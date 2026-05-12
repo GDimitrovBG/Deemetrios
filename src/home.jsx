@@ -104,7 +104,7 @@ function HomeHeroV3({ t, setRoute }) {
   );
 }
 
-function CollectionPreview({ t, setRoute, lang }) {
+function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite }) {
   const [activeCol, setActiveCol] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
 
@@ -173,7 +173,7 @@ function CollectionPreview({ t, setRoute, lang }) {
 
       <div className="dress-grid">
         {dresses.map((d) => (
-          <DressCard key={d.ref} d={d} lang={lang} onClick={() => setRoute("product")} />
+          <DressCard key={d.ref} d={d} lang={lang} onClick={() => setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
         ))}
       </div>
 
@@ -186,13 +186,25 @@ function CollectionPreview({ t, setRoute, lang }) {
   );
 }
 
-function DressCard({ d, lang, onClick }) {
+function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
   const t = i18n[lang];
   const name = lang === "bg" ? d.name_bg : d.name_en;
   const sil = lang === "bg" ? d.silhouette : d.silhouette_en;
+  const isFav = favorites.includes(d.ref);
   return (
     <article className="dress-card" onClick={onClick}>
       {d.badge && <span className="badge">{d.badge}</span>}
+      {toggleFavorite && (
+        <button
+          className={`fav-btn ${isFav ? "on" : ""}`}
+          onClick={(e) => { e.stopPropagation(); toggleFavorite(d.ref); }}
+          aria-label="Добави в любими"
+        >
+          <svg viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" width="16" height="16">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      )}
       <Img src={d.img} label={name} className="dress-img" />
       <span className="quick">View · {d.ref}</span>
       <div className="dress-info">
@@ -293,13 +305,13 @@ function CtaBand({ t, setRoute }) {
   );
 }
 
-function HomePage({ lang, setRoute, heroVariant }) {
+function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite }) {
   const t = i18n[lang];
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   return (
     <div className="page-enter">
       <Hero t={t} setRoute={setRoute} />
-      <CollectionPreview t={t} setRoute={setRoute} lang={lang} />
+      <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} />
       <MarqueeStrip />
       <StorySection t={t} setRoute={setRoute} />
       <ServicesSection t={t} />

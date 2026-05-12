@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Nav, Footer, FloatDial } from './components';
 import { HomePage } from './home';
-import { CollectionPage, ProductPage, AccessoriesPage } from './catalog';
+import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
 import { AboutPage, ContactPage, BlogPage } from './info';
 import {
@@ -57,29 +57,41 @@ export default function App() {
   }, [lang]);
 
   const [activeCollection, setActiveCollection] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+  const [bookingDress, setBookingDress] = useState(null);
+
+  const toggleFavorite = (ref) => {
+    setFavorites(prev => prev.includes(ref) ? prev.filter(r => r !== ref) : [...prev, ref]);
+  };
 
   const goCollection = (id = null) => {
     setActiveCollection(id);
     setRoute("collection");
   };
 
+  const goBooking = (dress = null) => {
+    setBookingDress(dress);
+    setRoute("booking");
+  };
+
   const transparent = route === "home" && tweaks.heroVariant !== "split";
 
   let page = null;
   switch (route) {
-    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} />; break;
-    case "product": page = <ProductPage lang={lang} setRoute={setRoute} />; break;
+    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
+    case "product": page = <ProductPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} />; break;
     case "accessories": page = <AccessoriesPage lang={lang} setRoute={setRoute} />; break;
-    case "booking": page = <BookingPage lang={lang} setRoute={setRoute} />; break;
+    case "booking": page = <BookingPage lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
+    case "wishlist": page = <WishlistPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} />; break;
     case "about": page = <AboutPage lang={lang} setRoute={setRoute} />; break;
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
     case "blog": page = <BlogPage lang={lang} setRoute={setRoute} />; break;
-    default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} />;
+    default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} />;
   }
 
   return (
     <>
-      <Nav route={route} setRoute={setRoute} lang={lang} setLang={setLang} transparent={transparent} goCollection={goCollection} />
+      <Nav route={route} setRoute={setRoute} lang={lang} setLang={setLang} transparent={transparent} goCollection={goCollection} favorites={favorites} />
       <main>{page}</main>
       <Footer lang={lang} setRoute={setRoute} />
       <FloatDial setRoute={setRoute} lang={lang} />

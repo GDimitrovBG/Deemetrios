@@ -93,7 +93,7 @@ function PriceRange({ filters, setFilters }) {
   );
 }
 
-function CollectionPage({ lang, setRoute, initCollection = null }) {
+function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite }) {
   const t = i18n[lang];
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
@@ -188,7 +188,7 @@ function CollectionPage({ lang, setRoute, initCollection = null }) {
 
       <div className={`collection-grid cols-${gridCols}`}>
         {filtered.map((d, i) => (
-          <DressCard key={i} d={d} lang={lang} onClick={() => setRoute("product")} />
+          <DressCard key={i} d={d} lang={lang} onClick={() => setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
         ))}
       </div>
 
@@ -277,11 +277,12 @@ function CollectionPage({ lang, setRoute, initCollection = null }) {
   );
 }
 
-function ProductPage({ lang, setRoute }) {
+function ProductPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking }) {
   const t = i18n[lang];
   const [activeSize, setActiveSize] = useState(38);
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const dress = DRESSES[0];
+  const isFav = favorites.includes(dress.ref);
   const name = lang === "bg" ? dress.name_bg : dress.name_en;
 
   const galleryImgs = [IMG.bride1, IMG.detail1, IMG.detail2, IMG.bride2];
@@ -336,8 +337,17 @@ function ProductPage({ lang, setRoute }) {
             </div>
             <p style={{ fontSize: 11, fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--ink-mute)", marginTop: 8 }}>{t.product.size_warn}</p>
             <div className="cta-stack">
-              <button className="btn btn-solid" onClick={() => setRoute("booking")}>{t.product.cta_book}</button>
+              <button className="btn btn-solid" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_book}</button>
               <button className="btn">{t.product.cta_inquire}</button>
+              <button
+                className={`fav-btn-product ${isFav ? "on" : ""}`}
+                onClick={() => toggleFavorite && toggleFavorite(dress.ref)}
+              >
+                <svg viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" width="16" height="16">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                {isFav ? (lang === "bg" ? "В любими ✓" : "Saved ✓") : (lang === "bg" ? "Добави в любими" : "Add to wishlist")}
+              </button>
             </div>
           </aside>
         </div>
@@ -346,10 +356,15 @@ function ProductPage({ lang, setRoute }) {
             <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(40px, 5vw, 72px)", lineHeight: 1 }}>{t.product.similar}</h2>
             <span className="t-meta">— Romansa MMXXVI</span>
           </div>
-          <div className="dress-grid">
+          <div className="dress-grid dress-grid--4">
             {DRESSES.slice(1, 5).map((d) => (
-              <DressCard key={d.ref} d={d} lang={lang} onClick={() => { window.scrollTo(0, 0); }} />
+              <DressCard key={d.ref} d={d} lang={lang} onClick={() => { window.scrollTo(0, 0); }} favorites={favorites} toggleFavorite={toggleFavorite} />
             ))}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 48 }}>
+            <button className="btn" onClick={() => setRoute("collection")}>
+              {lang === "bg" ? "Виж цялата колекция" : "View full collection"} <span style={{ fontFamily: "var(--f-serif)", fontSize: 16 }}>→</span>
+            </button>
           </div>
         </section>
       </div>
@@ -430,4 +445,141 @@ function AccessoriesPage({ lang, setRoute }) {
   );
 }
 
-export { CollectionPage, ProductPage, AccessoriesPage };
+function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking }) {
+  const [sent, setSent] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
+  const favDresses = DRESSES.filter(d => favorites.includes(d.ref));
+
+  const canSend = form.name && form.email && form.phone;
+
+  if (sent) {
+    return (
+      <div className="page-enter">
+        <div className="confirmation" style={{ padding: "120px var(--gutter)", textAlign: "center" }}>
+          <div className="check">✓</div>
+          <h2>{lang === "bg" ? "Запитването е изпратено" : "Inquiry sent"} <em>·</em></h2>
+          <p style={{ fontFamily: "var(--f-serif)", fontSize: 18, fontStyle: "italic", color: "var(--ink-soft)", marginTop: 16 }}>
+            {lang === "bg" ? "Ще се свържем с вас до 24 часа." : "We'll get back to you within 24 hours."}
+          </p>
+          <button className="btn" style={{ marginTop: 36 }} onClick={() => setRoute("home")}>{lang === "bg" ? "Към началото →" : "Go home →"}</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-enter">
+      <div className="collection-head">
+        <div>
+          <div className="t-eyebrow" style={{ marginBottom: 24 }}>— {lang === "bg" ? "Любими" : "Wishlist"}</div>
+          <h1>{lang === "bg" ? <>Избрани <em>рокли</em></> : <>My <em>wishlist</em></>}</h1>
+        </div>
+        <div className="meta-stack">
+          <div className="crumb">{favDresses.length}</div>
+          <div className="count">{lang === "bg" ? "рокли" : "styles"}</div>
+        </div>
+      </div>
+      <div style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "24px var(--gutter) 0" }}>
+        <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 16, color: "var(--ink-soft)", maxWidth: 480 }}>
+          {lang === "bg"
+            ? "Запазените от вас рокли. Можете да запитате за всички наведнъж."
+            : "Your saved styles. You can inquire about all of them at once."}
+        </p>
+      </div>
+
+      {favDresses.length === 0 ? (
+        <div style={{ padding: "80px var(--gutter)", textAlign: "center" }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-mute)" strokeWidth="1.2" width="48" height="48" style={{ marginBottom: 24 }}>
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 18, color: "var(--ink-mute)" }}>
+            {lang === "bg" ? "Все още нямате запазени рокли." : "No saved styles yet."}
+          </p>
+          <button className="btn" style={{ marginTop: 24 }} onClick={() => setRoute("collection")}>
+            {lang === "bg" ? "Разгледай колекцията →" : "Browse collection →"}
+          </button>
+        </div>
+      ) : (
+        <div style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 var(--gutter) var(--s-10)" }}>
+          <div className="wishlist-grid">
+            {favDresses.map(d => {
+              const name = lang === "bg" ? d.name_bg : d.name_en;
+              const sil = lang === "bg" ? d.silhouette : d.silhouette_en;
+              return (
+                <div key={d.ref} className="wishlist-card">
+                  <Img src={d.img} label={name} className="wishlist-img" />
+                  <div className="wishlist-card-info">
+                    <div>
+                      <div className="wishlist-card-name">{name}</div>
+                      <div className="wishlist-card-meta">{sil} · {d.fabric}</div>
+                      <div className="wishlist-card-price">от {d.price.toLocaleString("bg-BG")} лв.</div>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                      <button className="btn btn-solid" style={{ flex: 1, padding: "10px 0", fontSize: 10 }} onClick={() => goBooking ? goBooking(d) : setRoute("booking")}>
+                        {lang === "bg" ? "Запази проба" : "Book fitting"}
+                      </button>
+                      <button
+                        className="wishlist-remove"
+                        onClick={() => toggleFavorite && toggleFavorite(d.ref)}
+                        aria-label="Премахни"
+                      >
+                        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="14" height="14">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="wishlist-inquiry">
+            <div className="t-eyebrow" style={{ marginBottom: 20 }}>— {lang === "bg" ? "Групово запитване" : "Group inquiry"}</div>
+            <h3>{lang === "bg" ? <>Попитайте за <em>всички наведнъж</em></> : <>Inquire about <em>all at once</em></>}</h3>
+            <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 15, color: "var(--ink-soft)", marginTop: 8, marginBottom: 32 }}>
+              {lang === "bg"
+                ? `Изпращате запитване за ${favDresses.length} рокл${favDresses.length === 1 ? "я" : "и"}. Ще се свържем и ще насрочим проба.`
+                : `You're inquiring about ${favDresses.length} style${favDresses.length !== 1 ? "s" : ""}. We'll contact you to schedule fittings.`}
+            </p>
+
+            <div className="wishlist-selected-refs">
+              {favDresses.map(d => (
+                <span key={d.ref} className="wishlist-ref-pill">Реф. {d.ref}</span>
+              ))}
+            </div>
+
+            <div className="fields-row" style={{ marginTop: 28 }}>
+              <div className="field">
+                <label>{lang === "bg" ? "Ime" : "Name"}</label>
+                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Мария Иванова" />
+              </div>
+              <div className="field">
+                <label>{lang === "bg" ? "Телефон" : "Phone"}</label>
+                <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+359 ..." />
+              </div>
+            </div>
+            <div className="field">
+              <label>Email</label>
+              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="maria@example.com" />
+            </div>
+            <div className="field" style={{ marginTop: 16 }}>
+              <label>{lang === "bg" ? "Допълнително" : "Notes"}</label>
+              <textarea rows="3" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={lang === "bg" ? "Дата на сватбата, бюджет, въпроси..." : "Wedding date, budget, questions..."} />
+            </div>
+            <button
+              className="btn btn-solid"
+              style={{ marginTop: 24, opacity: canSend ? 1 : 0.4 }}
+              disabled={!canSend}
+              onClick={() => canSend && setSent(true)}
+            >
+              {lang === "bg" ? "Изпрати запитването →" : "Send inquiry →"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { CollectionPage, ProductPage, AccessoriesPage, WishlistPage };

@@ -38,7 +38,7 @@ function Img({ src, label, className = "", style = {} }) {
 }
 
 // ----- Nav -----
-function Nav({ route, setRoute, lang, setLang, transparent, goCollection }) {
+function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favorites = [] }) {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [colHover, setColHover] = useState(false);
@@ -85,6 +85,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection }) {
       <nav className={cls}>
         <div className="nav-inner">
           <div className="nav-left">
+            <span className={`nav-link ${route === "home" ? "active" : ""}`} onClick={() => { setDrawerOpen(false); setRoute("home"); }}>{t.nav.home}</span>
             <div className="nav-has-drop" onMouseEnter={showDrop} onMouseLeave={hideDrop}>
               <span className={`nav-link ${route === "collection" ? "active" : ""}`} onClick={() => goCollection(null)}>
                 {t.nav.collection}
@@ -103,9 +104,8 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection }) {
                 </div>
               )}
             </div>
-            {links.slice(1, 3).map((l) => (
-              <span key={l.id} className={`nav-link ${route === l.id ? "active" : ""}`} onClick={() => setRoute(l.id)}>{l.label}</span>
-            ))}
+            <span className={`nav-link ${route === "accessories" ? "active" : ""}`} onClick={() => setRoute("accessories")}>{t.nav.accessories}</span>
+            <span className={`nav-link ${route === "about" ? "active" : ""}`} onClick={() => setRoute("about")}>{t.nav.about}</span>
           </div>
           <div className={`burger ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(!drawerOpen)}>
             <span></span><span></span><span></span>
@@ -115,10 +115,15 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection }) {
             <span className="sub">— BRIDAL · SOFIA —</span>
           </div>
           <div className="nav-right">
-            {links.slice(3, 5).map((l) => (
-              <span key={l.id} className={`nav-link ${route === l.id ? "active" : ""}`} onClick={() => setRoute(l.id)}>{l.label}</span>
-            ))}
-            <span className="nav-link" onClick={() => setRoute("booking")}>{t.nav.bookings}</span>
+            <span className={`nav-link ${route === "blog" ? "active" : ""}`} onClick={() => setRoute("blog")}>{t.nav.blog}</span>
+            <span className={`nav-link ${route === "contact" ? "active" : ""}`} onClick={() => setRoute("contact")}>{t.nav.contact}</span>
+            <button className={`nav-fav ${route === "wishlist" ? "active" : ""}`} onClick={() => setRoute("wishlist")} aria-label={t.nav.wishlist}>
+              <svg viewBox="0 0 24 24" fill={favorites.length > 0 ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" width="18" height="18">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              {favorites.length > 0 && <span className="nav-fav-count">{favorites.length}</span>}
+            </button>
+            <span className={`nav-link nav-link--cta ${route === "booking" ? "active" : ""}`} onClick={() => setRoute("booking")}>{t.nav.bookings}</span>
             <div className="lang-toggle">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}><span>BG</span></button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}><span>EN</span></button>
@@ -132,7 +137,11 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection }) {
           <button className="m-close" onClick={() => setDrawerOpen(false)}>✕</button>
         </div>
         <nav className="m-nav">
-          <div className="m-link" onClick={() => { goTo("collection"); goCollection(null); }}>
+          <div className={`m-link ${route === "home" ? "m-link--active" : ""}`} onClick={() => goTo("home")}>
+            <span>{t.nav.home}</span>
+            <span className="arr">→</span>
+          </div>
+          <div className={`m-link ${route === "collection" ? "m-link--active" : ""}`} onClick={() => { goTo("collection"); goCollection(null); }}>
             <span>{t.nav.collection}</span>
             <span className="arr">→</span>
           </div>
@@ -141,12 +150,32 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection }) {
               <span>{c.label}</span>
             </div>
           ))}
-          {links.slice(1).map((l) => (
-            <div key={l.id} className="m-link" onClick={() => goTo(l.id)}>
-              <span>{l.label}</span>
-              <span className="arr">→</span>
-            </div>
-          ))}
+          <div className={`m-link ${route === "accessories" ? "m-link--active" : ""}`} onClick={() => goTo("accessories")}>
+            <span>{t.nav.accessories}</span>
+            <span className="arr">→</span>
+          </div>
+          <div className="m-divider" />
+          <div className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={() => goTo("about")}>
+            <span>{t.nav.about}</span>
+            <span className="arr">→</span>
+          </div>
+          <div className={`m-link ${route === "blog" ? "m-link--active" : ""}`} onClick={() => goTo("blog")}>
+            <span>{t.nav.blog}</span>
+            <span className="arr">→</span>
+          </div>
+          <div className={`m-link ${route === "contact" ? "m-link--active" : ""}`} onClick={() => goTo("contact")}>
+            <span>{t.nav.contact}</span>
+            <span className="arr">→</span>
+          </div>
+          <div className={`m-link ${route === "wishlist" ? "m-link--active" : ""}`} onClick={() => goTo("wishlist")}>
+            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {t.nav.wishlist}
+              {favorites.length > 0 && (
+                <span className="m-fav-badge">{favorites.length}</span>
+              )}
+            </span>
+            <span className="arr">→</span>
+          </div>
         </nav>
         <div className="m-foot">
           <button className="m-cta" onClick={() => goTo("booking")}>{t.nav.bookings} →</button>
@@ -331,7 +360,7 @@ function FloatDial({ setRoute, lang }) {
         </span>
         <span className="fd-plus">
           <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-            <path d="M12 2 L13.2 9.5 L20 8 L14.5 13 L18 20 L12 15.5 L6 20 L9.5 13 L4 8 L10.8 9.5 Z"/>
+            <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.57 21 3 13.43 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.58.11.35.03.74-.25 1.02L6.6 10.8z"/>
           </svg>
         </span>
       </button>

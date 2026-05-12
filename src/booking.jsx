@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import i18n from './i18n';
+import { Img } from './components';
 
 // =====================================================
 //  BOOKING — 4-step reservation flow
@@ -193,9 +194,21 @@ function Step4Details({ t, data, setData }) {
   );
 }
 
-function Summary({ t, data, lang }) {
+function Summary({ t, data, lang, dressRefs, setDressRefs }) {
   const monthNames = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
   const fmtDate = (d) => d ? `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}` : null;
+  const [refInput, setRefInput] = useState("");
+  const inputRef = useRef(null);
+
+  const addRef = () => {
+    const val = refInput.trim().replace(/\D/g, "");
+    if (val && !dressRefs.includes(val)) {
+      setDressRefs([...dressRefs, val]);
+    }
+    setRefInput("");
+    inputRef.current?.focus();
+  };
+
   const rows = [
     data.type != null ? t.booking.types[data.type].title : null,
     data.location != null ? t.booking.locations[data.location].name : null,
@@ -207,7 +220,42 @@ function Summary({ t, data, lang }) {
     <aside className="summary">
       <div className="s-eyebrow">{t.booking.summary_eye}</div>
       <h4>{t.booking.summary_title} <em>·</em></h4>
-      <div style={{ marginTop: 24 }}>
+
+      <div className="summary-refs-section">
+        <div className="summary-refs-label">
+          {lang === "bg" ? "Рокли за пробване" : "Styles to try"}
+        </div>
+        {dressRefs.length > 0 && (
+          <div className="summary-refs-pills">
+            {dressRefs.map(ref => (
+              <span key={ref} className="summary-ref-pill">
+                Реф. {ref}
+                <button
+                  className="summary-ref-remove"
+                  onClick={() => setDressRefs(dressRefs.filter(r => r !== ref))}
+                  aria-label="Премахни"
+                >×</button>
+              </span>
+            ))}
+          </div>
+        )}
+        <div className="summary-ref-input-row">
+          <input
+            ref={inputRef}
+            className="summary-ref-input"
+            value={refInput}
+            onChange={e => setRefInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && addRef()}
+            placeholder={lang === "bg" ? "Реф. номер…" : "Ref. number…"}
+            maxLength={10}
+          />
+          <button className="summary-ref-add" onClick={addRef} disabled={!refInput.trim()}>
+            +
+          </button>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 20 }}>
         {t.booking.summary_rows.map((label, i) => (
           <div key={i} className="s-row">
             <span className="label">{label}</span>
@@ -240,11 +288,12 @@ function Confirmation({ t, data, setRoute }) {
   );
 }
 
-function BookingPage({ lang, setRoute }) {
+function BookingPage({ lang, setRoute, dress = null }) {
   const t = i18n[lang];
   const [step, setStep] = useState(0);
   const [data, setData] = useState({});
   const [done, setDone] = useState(false);
+  const [dressRefs, setDressRefs] = useState(dress ? [String(dress.ref)] : []);
 
   const canNext = () => {
     if (step === 0) return data.type != null;
@@ -288,7 +337,7 @@ function BookingPage({ lang, setRoute }) {
             )}
           </div>
         </div>
-        <Summary t={t} data={data} lang={lang} />
+        <Summary t={t} data={data} lang={lang} dressRefs={dressRefs} setDressRefs={setDressRefs} />
       </div>
     </BookingShell>
   );

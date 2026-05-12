@@ -4,12 +4,14 @@
 const i18n = {
   bg: {
     nav: {
+      home: "Начало",
       collection: "Колекция",
       accessories: "Вечерни рокли",
       bookings: "Запази проба",
       about: "За нас",
       blog: "Дневник",
       contact: "Контакти",
+      wishlist: "Любими",
       menu: "Меню",
       search: "Търсене",
       account: "Профил",
@@ -119,7 +121,6 @@ const i18n = {
       ],
       locations: [
         { name: "София", addr: "ул. Шипка 18, ет.2 · до НДК", hours: "Вт – Сб · 11:00 – 19:00" },
-        { name: "Пловдив", addr: "ул. Княз Александър I 24 · Капана", hours: "Ср – Сб · 11:00 – 18:00" },
       ],
       labels: {
         name: "Име",
@@ -157,19 +158,18 @@ const i18n = {
         { yr: "2014", title: "Първото ателие в София.", p: "Арети основава студиото си с три рокли и пет порции вяра. Първата булка минава през вратите след две седмици." },
         { yr: "2017", title: "Колекция \"Софѝя Прима\"", p: "Първата собствена колекция от 12 силуета — представена на 200 гости в галерия в Пловдив." },
         { yr: "2020", title: "Couture линия", p: "Откриване на couture лабораторията. Всяка рокля — едно от вид, шита изцяло на ръка." },
-        { yr: "2023", title: "Второ студио — Пловдив", p: "Капана получава своя ателие. Бутиково пространство в реконструирана къща от 1890 г." },
+        { yr: "2023", title: "Ново ателие пространство", p: "Разширяване на студиото в София — нова couture лаборатория и по-голям салон за проби." },
         { yr: "2026", title: "Колекция \"Романса\"", p: "Дванадесет силуета, вдъхновени от тихата сила на съвременната булка." },
       ],
     },
     contact: {
       title: "Контакти",
       title_em: "и студия",
-      lede: "Намери ни в София или Пловдив. Записването е по уговорка.",
+      lede: "Намери ни в София. Записването е по уговорка.",
       directions: "Упътвания",
       book: "Запази час",
       cities: [
         { name: "София", em: "флагман", addr: "ул. Шипка 18, ет.2\n1504 София, България", hours: "Вт – Сб · 11:00 – 19:00", phone: "+359 2 444 12 12", email: "sofia@areti.bg" },
-        { name: "Пловдив", em: "couture", addr: "ул. Княз Александър I 24\n4000 Пловдив, Капана", hours: "Ср – Сб · 11:00 – 18:00", phone: "+359 32 222 88 44", email: "plovdiv@areti.bg" },
         { name: "Онлайн", em: "виртуално", addr: "Виртуални консултации\nZoom · 60 минути", hours: "Гъвкав часови график", phone: "+359 88 700 21 21", email: "hello@areti.bg" },
       ],
     },
@@ -210,7 +210,7 @@ const i18n = {
       atelier_links: ["За нас", "Дневник", "Преса", "Кариери"],
       help: "Помощ",
       help_links: ["Запази проба", "Контакти", "Размери", "Условия"],
-      copyright: "© MMXXVI Арети ООД · София · Всички права запазени",
+      copyright: "© MMXXVI Арети ООД · Всички права запазени",
       lang_marker: "Езици · BG / EN",
     },
     common: {
@@ -224,12 +224,14 @@ const i18n = {
   },
   en: {
     nav: {
+      home: "Home",
       collection: "Collection",
       accessories: "Evening dresses",
       bookings: "Book a fitting",
       about: "Atelier",
       blog: "Journal",
       contact: "Contact",
+      wishlist: "Wishlist",
       menu: "Menu",
       search: "Search",
       account: "Account",
@@ -340,7 +342,6 @@ const i18n = {
       ],
       locations: [
         { name: "Sofia", addr: "18 Shipka St., fl.2 · near NDK", hours: "Tue – Sat · 11:00 – 19:00" },
-        { name: "Plovdiv", addr: "24 Knyaz Alexander I · Kapana", hours: "Wed – Sat · 11:00 – 18:00" },
       ],
       labels: {
         name: "Full name",
@@ -378,19 +379,18 @@ const i18n = {
         { yr: "2014", title: "First atelier in Sofia.", p: "Areti opens her studio with three dresses and five portions of faith. The first bride walks in two weeks later." },
         { yr: "2017", title: "Sofia Prima collection", p: "First in-house collection of 12 silhouettes — shown to 200 guests in a Plovdiv gallery." },
         { yr: "2020", title: "Couture line", p: "Opening of the couture lab. Every dress — one of a kind, fully hand-stitched." },
-        { yr: "2023", title: "Second studio — Plovdiv", p: "Kapana receives its atelier. A boutique space inside a restored 1890 house." },
+        { yr: "2023", title: "New atelier space", p: "Expansion of the Sofia studio — new couture lab and a larger fitting salon." },
         { yr: "2026", title: "Romansa collection", p: "Twelve silhouettes inspired by the quiet strength of the modern bride." },
       ],
     },
     contact: {
       title: "Visit",
       title_em: "our studios",
-      lede: "Find us in Sofia or Plovdiv. Visits by appointment only.",
+      lede: "Find us in Sofia. Visits by appointment only.",
       directions: "Directions",
       book: "Book a fitting",
       cities: [
         { name: "Sofia", em: "flagship", addr: "18 Shipka St., fl.2\n1504 Sofia, Bulgaria", hours: "Tue – Sat · 11:00 – 19:00", phone: "+359 2 444 12 12", email: "sofia@areti.bg" },
-        { name: "Plovdiv", em: "couture", addr: "24 Knyaz Alexander I\n4000 Plovdiv, Kapana", hours: "Wed – Sat · 11:00 – 18:00", phone: "+359 32 222 88 44", email: "plovdiv@areti.bg" },
         { name: "Online", em: "virtual", addr: "Virtual consultation\nZoom · 60 minutes", hours: "Flexible scheduling", phone: "+359 88 700 21 21", email: "hello@areti.bg" },
       ],
     },
@@ -431,7 +431,7 @@ const i18n = {
       atelier_links: ["About", "Journal", "Press", "Careers"],
       help: "Help",
       help_links: ["Book a fitting", "Contact", "Size guide", "Terms"],
-      copyright: "© MMXXVI Areti Ltd · Sofia · All rights reserved",
+      copyright: "© MMXXVI Areti Ltd · All rights reserved",
       lang_marker: "Languages · BG / EN",
     },
     common: {
