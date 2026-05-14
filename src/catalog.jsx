@@ -300,13 +300,12 @@ function ProductPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking
         <div className="product-main">
           <div className="product-gallery">
             <Img src={galleryImgs[0]} label={`${name} · main`} className="main-img" style={{ cursor: "zoom-in" }} />
-            <div onClick={() => setLightboxIdx(0)} style={{ cursor: "zoom-in", gridColumn: "span 2", aspectRatio: "3/4", backgroundImage: `url(${encodeURI(galleryImgs[0])})`, backgroundSize: "cover", backgroundPosition: "center", display: "none" }}></div>
-            {[1, 2, 3].map((i) => (
-              <Img key={i} src={galleryImgs[i]} label={`detail ${i}`} className="thumb" style={{ cursor: "zoom-in" }} />
+            {galleryImgs.slice(1, 4).map((imgSrc, i) => (
+              <Img key={i} src={imgSrc} label={`${name} · ${i + 2}`} className="thumb" style={{ cursor: "zoom-in" }} />
             ))}
             {galleryImgs.length > 4 && (
               <div className="thumb" style={{ background: "var(--bg-deep)", display: "grid", placeItems: "center", cursor: "pointer" }} onClick={() => setLightboxIdx(0)}>
-                <span style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--ink-soft)" }}>+ {galleryImgs.length - 4} more</span>
+                <span style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--ink-soft)" }}>+ {galleryImgs.length - 4} снимки</span>
               </div>
             )}
           </div>
