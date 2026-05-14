@@ -104,7 +104,7 @@ function HomeHeroV3({ t, setRoute }) {
   );
 }
 
-function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite }) {
+function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, goProduct }) {
   const [activeCol, setActiveCol] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
 
@@ -173,7 +173,7 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite }
 
       <div className="dress-grid">
         {dresses.map((d) => (
-          <DressCard key={d.ref} d={d} lang={lang} onClick={() => setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
+          <DressCard key={d.ref} d={d} lang={lang} onClick={() => goProduct ? goProduct(d.ref) : setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
         ))}
       </div>
 
@@ -305,13 +305,13 @@ function CtaBand({ t, setRoute }) {
   );
 }
 
-function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite }) {
+function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   return (
     <div className="page-enter">
       <Hero t={t} setRoute={setRoute} />
-      <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} />
+      <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />
       <MarqueeStrip />
       <StorySection t={t} setRoute={setRoute} />
       <ServicesSection t={t} />

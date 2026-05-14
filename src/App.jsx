@@ -66,6 +66,7 @@ export default function App() {
   }, [lang]);
 
   const [activeCollection, setActiveCollection] = useState(null);
+  const [activeProduct, setActiveProduct] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [bookingDress, setBookingDress] = useState(null);
 
@@ -78,6 +79,11 @@ export default function App() {
     setRoute("collection");
   };
 
+  const goProduct = (ref) => {
+    setActiveProduct(ref);
+    setRoute("product");
+  };
+
   const goBooking = (dress = null) => {
     setBookingDress(dress);
     setRoute("booking");
@@ -87,17 +93,17 @@ export default function App() {
 
   let page = null;
   switch (route) {
-    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
-    case "product": page = <ProductPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} />; break;
+    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
+    case "product": page = <ProductPage lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
     case "accessories": page = <AccessoriesPage lang={lang} setRoute={setRoute} />; break;
     case "booking": page = <BookingPage lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
-    case "wishlist": page = <WishlistPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} />; break;
+    case "wishlist": page = <WishlistPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
     case "about": page = <AboutPage lang={lang} setRoute={setRoute} />; break;
     case "demetrios": page = <DemetriosPage lang={lang} setRoute={setRoute} />; break;
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
     case "blog": page = <BlogPage lang={lang} setRoute={setRoute} />; break;
     case "admin": page = null; break;
-    default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} />;
+    default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
   }
 
   if (route === "admin") return <AdminPanel setRoute={setRoute} />;

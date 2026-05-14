@@ -106,7 +106,7 @@ function applyFiltersAndSort(list, filters, sortBy) {
   return result;
 }
 
-function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite }) {
+function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -243,7 +243,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         items={visibleItems}
         lang={lang}
         gridCols={gridCols}
-        setRoute={setRoute}
+        goProduct={goProduct}
         favorites={favorites}
         toggleFavorite={toggleFavorite}
         activeCol={activeCol}
@@ -393,7 +393,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
 }
 
 // Renders grid with collection-change dividers
-function CollectionGrid({ items, lang, gridCols, setRoute, favorites, toggleFavorite, activeCol }) {
+function CollectionGrid({ items, lang, gridCols, goProduct, favorites, toggleFavorite, activeCol }) {
   const isBg = lang === "bg";
   const rows = [];
   let lastCol = null;
@@ -416,7 +416,7 @@ function CollectionGrid({ items, lang, gridCols, setRoute, favorites, toggleFavo
     }
     lastCol = d.collection;
     rows.push(
-      <DressCard key={d.ref} d={d} lang={lang} onClick={() => setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
+      <DressCard key={d.ref} d={d} lang={lang} onClick={() => goProduct(d.ref)} favorites={favorites} toggleFavorite={toggleFavorite} />
     );
   });
 
@@ -453,11 +453,11 @@ function CollectionGrid({ items, lang, gridCols, setRoute, favorites, toggleFavo
   );
 }
 
-function ProductPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking }) {
+function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct }) {
   const t = i18n[lang];
   const [activeSize, setActiveSize] = useState(38);
   const [lightboxIdx, setLightboxIdx] = useState(null);
-  const dress = DRESSES[0];
+  const dress = DRESSES.find(d => d.ref === productRef) || DRESSES[0];
   const isFav = favorites.includes(dress.ref);
   const name = lang === "bg" ? dress.name_bg : dress.name_en;
 
@@ -534,8 +534,8 @@ function ProductPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking
             <span className="t-meta">— Romansa MMXXVI</span>
           </div>
           <div className="dress-grid dress-grid--4">
-            {DRESSES.slice(1, 5).map((d) => (
-              <DressCard key={d.ref} d={d} lang={lang} onClick={() => { window.scrollTo(0, 0); }} favorites={favorites} toggleFavorite={toggleFavorite} />
+            {DRESSES.filter(d => d.ref !== dress.ref).slice(0, 4).map((d) => (
+              <DressCard key={d.ref} d={d} lang={lang} onClick={() => { goProduct && goProduct(d.ref); window.scrollTo(0, 0); }} favorites={favorites} toggleFavorite={toggleFavorite} />
             ))}
           </div>
           <div style={{ textAlign: "center", marginTop: 48 }}>
