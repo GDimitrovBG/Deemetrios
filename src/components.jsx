@@ -105,7 +105,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
                 </div>
               )}
             </div>
-            <span className={`nav-link ${route === "accessories" ? "active" : ""}`} onClick={() => setRoute("accessories")}>{t.nav.accessories}</span>
+            <span className={`nav-link`} onClick={() => goCollection("evening")}>{t.nav.accessories}</span>
             <span className={`nav-link ${route === "about" ? "active" : ""}`} onClick={() => setRoute("about")}>{t.nav.about}</span>
           </div>
           <div className={`burger ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(!drawerOpen)}>
@@ -151,10 +151,6 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
               <span>{c.label}</span>
             </div>
           ))}
-          <div className={`m-link ${route === "accessories" ? "m-link--active" : ""}`} onClick={() => goTo("accessories")}>
-            <span>{t.nav.accessories}</span>
-            <span className="arr">→</span>
-          </div>
           <div className="m-divider" />
           <div className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={() => goTo("about")}>
             <span>{t.nav.about}</span>
