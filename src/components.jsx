@@ -26,13 +26,14 @@ function Img({ src, label, className = "", style = {} }) {
     );
   }
   return (
-    <div
-      className={`ph ph-img ${className}`}
-      style={{ ...style, backgroundImage: `url(${encodeURI(src)})` }}
-      role="img"
-      aria-label={label}
-    >
-      <img src={src} alt={label || ""} style={{ display: "none" }} onError={() => setErrored(true)} />
+    <div className={`ph ph-img ${className}`} style={style}>
+      <img
+        src={src}
+        alt={label || ""}
+        onError={() => setErrored(true)}
+        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }}
+        loading="lazy"
+      />
     </div>
   );
 }

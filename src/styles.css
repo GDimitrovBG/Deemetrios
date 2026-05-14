@@ -196,8 +196,7 @@ a { color: inherit; text-decoration: none; }
   padding: 16px;
 }
 .ph-img {
-  background-size: cover;
-  background-position: center;
+  background: none;
 }
 .ph-img::before, .ph-img::after { display: none; }
 
