@@ -96,7 +96,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
                   <div className="nd-item nd-all" onClick={() => { setColHover(false); goCollection(null); }}>
                     {lang === "bg" ? "Всички колекции" : "All Collections"}
                   </div>
-                  {COLLECTIONS.map(c => (
+                  {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
                     <div key={c.id} className="nd-item" onClick={() => { setColHover(false); goCollection(c.id); }}>
                       <span className="nd-label">{c.label}</span>
                       <span className="nd-desc">{lang === "bg" ? c.desc_bg.split("—")[0] : c.desc_en.split("—")[0]}</span>
@@ -146,7 +146,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
             <span>{t.nav.collection}</span>
             <span className="arr">→</span>
           </div>
-          {COLLECTIONS.map(c => (
+          {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
             <div key={c.id} className="m-link m-link-sub" onClick={() => { goTo("collection"); goCollection(c.id); }}>
               <span>{c.label}</span>
             </div>
