@@ -139,12 +139,49 @@ function Step3Date({ t, data, setData }) {
               <button
                 key={s}
                 className={`time-slot ${data.time === s ? "on" : ""} ${goneSlots.includes(s) ? "gone" : ""}`}
-                onClick={() => !goneSlots.includes(s) && setData({ ...data, time: s })}
+                onClick={() => !goneSlots.includes(s) && setData({ ...data, time: s, timeConfirmed: false })}
               >{s}</button>
             ))}
           </div>
         )}
       </div>
+
+      {/* Time selected — confirmation notice */}
+      {data.date && data.time && (
+        <div className="time-confirm-box">
+          {/* Big selected summary */}
+          <div className="time-confirm-top">
+            <div className="time-confirm-date">
+              {data.date.toLocaleDateString("bg-BG", { weekday: "long", day: "numeric", month: "long" })}
+            </div>
+            <div className="time-confirm-time">{data.time}</div>
+          </div>
+
+          {/* Interactive checkbox notice */}
+          <label
+            className={`time-confirm-notice ${data.timeConfirmed ? "is-checked" : ""}`}
+            style={{ cursor: "pointer", userSelect: "none" }}
+            onClick={() => setData({ ...data, timeConfirmed: !data.timeConfirmed })}
+          >
+            {/* Custom checkbox */}
+            <div className={`time-confirm-checkbox ${data.timeConfirmed ? "checked" : ""}`}>
+              {data.timeConfirmed && (
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+                  <polyline points="2 7 5.5 10.5 12 3.5" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <div className="time-confirm-label">
+                {data.timeConfirmed ? "✓ Прочетено и разбрано" : "Прочетете и потвърдете"}
+              </div>
+              <div className="time-confirm-text">
+                Избраният час е <strong>ориентировъчен</strong>. Ще се свържем с вас в рамките на 24 часа, за да потвърдим и уточним всички детайли на пробата.
+              </div>
+            </div>
+          </label>
+        </div>
+      )}
     </div>
   );
 }
@@ -298,7 +335,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
   const canNext = () => {
     if (step === 0) return data.type != null;
     if (step === 1) return data.location != null;
-    if (step === 2) return data.date && data.time;
+    if (step === 2) return data.date && data.time && data.timeConfirmed;
     if (step === 3) return data.name && data.email && data.phone;
     return false;
   };

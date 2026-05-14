@@ -93,8 +93,22 @@ function PriceRange({ filters, setFilters }) {
   );
 }
 
+const PAGE_SIZE = 20;
+
+function applyFiltersAndSort(list, filters, sortBy) {
+  let result = [...list];
+  const sf = filters.silhouette || [];
+  if (sf.length) result = result.filter(d => sf.includes(d.silhouette));
+  if (filters.priceLo != null) result = result.filter(d => d.price >= filters.priceLo);
+  if (filters.priceHi != null) result = result.filter(d => d.price <= filters.priceHi);
+  if (sortBy === "price-asc") result.sort((a, b) => a.price - b.price);
+  else if (sortBy === "price-desc") result.sort((a, b) => b.price - a.price);
+  return result;
+}
+
 function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite }) {
   const t = i18n[lang];
+  const isBg = lang === "bg";
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const [filters, setFilters] = useState({});
@@ -102,23 +116,61 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
   const [activeCol, setActiveCol] = useState(initCollection);
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   const [gridCols, setGridCols] = useState(isMobile ? 2 : 2);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => { setActiveCol(initCollection); }, [initCollection]);
 
-  const filtered = useMemo(() => {
-    let list = [...DRESSES];
-    if (activeCol) list = list.filter(d => d.collection === activeCol);
-    const sf = filters.silhouette || [];
-    if (sf.length) list = list.filter(d => sf.includes(d.silhouette));
-    if (filters.priceLo != null) list = list.filter(d => d.price >= filters.priceLo);
-    if (filters.priceHi != null) list = list.filter(d => d.price <= filters.priceHi);
-    if (sortBy === "price-asc") list.sort((a, b) => a.price - b.price);
-    else if (sortBy === "price-desc") list.sort((a, b) => b.price - a.price);
-    return list;
-  }, [filters, sortBy, activeCol]);
+  // Reset pagination whenever the tab / filters / sort change
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeCol, filters, sortBy]);
+
+  // Build cross-collection ordered list:
+  // When a specific collection is selected, continue into subsequent collections
+  // so the "Виж още" button flows naturally across all collections.
+  const displayList = useMemo(() => {
+    if (!activeCol) {
+      // All: respect collection order (cosmobella → demetrios → … → evening)
+      const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id));
+      return applyFiltersAndSort(ordered, filters, sortBy);
+    }
+    // Start from the selected collection, then append subsequent ones
+    const startIdx = COLLECTIONS.findIndex(c => c.id === activeCol);
+    const ordered = [];
+    for (let i = startIdx; i < COLLECTIONS.length; i++) {
+      DRESSES.filter(d => d.collection === COLLECTIONS[i].id).forEach(d => ordered.push(d));
+    }
+    return applyFiltersAndSort(ordered, filters, sortBy);
+  }, [activeCol, filters, sortBy]);
+
+  // What's currently visible in the grid
+  const visibleItems = displayList.slice(0, visibleCount);
+  const remaining = displayList.length - visibleCount;
+  const hasMore = remaining > 0;
+  const allShown = displayList.length > 0 && !hasMore;
+  // Is the active collection itself exhausted (but more from next ones)?
+  const activeColCount = activeCol ? DRESSES.filter(d => d.collection === activeCol).length : 0;
 
   const activeCount = Object.values(filters).filter(v => Array.isArray(v) ? v.length > 0 : v != null).length;
   const activeColData = COLLECTIONS.find(c => c.id === activeCol);
+
+  // Which collection is currently at the "edge" of what's visible
+  const nextColLabel = useMemo(() => {
+    if (!activeCol || !hasMore) return null;
+    const lastVisible = visibleItems[visibleItems.length - 1];
+    if (!lastVisible) return null;
+    const lastColIdx = COLLECTIONS.findIndex(c => c.id === lastVisible.collection);
+    const nextCol = COLLECTIONS[lastColIdx + 1];
+    if (nextCol && lastVisible.collection !== activeCol) return null; // already into next
+    return nextCol ? nextCol.label : null;
+  }, [visibleItems, activeCol, hasMore]);
+
+  const handleLoadMore = () => {
+    setVisibleCount(v => Math.min(v + PAGE_SIZE, displayList.length + 1));
+  };
+
+  const handleRestart = () => {
+    setVisibleCount(PAGE_SIZE);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="page-enter">
@@ -136,13 +188,13 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         </div>
         <div className="meta-stack">
           <div className="crumb">N° XXVI</div>
-          <div className="count">{filtered.length} {lang === 'bg' ? 'модела' : 'styles'}</div>
+          <div className="count">{visibleItems.length} / {displayList.length} {isBg ? 'модела' : 'styles'}</div>
         </div>
       </div>
 
       <div className="collection-tabs">
         <button className={`col-tab ${!activeCol ? 'active' : ''}`} onClick={() => setActiveCol(null)}>
-          {lang === 'bg' ? 'Всички' : 'All'}
+          {isBg ? 'Всички' : 'All'}
         </button>
         {COLLECTIONS.map(c => (
           <button key={c.id} className={`col-tab ${activeCol === c.id ? 'active' : ''}`} onClick={() => setActiveCol(c.id)}>
@@ -161,16 +213,16 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
               {t.collection.reset} ×
             </button>
           )}
-          <span className="results">{t.collection.results(filtered.length)}</span>
+          <span className="results">{t.collection.results(displayList.length)}</span>
           <span className="sort" onClick={() => setSortBy(sortBy === "new" ? "price-asc" : sortBy === "price-asc" ? "price-desc" : "new")}>
-            {t.collection.sort}: {sortBy === "new" ? t.collection.sort_new : sortBy === "price-asc" ? "↑ Price" : "↓ Price"}
+            {t.collection.sort}: {sortBy === "new" ? t.collection.sort_new : sortBy === "price-asc" ? (isBg ? "↑ Цена" : "↑ Price") : (isBg ? "↓ Цена" : "↓ Price")}
           </span>
         </div>
       </div>
       {filtersOpen && <FilterPanel t={t} lang={lang} filters={filters} setFilters={setFilters} onClose={() => setFiltersOpen(false)} />}
 
       <div className="mobile-grid-bar">
-        <span className="mobile-grid-count">{filtered.length} {lang === "bg" ? "модела" : "styles"}</span>
+        <span className="mobile-grid-count">{visibleItems.length} {isBg ? "модела" : "styles"}</span>
         <div className="grid-toggle">
           <button className={gridCols === 1 ? "active" : ""} onClick={() => setGridCols(1)} aria-label="1 column">
             <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
@@ -186,10 +238,73 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         </div>
       </div>
 
-      <div className={`collection-grid cols-${gridCols}`}>
-        {filtered.map((d, i) => (
-          <DressCard key={i} d={d} lang={lang} onClick={() => setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
-        ))}
+      {/* Grid — render visible items with collection dividers */}
+      <CollectionGrid
+        items={visibleItems}
+        lang={lang}
+        gridCols={gridCols}
+        setRoute={setRoute}
+        favorites={favorites}
+        toggleFavorite={toggleFavorite}
+        activeCol={activeCol}
+      />
+
+      {/* Load more / End state */}
+      <div style={{ padding: "48px var(--gutter) 80px", textAlign: "center" }}>
+        {hasMore && (
+          <div>
+            {/* Progress indicator */}
+            <div style={{ display: "flex", alignItems: "center", gap: 16, justifyContent: "center", marginBottom: 28 }}>
+              <div style={{ flex: 1, maxWidth: 200, height: 1, background: "var(--rule)" }} />
+              <span style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 14, color: "var(--ink-mute)" }}>
+                {visibleItems.length} {isBg ? "от" : "of"} {displayList.length}
+              </span>
+              <div style={{ flex: 1, maxWidth: 200, height: 1, background: "var(--rule)" }} />
+            </div>
+            {/* Progress bar */}
+            <div style={{ maxWidth: 320, margin: "0 auto 32px", height: 2, background: "var(--champagne)", borderRadius: 1 }}>
+              <div style={{ height: "100%", background: "var(--champagne-deep)", borderRadius: 1, width: `${(visibleItems.length / displayList.length) * 100}%`, transition: "width .4s ease" }} />
+            </div>
+            <button className="btn btn-solid" onClick={handleLoadMore} style={{ minWidth: 220 }}>
+              {isBg
+                ? `Виж още ${Math.min(PAGE_SIZE, remaining)} ${remaining === 1 ? "рокля" : "рокли"}`
+                : `Load ${Math.min(PAGE_SIZE, remaining)} more`}
+            </button>
+            {nextColLabel && (
+              <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 13, color: "var(--ink-mute)", marginTop: 12 }}>
+                {isBg ? `Следва: ${nextColLabel}` : `Next up: ${nextColLabel}`}
+              </p>
+            )}
+          </div>
+        )}
+
+        {allShown && displayList.length > 0 && (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, justifyContent: "center", marginBottom: 28 }}>
+              <div style={{ flex: 1, maxWidth: 200, height: 1, background: "var(--rule)" }} />
+              <span style={{ fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: 18, color: "var(--ink-soft)" }}>
+                {isBg ? "Разгледахте всичко" : "You've seen it all"}
+              </span>
+              <div style={{ flex: 1, maxWidth: 200, height: 1, background: "var(--rule)" }} />
+            </div>
+            <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 15, color: "var(--ink-mute)", marginBottom: 28 }}>
+              {isBg
+                ? "Искате ли да започнете от начало?"
+                : "Would you like to start over?"}
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <button className="btn btn-solid" onClick={handleRestart}>
+                {isBg ? "Към началото ↑" : "Back to top ↑"}
+              </button>
+              <button className="btn" onClick={() => { setActiveCol(null); handleRestart(); }}>
+                {isBg ? "Всички колекции" : "All collections"}
+              </button>
+              <button className="btn" onClick={() => setRoute("booking")}>
+                {isBg ? "Запази проба →" : "Book a fitting →"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}
@@ -199,7 +314,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
             <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
           </svg>
-          <span>{lang === "bg" ? "Филтри" : "Filters"}</span>
+          <span>{isBg ? "Филтри" : "Filters"}</span>
           {activeCount > 0 && <span className="mfab-badge">{activeCount}</span>}
         </button>
         {mobileSheetOpen && (
@@ -207,7 +322,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           <div className="msheet" onClick={e => e.stopPropagation()}>
             <div className="msheet-handle" />
             <div className="msheet-head">
-              <span>{lang === "bg" ? "Филтри и сортиране" : "Filter & Sort"}</span>
+              <span>{isBg ? "Филтри и сортиране" : "Filter & Sort"}</span>
               <button className="msheet-close" onClick={() => setMobileSheetOpen(false)}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" width="18" height="18">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -217,10 +332,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
 
             <div className="msheet-body">
               <div className="msheet-section">
-                <div className="msheet-label">{lang === "bg" ? "Колекция" : "Collection"}</div>
+                <div className="msheet-label">{isBg ? "Колекция" : "Collection"}</div>
                 <div className="msheet-pills">
                   <span className={`filter-pill ${!activeCol ? "on" : ""}`} onClick={() => setActiveCol(null)}>
-                    {lang === "bg" ? "Всички" : "All"}
+                    {isBg ? "Всички" : "All"}
                   </span>
                   {COLLECTIONS.map(c => (
                     <span key={c.id} className={`filter-pill ${activeCol === c.id ? "on" : ""}`} onClick={() => setActiveCol(c.id)}>
@@ -231,7 +346,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
               </div>
 
               <div className="msheet-section">
-                <div className="msheet-label">{lang === "bg" ? "Силует" : "Silhouette"}</div>
+                <div className="msheet-label">{isBg ? "Силует" : "Silhouette"}</div>
                 <div className="msheet-pills">
                   {t.collection.silhouettes.map(s => (
                     <span key={s} className={`filter-pill ${(filters.silhouette || []).includes(s) ? "on" : ""}`}
@@ -243,16 +358,16 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
               </div>
 
               <div className="msheet-section">
-                <div className="msheet-label">{lang === "bg" ? "Подреди" : "Sort by"}</div>
+                <div className="msheet-label">{isBg ? "Подреди" : "Sort by"}</div>
                 <div className="msheet-pills">
-                  {[["new", lang === "bg" ? "Най-нови" : "Newest"], ["price-asc", lang === "bg" ? "↑ Цена" : "↑ Price"], ["price-desc", lang === "bg" ? "↓ Цена" : "↓ Price"]].map(([val, label]) => (
+                  {[["new", isBg ? "Най-нови" : "Newest"], ["price-asc", isBg ? "↑ Цена" : "↑ Price"], ["price-desc", isBg ? "↓ Цена" : "↓ Price"]].map(([val, label]) => (
                     <span key={val} className={`filter-pill ${sortBy === val ? "on" : ""}`} onClick={() => setSortBy(val)}>{label}</span>
                   ))}
                 </div>
               </div>
 
               <div className="msheet-section">
-                <div className="msheet-label">{lang === "bg" ? "Цена" : "Price"}</div>
+                <div className="msheet-label">{isBg ? "Цена" : "Price"}</div>
                 <PriceRange filters={filters} setFilters={setFilters} />
               </div>
             </div>
@@ -260,11 +375,11 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
             <div className="msheet-foot">
               {activeCount > 0 && (
                 <button className="msheet-reset" onClick={() => { setFilters({}); setActiveCol(null); }}>
-                  {lang === "bg" ? "Изчисти всички" : "Clear all"}
+                  {isBg ? "Изчисти всички" : "Clear all"}
                 </button>
               )}
               <button className="btn btn-solid msheet-apply" onClick={() => setMobileSheetOpen(false)}>
-                {lang === "bg" ? `Виж ${filtered.length} модела` : `Show ${filtered.length} styles`}
+                {isBg ? `Виж ${displayList.length} модела` : `Show ${displayList.length} styles`}
               </button>
             </div>
           </div>
@@ -274,6 +389,67 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         document.body
       )}
     </div>
+  );
+}
+
+// Renders grid with collection-change dividers
+function CollectionGrid({ items, lang, gridCols, setRoute, favorites, toggleFavorite, activeCol }) {
+  const isBg = lang === "bg";
+  const rows = [];
+  let lastCol = null;
+
+  items.forEach((d, i) => {
+    // Insert a divider when the collection changes (only when browsing cross-collection)
+    if (d.collection !== lastCol && lastCol !== null) {
+      const colData = COLLECTIONS.find(c => c.id === d.collection);
+      rows.push(
+        <div key={`divider-${d.collection}`} className="col-divider">
+          <div className="col-divider-inner">
+            <div style={{ height: 1, background: "var(--rule)", flex: 1 }} />
+            <span style={{ fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: "clamp(14px, 1.5vw, 18px)", color: "var(--ink-soft)", whiteSpace: "nowrap", padding: "0 20px" }}>
+              {colData ? colData.label : d.collection}
+            </span>
+            <div style={{ height: 1, background: "var(--rule)", flex: 1 }} />
+          </div>
+        </div>
+      );
+    }
+    lastCol = d.collection;
+    rows.push(
+      <DressCard key={d.ref} d={d} lang={lang} onClick={() => setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
+    );
+  });
+
+  // We need to wrap non-divider items into the grid. Use a fragment approach:
+  // Group consecutive same-collection items and render them in a grid div.
+  const segments = [];
+  let currentSegment = [];
+  let currentIsDivider = false;
+
+  rows.forEach((row, i) => {
+    const isDivider = row.key && row.key.startsWith("divider-");
+    if (isDivider) {
+      if (currentSegment.length) segments.push({ isDivider: false, items: currentSegment });
+      segments.push({ isDivider: true, el: row });
+      currentSegment = [];
+    } else {
+      currentSegment.push(row);
+    }
+  });
+  if (currentSegment.length) segments.push({ isDivider: false, items: currentSegment });
+
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.isDivider ? (
+          <div key={i}>{seg.el}</div>
+        ) : (
+          <div key={i} className={`collection-grid cols-${gridCols}`}>
+            {seg.items}
+          </div>
+        )
+      )}
+    </>
   );
 }
 

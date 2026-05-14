@@ -156,6 +156,9 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
             <span>{t.nav.about}</span>
             <span className="arr">→</span>
           </div>
+          <div className={`m-link m-link-sub ${route === "demetrios" ? "m-link--active" : ""}`} onClick={() => goTo("demetrios")}>
+            <span style={{ fontStyle: "italic" }}>{t.nav.demetrios}</span>
+          </div>
           <div className={`m-link ${route === "blog" ? "m-link--active" : ""}`} onClick={() => goTo("blog")}>
             <span>{t.nav.blog}</span>
             <span className="arr">→</span>
@@ -220,7 +223,7 @@ function Footer({ lang, setRoute }) {
           </div>
           <div>
             <h4>{t.atelier}</h4>
-            <ul>{t.atelier_links.map((x, i) => <li key={i}><a onClick={() => setRoute(i === 0 ? "about" : i === 1 ? "blog" : "about")}>{x}</a></li>)}</ul>
+            <ul>{t.atelier_links.map((x, i) => <li key={i}><a onClick={() => setRoute(i === 0 ? "about" : i === 1 ? "demetrios" : i === 2 ? "blog" : "contact")}>{x}</a></li>)}</ul>
           </div>
           <div>
             <h4>{t.help}</h4>

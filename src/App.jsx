@@ -3,7 +3,7 @@ import { Nav, Footer, FloatDial } from './components';
 import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
-import { AboutPage, ContactPage, BlogPage } from './info';
+import { AboutPage, ContactPage, BlogPage, DemetriosPage } from './info';
 import AdminPanel from './admin';
 import {
   useTweaks, TweaksPanel, TweakSection,
@@ -93,6 +93,7 @@ export default function App() {
     case "booking": page = <BookingPage lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
     case "wishlist": page = <WishlistPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} />; break;
     case "about": page = <AboutPage lang={lang} setRoute={setRoute} />; break;
+    case "demetrios": page = <DemetriosPage lang={lang} setRoute={setRoute} />; break;
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
     case "blog": page = <BlogPage lang={lang} setRoute={setRoute} />; break;
     case "admin": page = null; break;
