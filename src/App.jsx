@@ -33,6 +33,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Access admin via URL hash: localhost:5173/#admin
+  useEffect(() => {
+    if (window.location.hash === "#admin") setRouteRaw("admin");
+    const onHash = () => { if (window.location.hash === "#admin") setRouteRaw("admin"); };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
   useEffect(() => {
     document.documentElement.className =
       tweaks.palette === "noir" ? "theme-noir" :

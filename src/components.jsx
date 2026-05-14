@@ -235,10 +235,10 @@ function Footer({ lang, setRoute }) {
           <span>{t.lang_marker}</span>
           <button
             onClick={() => setRoute("admin")}
-            style={{ background:"none", border:"none", cursor:"pointer", color:"transparent", fontSize:1, padding:0, userSelect:"none" }}
+            style={{ background:"none", border:"none", cursor:"default", color:"transparent", fontSize:"inherit", padding:"0 4px", userSelect:"none", opacity:0 }}
             aria-hidden="true"
             tabIndex={-1}
-          >admin</button>
+          >·</button>
         </div>
       </div>
     </footer>
