@@ -285,7 +285,7 @@ function ProductPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking
   const isFav = favorites.includes(dress.ref);
   const name = lang === "bg" ? dress.name_bg : dress.name_en;
 
-  const galleryImgs = [IMG.bride1, IMG.detail1, IMG.detail2, IMG.bride2];
+  const galleryImgs = dress.imgs && dress.imgs.length > 0 ? dress.imgs : [dress.img, IMG.detail1, IMG.detail2, IMG.detail2];
   const sizes = [34, 36, 38, 40, 42, 44, 46, 48];
   const outOfStock = [46, 48];
 
@@ -300,13 +300,15 @@ function ProductPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking
         <div className="product-main">
           <div className="product-gallery">
             <Img src={galleryImgs[0]} label={`${name} · main`} className="main-img" style={{ cursor: "zoom-in" }} />
-            <div onClick={() => setLightboxIdx(0)} style={{ cursor: "zoom-in", gridColumn: "span 2", aspectRatio: "3/4", backgroundImage: `url(${galleryImgs[0]})`, backgroundSize: "cover", backgroundPosition: "center", display: "none" }}></div>
+            <div onClick={() => setLightboxIdx(0)} style={{ cursor: "zoom-in", gridColumn: "span 2", aspectRatio: "3/4", backgroundImage: `url(${encodeURI(galleryImgs[0])})`, backgroundSize: "cover", backgroundPosition: "center", display: "none" }}></div>
             {[1, 2, 3].map((i) => (
               <Img key={i} src={galleryImgs[i]} label={`detail ${i}`} className="thumb" style={{ cursor: "zoom-in" }} />
             ))}
-            <div className="thumb" style={{ background: "var(--bg-deep)", display: "grid", placeItems: "center", cursor: "pointer" }} onClick={() => setLightboxIdx(0)}>
-              <span style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--ink-soft)" }}>+ 4 more</span>
-            </div>
+            {galleryImgs.length > 4 && (
+              <div className="thumb" style={{ background: "var(--bg-deep)", display: "grid", placeItems: "center", cursor: "pointer" }} onClick={() => setLightboxIdx(0)}>
+                <span style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--ink-soft)" }}>+ {galleryImgs.length - 4} more</span>
+              </div>
+            )}
           </div>
           <aside className="product-info">
             <div className="designer">{t.product.designer}</div>

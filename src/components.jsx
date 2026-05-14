@@ -28,7 +28,7 @@ function Img({ src, label, className = "", style = {} }) {
   return (
     <div
       className={`ph ph-img ${className}`}
-      style={{ ...style, backgroundImage: `url(${src})` }}
+      style={{ ...style, backgroundImage: `url(${encodeURI(src)})` }}
       role="img"
       aria-label={label}
     >
