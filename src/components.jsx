@@ -233,6 +233,12 @@ function Footer({ lang, setRoute }) {
         <div className="bottom">
           <span>{t.copyright}</span>
           <span>{t.lang_marker}</span>
+          <button
+            onClick={() => setRoute("admin")}
+            style={{ background:"none", border:"none", cursor:"pointer", color:"transparent", fontSize:1, padding:0, userSelect:"none" }}
+            aria-hidden="true"
+            tabIndex={-1}
+          >admin</button>
         </div>
       </div>
     </footer>

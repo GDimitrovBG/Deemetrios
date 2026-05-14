@@ -4,6 +4,7 @@ import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
 import { AboutPage, ContactPage, BlogPage } from './info';
+import AdminPanel from './admin';
 import {
   useTweaks, TweaksPanel, TweakSection,
   TweakRadio, TweakColor, TweakSelect, TweakToggle,
@@ -86,8 +87,11 @@ export default function App() {
     case "about": page = <AboutPage lang={lang} setRoute={setRoute} />; break;
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
     case "blog": page = <BlogPage lang={lang} setRoute={setRoute} />; break;
+    case "admin": page = null; break;
     default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} />;
   }
+
+  if (route === "admin") return <AdminPanel setRoute={setRoute} />;
 
   return (
     <>

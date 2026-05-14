@@ -571,7 +571,24 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
               className="btn btn-solid"
               style={{ marginTop: 24, opacity: canSend ? 1 : 0.4 }}
               disabled={!canSend}
-              onClick={() => canSend && setSent(true)}
+              onClick={() => {
+                if (!canSend) return;
+                const inquiry = {
+                  id: Math.random().toString(36).slice(2,10) + Date.now().toString(36),
+                  createdAt: new Date().toISOString(),
+                  name: form.name,
+                  email: form.email,
+                  phone: form.phone,
+                  notes: form.notes,
+                  dressRefs: favDresses.map(d => d.ref),
+                  status: "new",
+                };
+                try {
+                  const existing = JSON.parse(localStorage.getItem("areti_inquiries") || "[]");
+                  localStorage.setItem("areti_inquiries", JSON.stringify([...existing, inquiry]));
+                } catch {}
+                setSent(true);
+              }}
             >
               {lang === "bg" ? "Изпрати запитването →" : "Send inquiry →"}
             </button>

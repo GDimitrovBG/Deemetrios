@@ -331,7 +331,27 @@ function BookingPage({ lang, setRoute, dress = null }) {
                 {t.booking.next} →
               </button>
             ) : (
-              <button className="btn btn-solid" onClick={() => canNext() && setDone(true)} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
+              <button className="btn btn-solid" onClick={() => {
+                if (!canNext()) return;
+                const booking = {
+                  id: Math.random().toString(36).slice(2,10) + Date.now().toString(36),
+                  createdAt: new Date().toISOString(),
+                  name: data.name || "",
+                  email: data.email || "",
+                  phone: data.phone || "",
+                  type: t.booking.types[data.type]?.title || "",
+                  location: t.booking.locations[data.location]?.name || "",
+                  date: data.date ? data.date.toLocaleDateString("bg-BG") : "",
+                  time: data.time || "",
+                  dressRefs: dressRefs || [],
+                  status: "new",
+                };
+                try {
+                  const existing = JSON.parse(localStorage.getItem("areti_bookings") || "[]");
+                  localStorage.setItem("areti_bookings", JSON.stringify([...existing, booking]));
+                } catch {}
+                setDone(true);
+              }} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
                 {t.booking.confirm}
               </button>
             )}
