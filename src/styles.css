@@ -1012,6 +1012,7 @@ a { color: inherit; text-decoration: none; }
 .size-pick.out::after { content: ""; position: absolute; inset: 50% 8px auto; height: 1px; background: var(--ink-mute); }
 
 .cta-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+.cta-stack .btn { justify-content: center; width: 100%; }
 
 /* lightbox */
 .lightbox {
