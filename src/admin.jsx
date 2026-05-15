@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { DRESSES, COLLECTIONS } from './data';
 import { BLOG_POSTS } from './blog_data';
 
@@ -55,6 +55,163 @@ function ATextarea({ label, value, onChange, rows=3, placeholder="" }) {
       {label && <label className="adm-label">{label}</label>}
       <textarea className="adm-input" rows={rows} value={value}
         onChange={e => onChange(e.target.value)} placeholder={placeholder} style={{ resize:"vertical" }} />
+    </div>
+  );
+}
+
+// ─── Image compress helper ────────────────────────────────────────────────────
+function compressImage(file, maxW = 1400) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxW / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width  = Math.round(img.width  * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+// ─── ImageUpload ──────────────────────────────────────────────────────────────
+function ImageUpload({ label = "Снимка", value, onChange }) {
+  const inputRef = useRef(null);
+  const [drag, setDrag] = useState(false);
+
+  const handleFile = useCallback(async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const result = await compressImage(file);
+    if (result) onChange(result);
+  }, [onChange]);
+
+  const onDrop = (e) => {
+    e.preventDefault(); setDrag(false);
+    handleFile(e.dataTransfer.files[0]);
+  };
+
+  const isBase64 = value && value.startsWith('data:');
+  const urlVal   = value && !isBase64 ? value : '';
+
+  return (
+    <div className="adm-img-upload">
+      <div className="adm-label" style={{ marginBottom: 6 }}>{label}</div>
+
+      {/* Drop zone */}
+      <div
+        className={`adm-img-drop${drag ? ' drag' : ''}`}
+        onClick={() => inputRef.current.click()}
+        onDragOver={e => { e.preventDefault(); setDrag(true); }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={onDrop}
+      >
+        {value
+          ? <>
+              <img src={value} alt="" />
+              <div className="adm-img-drop-change">↑ Замени снимката</div>
+            </>
+          : <div className="adm-img-drop-label">
+              <strong>Кликни или пусни снимка тук</strong>
+              JPEG · PNG · WebP · max ~5 MB
+            </div>
+        }
+        <input
+          ref={inputRef} type="file" accept="image/*"
+          style={{ display: 'none' }}
+          onChange={e => handleFile(e.target.files[0])}
+        />
+      </div>
+
+      {/* URL fallback */}
+      <div className="adm-img-url-row">
+        <span className="adm-img-url-label">или URL:</span>
+        <input
+          className="adm-input" style={{ flex: 1, fontSize: 12, padding: '7px 10px' }}
+          value={urlVal} placeholder="https://cdn.example.com/photo.jpg"
+          onChange={e => onChange(e.target.value)}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── RichEditor (WYSIWYG) ─────────────────────────────────────────────────────
+const RICH_TOOLS = [
+  { icon: 'B',   title: 'Удебелен',  cmd: 'bold',            style: { fontWeight: 'bold' } },
+  { icon: 'I',   title: 'Курсив',    cmd: 'italic',          style: { fontStyle: 'italic' } },
+  { icon: 'sep' },
+  { icon: 'H2',  title: 'Заглавие 2', cmd: 'formatBlock', arg: 'h2', style: { fontSize: 11 } },
+  { icon: 'H3',  title: 'Заглавие 3', cmd: 'formatBlock', arg: 'h3', style: { fontSize: 11 } },
+  { icon: '¶',   title: 'Параграф',   cmd: 'formatBlock', arg: 'p'  },
+  { icon: 'sep' },
+  { icon: '≡',   title: 'Списък',     cmd: 'insertUnorderedList' },
+  { icon: '①',   title: 'Нумериран', cmd: 'insertOrderedList'   },
+  { icon: '❝',   title: 'Цитат',     cmd: 'formatBlock', arg: 'blockquote' },
+  { icon: 'sep' },
+  { icon: '🔗',  title: 'Линк',      cmd: '_link' },
+  { icon: '✕',   title: 'Изчисти',   cmd: 'removeFormat' },
+];
+
+function RichEditor({ label, value = '', onChange, placeholder = 'Въведи текст…', minH = 200 }) {
+  const ref = useRef(null);
+  const skipUpdate = useRef(false);
+
+  // Set innerHTML only on mount
+  useEffect(() => {
+    if (ref.current) ref.current.innerHTML = value || '';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const exec = (cmd, arg) => {
+    if (cmd === '_link') {
+      const url = prompt('URL:');
+      if (url) { ref.current.focus(); document.execCommand('createLink', false, url); }
+      return;
+    }
+    ref.current.focus();
+    document.execCommand(cmd, false, arg ?? null);
+    skipUpdate.current = true;
+    onChange(ref.current.innerHTML);
+  };
+
+  const onInput = () => {
+    if (skipUpdate.current) { skipUpdate.current = false; return; }
+    onChange(ref.current.innerHTML);
+  };
+
+  return (
+    <div className="adm-rich-editor">
+      {label && <div className="adm-rich-label">{label}</div>}
+      <div className="adm-rich-wrap">
+        <div className="adm-rich-toolbar">
+          {RICH_TOOLS.map((t, i) =>
+            t.icon === 'sep'
+              ? <div key={i} className="adm-rich-sep" />
+              : <button
+                  key={i} type="button"
+                  className="adm-rich-btn"
+                  title={t.title}
+                  style={t.style || {}}
+                  onMouseDown={e => { e.preventDefault(); exec(t.cmd, t.arg); }}
+                >
+                  {t.icon}
+                </button>
+          )}
+        </div>
+        <div
+          ref={ref}
+          className="adm-rich-content"
+          contentEditable
+          suppressContentEditableWarning
+          data-placeholder={placeholder}
+          style={{ minHeight: minH }}
+          onInput={onInput}
+        />
+      </div>
     </div>
   );
 }
@@ -267,7 +424,7 @@ function InquiriesSection({ inquiries, setInquiries }) {
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
-const EMPTY_PRODUCT = { ref:"", name_bg:"", name_en:"", collection:"cosmobella", silhouette:"А-силует", silhouette_en:"A-line", price:"", img:"", fabric:"", badge:"" };
+const EMPTY_PRODUCT = { ref:"", name_bg:"", name_en:"", collection:"cosmobella", silhouette:"А-силует", silhouette_en:"A-line", price:"", img:"", fabric:"", badge:"", description:"" };
 
 function ProductForm({ product, onSave, onCancel }) {
   const [form, setForm] = useState(product ? {...product, price: String(product.price)} : EMPTY_PRODUCT);
@@ -308,8 +465,14 @@ function ProductForm({ product, onSave, onCancel }) {
           </div>
         </div>
         <AInput label="Плат / Материал" value={form.fabric} onChange={v=>set("fabric",v)} placeholder="Дантела, тюл"/>
-        <AInput label="URL на снимката" value={form.img} onChange={v=>set("img",v)} placeholder="https://images.unsplash.com/..."/>
-        {form.img&&<img src={form.img} alt="" style={{width:"100%",maxHeight:180,objectFit:"cover",borderRadius:8,marginTop:8}}/>}
+        <ImageUpload label="Снимка на продукта" value={form.img} onChange={v=>set("img",v)} />
+        <RichEditor
+          label="Описание"
+          value={form.description || ""}
+          onChange={v=>set("description",v)}
+          placeholder="Кратко описание на роклята…"
+          minH={140}
+        />
         <div className="adm-form-actions">
           <button className="adm-btn" onClick={onCancel}>Отказ</button>
           <button className="adm-btn-solid" disabled={!canSave} style={{opacity:canSave?1:0.4}}
@@ -383,7 +546,7 @@ function ProductsSection({ products, setProducts }) {
 }
 
 // ─── Articles ─────────────────────────────────────────────────────────────────
-const EMPTY_ARTICLE = { id:null, title_bg:"", title_en:"", excerpt_bg:"", excerpt_en:"", img:"", date:new Date().toISOString().slice(0,10), visible:true };
+const EMPTY_ARTICLE = { id:null, title_bg:"", title_en:"", excerpt_bg:"", excerpt_en:"", content:"", img:"", date:new Date().toISOString().slice(0,10), visible:true };
 
 function ArticleForm({ article, onSave, onCancel }) {
   const [form, setForm] = useState(article||EMPTY_ARTICLE);
@@ -398,12 +561,16 @@ function ArticleForm({ article, onSave, onCancel }) {
           <AInput label="Заглавие (EN)" value={form.title_en} onChange={v=>set("title_en",v)}/>
         </div>
         <ATextarea label="Резюме (BG)" value={form.excerpt_bg} onChange={v=>set("excerpt_bg",v)} rows={3}/>
-        <ATextarea label="Резюме (EN)" value={form.excerpt_en} onChange={v=>set("excerpt_en",v)} rows={3}/>
-        <div className="adm-form-grid">
-          <AInput label="URL на снимката" value={form.img} onChange={v=>set("img",v)} placeholder="https://..."/>
-          <AInput label="Дата" value={form.date} onChange={v=>set("date",v)} type="date"/>
-        </div>
-        {form.img&&<img src={form.img} alt="" style={{width:"100%",maxHeight:160,objectFit:"cover",borderRadius:8,marginTop:8}}/>}
+        <ATextarea label="Резюме (EN)" value={form.excerpt_en} onChange={v=>set("excerpt_en",v)} rows={2}/>
+        <AInput label="Дата" value={form.date} onChange={v=>set("date",v)} type="date"/>
+        <ImageUpload label="Заглавна снимка" value={form.img} onChange={v=>set("img",v)} />
+        <RichEditor
+          label="Съдържание на статията"
+          value={form.content || ""}
+          onChange={v=>set("content",v)}
+          placeholder="Напиши или постави съдържанието на статията…"
+          minH={280}
+        />
         <label className="adm-toggle-row" style={{marginTop:16}}>
           <input type="checkbox" checked={form.visible} onChange={e=>set("visible",e.target.checked)}/>
           <span style={{color:"#ccc",fontSize:14}}>Публикувана</span>
@@ -434,8 +601,8 @@ function ArticlesSection({ articles, setArticles }) {
     if (!confirm("Нулирай до импортираните статии от WordPress?")) return;
     const seeded = BLOG_POSTS.map(p => ({
       id: String(p.id), title_bg: p.title, title_en: "",
-      excerpt_bg: p.excerpt, excerpt_en: "", img: p.image,
-      date: p.isoDate, category: p.category, visible: true,
+      excerpt_bg: p.excerpt, excerpt_en: "", content: p.content,
+      img: p.image, date: p.isoDate, category: p.category, visible: true,
     }));
     setArticles(seeded); LS.set("areti_articles", seeded);
   };
@@ -552,6 +719,7 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
       title_en:   "",
       excerpt_bg: p.excerpt,
       excerpt_en: "",
+      content:    p.content,
       img:        p.image,
       date:       p.isoDate,
       category:   p.category,

@@ -3,6 +3,30 @@ import { IMG } from './data';
 import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
 
+// Merge static BLOG_POSTS with any admin edits stored in localStorage
+function getActivePosts() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('areti_articles') || 'null');
+    if (!stored || !stored.length) return BLOG_POSTS;
+    // Map stored admin articles back to the blog post shape
+    return stored
+      .filter(a => a.visible !== false)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .map(a => ({
+        id:      Number(a.id) || a.id,
+        title:   a.title_bg || a.title,
+        date:    a.date ? new Date(a.date).toLocaleDateString('bg-BG', { day:'numeric', month:'long', year:'numeric' }) : '',
+        isoDate: a.date,
+        category: a.category || 'Блог',
+        image:   a.img || '',
+        excerpt: a.excerpt_bg || a.excerpt || '',
+        content: a.content || '',
+      }));
+  } catch {
+    return BLOG_POSTS;
+  }
+}
+
 // =====================================================
 //  INFO pages — About, Contact, Blog
 // =====================================================
@@ -328,7 +352,8 @@ function ContactPage({ lang, setRoute }) {
 
 function BlogPage({ lang, setRoute, goBlogPost }) {
   const isBg = lang === "bg";
-  const [featured, ...rest] = BLOG_POSTS;
+  const posts = getActivePosts();
+  const [featured, ...rest] = posts;
 
   return (
     <div className="page-enter">
@@ -382,8 +407,9 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
 
 function BlogPostPage({ lang, setRoute, postId, goBlogPost }) {
   const isBg = lang === "bg";
-  const post = BLOG_POSTS.find(p => p.id === postId) || BLOG_POSTS[0];
-  const others = BLOG_POSTS.filter(p => p.id !== post.id).slice(0, 3);
+  const posts = getActivePosts();
+  const post = posts.find(p => p.id === postId || String(p.id) === String(postId)) || posts[0];
+  const others = posts.filter(p => p.id !== post.id).slice(0, 3);
 
   return (
     <div className="page-enter">
