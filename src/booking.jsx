@@ -395,7 +395,7 @@ function DressSearch({ t, dressRefs, setDressRefs }) {
   );
 }
 
-function Summary({ t, data, lang, dressRefs, setDressRefs }) {
+function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false }) {
   const monthNames = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
   const fmtDate = (d) => d ? `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}` : null;
 
@@ -414,10 +414,14 @@ function Summary({ t, data, lang, dressRefs, setDressRefs }) {
       <div className="s-eyebrow">{t.booking.summary_eye}</div>
       <h4>{t.booking.summary_title} <em>·</em></h4>
 
-      <div className="summary-refs-section">
+      <div className={`summary-refs-section ${dressRequired && dressRefs.length === 0 ? 'is-required-empty' : ''}`}>
         <div className="summary-refs-label">
           {t.common.dresses_to_try}
+          {dressRequired && <span className="summary-refs-required"> *</span>}
         </div>
+        {dressRequired && dressRefs.length === 0 && (
+          <div className="summary-refs-warning">{t.booking.dress_required_hint}</div>
+        )}
         {dressRefs.length > 0 && (
           <div className="summary-refs-pills">
             {dressRefs.map(ref => {
@@ -498,11 +502,16 @@ function BookingPage({ lang, setRoute, dress = null }) {
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  // Type index 1 = "Втора проба" / "Second Fitting" — requires the dress that's being revisited.
+  // Type index 0 = "Първа консултация" — exploratory, no dress required.
+  const dressRequired = data.type === 1;
+  const dressMissing  = dressRequired && dressRefs.length === 0;
+
   const canNext = () => {
     if (step === 0) return data.type != null;
     if (step === 1) return data.location != null;
     if (step === 2) return data.date && data.time && data.timeConfirmed;
-    if (step === 3) return data.name && data.email && isValidEmail(data.email) && data.phone;
+    if (step === 3) return data.name && data.email && isValidEmail(data.email) && data.phone && !dressMissing;
     return false;
   };
 
@@ -560,7 +569,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
             )}
           </div>
         </div>
-        <Summary t={t} data={data} lang={lang} dressRefs={dressRefs} setDressRefs={setDressRefs} />
+        <Summary t={t} data={data} lang={lang} dressRefs={dressRefs} setDressRefs={setDressRefs} dressRequired={dressRequired} />
       </div>
     </BookingShell>
   );
