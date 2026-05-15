@@ -5,7 +5,7 @@ import Setting from '../models/Setting.js';
 
 const router = Router();
 
-const SITE_URL = process.env.SITE_URL || 'https://areti.bg';
+const SITE_URL = process.env.SITE_URL || 'https://demetriosbride-bg.com';
 
 router.get('/sitemap.xml', async (req, res) => {
   try {

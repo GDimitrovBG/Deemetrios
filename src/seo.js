@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 
 const SITE_NAME    = 'Арети — Bridal Couture';
-const SITE_URL     = 'https://areti.bg';
+const SITE_URL     = 'https://demetriosbride-bg.com';
 const DEFAULT_DESC = 'Арети е официален представител на Demetrios в България. Луксозни булчински рокли, ръчно везане и елитни колекции в сватбения салон в София. Запазете час за проба.';
 const DEFAULT_IMG  = 'https://demetriosbride-bg.com/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.jpg';
 const DEFAULT_LOCALE = 'bg_BG';

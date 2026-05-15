@@ -272,7 +272,7 @@ function ServicesSection({ t }) {
 }
 
 function MarqueeStrip() {
-  const items = ["Bridal Couture", "MMXXVI Romansa", "Hand-Stitched", "Sofia · Plovdiv", "Bridal Couture", "MMXXVI Romansa", "Hand-Stitched", "Sofia · Plovdiv"];
+  const items = ["Bridal Couture", "MMXXVI Romansa", "Hand-Stitched", "Sofia", "Bridal Couture", "MMXXVI Romansa", "Hand-Stitched", "Sofia"];
   return (
     <div className="marquee-strip">
       <div className="marquee-track">

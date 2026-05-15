@@ -72,7 +72,7 @@ function sendBookingEmails(booking, lang) {
           </div>
           <div style="padding:20px 0;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
             Арети — Bridal Couture · София<br>
-            <a href="https://areti.bg" style="color:#8a7556;">areti.bg</a>
+            <a href="https://demetriosbride-bg.com" style="color:#8a7556;">demetriosbride-bg.com</a>
           </div>
         </div>
       `,

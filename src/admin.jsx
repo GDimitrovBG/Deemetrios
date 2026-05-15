@@ -591,7 +591,7 @@ function ProductEditPage({ product, onSave, onBack, isNew }) {
           <div className="adm-card-block">
             <h3 className="adm-subtitle">Преглед в Google</h3>
             <div className="adm-google-preview">
-              <div className="g-url">areti.bg › product › {form.ref || '—'}</div>
+              <div className="g-url">demetriosbride-bg.com › product › {form.ref || '—'}</div>
               <div className="g-title">{form.seo_title_bg || `Булчинска рокля ${form.ref} — ${form.silhouette} | Арети София`}</div>
               <div className="g-desc">{form.seo_description_bg || `Булчинска рокля Style ${form.ref || '—'} от колекция ${form.collection} — ${form.silhouette?.toLowerCase()} силует.`}</div>
             </div>
@@ -735,7 +735,7 @@ function ArticleEditPage({ article, allProducts, onSave, onBack, isNew }) {
           <div className="adm-card-block">
             <h3 className="adm-subtitle">Преглед в Google</h3>
             <div className="adm-google-preview">
-              <div className="g-url">areti.bg › blog › —</div>
+              <div className="g-url">demetriosbride-bg.com › blog › —</div>
               <div className="g-title">{form.seo_title || form.title_bg || '—'}</div>
               <div className="g-desc">{form.seo_description || form.excerpt_bg || '—'}</div>
             </div>
@@ -1008,7 +1008,7 @@ function SettingsSection({ user, onLogout }) {
 
             <div className="adm-seo-group">
               <h4 className="adm-seo-group-title">Open Graph по подразбиране</h4>
-              <AInput label="OG Image URL" value={s.og_image||""} onChange={v=>set("og_image",v)} placeholder="https://areti.bg/images/og-default.jpg" />
+              <AInput label="OG Image URL" value={s.og_image||""} onChange={v=>set("og_image",v)} placeholder="https://demetriosbride-bg.com/images/og-default.jpg" />
               <AInput label="SEO заглавие на сайта" value={s.seo_title||""} onChange={v=>set("seo_title",v)} placeholder="Арети — Bridal Couture" />
               <ATextarea label="SEO описание на сайта" value={s.seo_description||""} onChange={v=>set("seo_description",v)} rows={2} placeholder="Луксозни булчински рокли в София..." />
             </div>
