@@ -2,10 +2,106 @@ import { useState, useMemo, useRef } from 'react';
 import i18n from './i18n';
 import { Img } from './components';
 import { useSeo } from './seo';
+import { createBooking } from './api';
 
 // =====================================================
 //  BOOKING — 4-step reservation flow
 // =====================================================
+
+// Brevo (Sendinblue) transactional email
+const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY || '';
+const ARETI_EMAIL  = import.meta.env.VITE_ARETI_EMAIL || 'info@demetriosbride-bg.com';
+const ARETI_NAME   = 'Арети — Bridal Couture';
+
+async function sendBrevoEmail({ to, toName, subject, html }) {
+  try {
+    await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'accept': 'application/json', 'content-type': 'application/json', 'api-key': BREVO_API_KEY },
+      body: JSON.stringify({
+        sender: { name: ARETI_NAME, email: ARETI_EMAIL },
+        to: [{ email: to, name: toName || '' }],
+        subject,
+        htmlContent: html,
+      }),
+    });
+  } catch { /* silent — booking still succeeds even if email fails */ }
+}
+
+function sendBookingEmails(booking, lang) {
+  const isBg = lang === 'bg';
+  const { name, email, phone, type, location, date, time, budget, notes, dressRefs } = booking;
+  const dressLine = dressRefs?.length ? dressRefs.join(', ') : (isBg ? 'не е избрана' : 'none selected');
+
+  // 1. Email to customer
+  if (email) {
+    sendBrevoEmail({
+      to: email,
+      toName: name,
+      subject: isBg ? 'Потвърждение за консултация — Арети Bridal' : 'Booking Confirmation — Areti Bridal',
+      html: `
+        <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;">
+          <div style="padding:32px 0;border-bottom:1px solid #e8dfc9;">
+            <h1 style="font-size:28px;font-weight:400;margin:0;">Арети <em>Bridal</em></h1>
+          </div>
+          <div style="padding:32px 0;">
+            <p style="font-size:18px;line-height:1.5;margin:0 0 24px;">
+              ${isBg ? `Здравейте, ${name || ''}!` : `Hello, ${name || ''}!`}
+            </p>
+            <p style="font-size:16px;line-height:1.6;color:#4a4540;margin:0 0 24px;">
+              ${isBg
+                ? 'Получихме заявката Ви за консултация. Ще се свържем с Вас по телефон или имейл в рамките на 24 часа, за да уточним точния час и всички детайли.'
+                : 'We have received your consultation request. We will contact you by phone or email within 24 hours to confirm the exact time and all details.'}
+            </p>
+            <div style="background:#f9f5ed;padding:24px;border-radius:4px;margin:0 0 24px;">
+              <div style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#8a7556;margin-bottom:16px;">
+                ${isBg ? 'Вашата заявка' : 'Your request'}
+              </div>
+              <table style="width:100%;font-size:14px;line-height:1.8;color:#4a4540;">
+                <tr><td style="width:140px;color:#8a7556;">${isBg ? 'Тип' : 'Type'}</td><td>${type}</td></tr>
+                <tr><td style="color:#8a7556;">${isBg ? 'Локация' : 'Location'}</td><td>${location}</td></tr>
+                <tr><td style="color:#8a7556;">${isBg ? 'Дата' : 'Date'}</td><td>${date}</td></tr>
+                <tr><td style="color:#8a7556;">${isBg ? 'Час' : 'Time'}</td><td>${time || (isBg ? 'ще уточним' : 'to be confirmed')}</td></tr>
+                ${dressRefs?.length ? `<tr><td style="color:#8a7556;">${isBg ? 'Рокли' : 'Dresses'}</td><td>${dressLine}</td></tr>` : ''}
+              </table>
+            </div>
+            <p style="font-size:14px;color:#8a7556;line-height:1.5;">
+              ${isBg ? 'Очакваме Ви с шампанско! ✨' : 'We look forward to seeing you — champagne awaits! ✨'}
+            </p>
+          </div>
+          <div style="padding:20px 0;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
+            Арети — Bridal Couture · София<br>
+            <a href="https://areti.bg" style="color:#8a7556;">areti.bg</a>
+          </div>
+        </div>
+      `,
+    });
+  }
+
+  // 2. Email to Areti (notification)
+  sendBrevoEmail({
+    to: ARETI_EMAIL,
+    toName: ARETI_NAME,
+    subject: `Нова консултация: ${name || 'Неизвестен'} — ${type} — ${date}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:560px;color:#1a1612;">
+        <h2 style="margin:0 0 16px;font-size:20px;">🗓 Нова заявка за консултация</h2>
+        <table style="width:100%;font-size:14px;line-height:2;border-collapse:collapse;">
+          <tr><td style="width:130px;font-weight:600;">Име</td><td>${name || '—'}</td></tr>
+          <tr><td style="font-weight:600;">Имейл</td><td><a href="mailto:${email}">${email || '—'}</a></td></tr>
+          <tr><td style="font-weight:600;">Телефон</td><td><a href="tel:${phone}">${phone || '—'}</a></td></tr>
+          <tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Тип</td><td>${type}</td></tr>
+          <tr><td style="font-weight:600;">Локация</td><td>${location}</td></tr>
+          <tr><td style="font-weight:600;">Дата</td><td>${date}</td></tr>
+          <tr><td style="font-weight:600;">Час</td><td>${time || 'за уточняване'}</td></tr>
+          <tr><td style="font-weight:600;">Бюджет</td><td>${budget || '—'}</td></tr>
+          <tr><td style="font-weight:600;">Рокли</td><td>${dressLine}</td></tr>
+          ${notes ? `<tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Бележки</td><td>${notes}</td></tr>` : ''}
+        </table>
+      </div>
+    `,
+  });
+}
 
 function StepsBar({ steps, current, setCurrent, maxReached }) {
   return (
@@ -217,10 +313,10 @@ function Step4Details({ t, data, setData }) {
           <label>{lab.budget}</label>
           <select value={data.budget || ""} onChange={(e) => setData({ ...data, budget: e.target.value })} style={{ borderBottom: "1px solid var(--rule)", background: "transparent" }}>
             <option value="">Избери...</option>
-            <option>под 3 000 лв.</option>
-            <option>3 000 – 5 000 лв.</option>
-            <option>5 000 – 8 000 лв.</option>
-            <option>над 8 000 лв.</option>
+            <option>под 1 500 €</option>
+            <option>1 500 – 2 500 €</option>
+            <option>2 500 – 4 000 €</option>
+            <option>над 4 000 €</option>
           </select>
         </div>
       </div>
@@ -341,11 +437,13 @@ function BookingPage({ lang, setRoute, dress = null }) {
   const [done, setDone] = useState(false);
   const [dressRefs, setDressRefs] = useState(dress ? [String(dress.ref)] : []);
 
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const canNext = () => {
     if (step === 0) return data.type != null;
     if (step === 1) return data.location != null;
     if (step === 2) return data.date && data.time && data.timeConfirmed;
-    if (step === 3) return data.name && data.email && data.phone;
+    if (step === 3) return data.name && data.email && isValidEmail(data.email) && data.phone;
     return false;
   };
 
@@ -389,13 +487,13 @@ function BookingPage({ lang, setRoute, dress = null }) {
                   location: t.booking.locations[data.location]?.name || "",
                   date: data.date ? data.date.toLocaleDateString("bg-BG") : "",
                   time: data.time || "",
+                  budget: data.budget || "",
+                  notes: data.notes || "",
                   dressRefs: dressRefs || [],
                   status: "new",
                 };
-                try {
-                  const existing = JSON.parse(localStorage.getItem("areti_bookings") || "[]");
-                  localStorage.setItem("areti_bookings", JSON.stringify([...existing, booking]));
-                } catch {}
+                createBooking(booking).catch(() => {});
+                sendBookingEmails(booking, lang);
                 setDone(true);
               }} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
                 {t.booking.confirm}

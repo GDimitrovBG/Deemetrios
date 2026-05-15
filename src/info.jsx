@@ -4,28 +4,50 @@ import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
 import { useSeo, orgSchema, articleSchema, breadcrumbSchema } from './seo';
 
+// Simple HTML sanitizer — strips dangerous tags and event-handler attributes
+function sanitizeHTML(html) {
+  if (!html) return '';
+  // Remove <script>, <iframe>, <object>, <embed>, <form>, <link>, <meta> tags and their content
+  let clean = html.replace(/<\s*(script|iframe|object|embed|form|link|meta)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '');
+  // Remove self-closing or unclosed versions of those tags
+  clean = clean.replace(/<\s*(script|iframe|object|embed|form|link|meta)[^>]*\/?>/gi, '');
+  // Remove event-handler attributes (on*)
+  clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+  // Remove javascript: URLs in href/src/action attributes
+  clean = clean.replace(/(href|src|action)\s*=\s*(?:"javascript:[^"]*"|'javascript:[^']*')/gi, '$1=""');
+  // Remove data: URLs in src (except for images which are safe in img tags)
+  clean = clean.replace(/<(?!img\b)\w+[^>]*\ssrc\s*=\s*(?:"data:[^"]*"|'data:[^']*')/gi, (m) => m.replace(/src\s*=\s*(?:"data:[^"]*"|'data:[^']*')/i, 'src=""'));
+  return clean;
+}
+
 // Merge static BLOG_POSTS with any admin edits stored in localStorage
 function getActivePosts() {
   try {
     const stored = JSON.parse(localStorage.getItem('areti_articles') || 'null');
     if (!stored || !stored.length) return BLOG_POSTS;
-    // Map stored admin articles back to the blog post shape
+    // Build a lookup from the original static posts for fallback data
+    const staticById = {};
+    BLOG_POSTS.forEach(p => { staticById[String(p.id)] = p; });
+    // Map stored admin articles back to the blog post shape, merging with static data
     return stored
       .filter(a => a.visible !== false)
       .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .map(a => ({
-        id:      Number(a.id) || a.id,
-        title:   a.title_bg || a.title,
-        date:    a.date ? new Date(a.date).toLocaleDateString('bg-BG', { day:'numeric', month:'long', year:'numeric' }) : '',
-        isoDate: a.date,
-        category: a.category || 'Блог',
-        image:   a.img || '',
-        excerpt: a.excerpt_bg || a.excerpt || '',
-        content: a.content || '',
-        relatedRefs: a.relatedRefs || [],
-        seo_title: a.seo_title || '',
-        seo_description: a.seo_description || '',
-      }));
+      .map(a => {
+        const orig = staticById[String(a.id)] || {};
+        return {
+          id:      Number(a.id) || a.id,
+          title:   a.title_bg || a.title || orig.title || '',
+          date:    a.date ? new Date(a.date).toLocaleDateString('bg-BG', { day:'numeric', month:'long', year:'numeric' }) : (orig.date || ''),
+          isoDate: a.date || orig.isoDate || '',
+          category: a.category || orig.category || 'Блог',
+          image:   a.img || orig.image || '',
+          excerpt: a.excerpt_bg || a.excerpt || orig.excerpt || '',
+          content: a.content || orig.content || '',
+          relatedRefs: (a.relatedRefs && a.relatedRefs.length) ? a.relatedRefs : (orig.relatedRefs || []),
+          seo_title: a.seo_title || '',
+          seo_description: a.seo_description || '',
+        };
+      });
   } catch {
     return BLOG_POSTS;
   }
@@ -407,10 +429,12 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
         {/* Featured post */}
         {featured && (
           <div className="blog-feature" style={{ cursor: "pointer" }} onClick={() => goBlogPost(featured.id)}>
-            {featured.image
-              ? <img src={featured.image} alt={featured.title} className="img" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <div className="img" style={{ background: "var(--champagne)" }} />
-            }
+            <div className="img-wrap">
+              {featured.image
+                ? <img src={featured.image} alt={featured.title} className="img" loading="lazy" decoding="async" />
+                : <div className="img" style={{ background: "var(--champagne)" }} />
+              }
+            </div>
             <div>
               <div className="meta">{featured.category} · {featured.date}</div>
               <h2>{featured.title}</h2>
@@ -431,10 +455,12 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
               style={{ cursor: "pointer" }}
               onClick={() => goBlogPost(post.id)}
             >
-              {post.image
-                ? <img src={post.image} alt={post.title} className="img" loading="lazy" decoding="async" />
-                : <div className="img" style={{ background: "var(--champagne)" }} />
-              }
+              <div className="img-wrap">
+                {post.image
+                  ? <img src={post.image} alt={post.title} className="img" loading="lazy" decoding="async" />
+                  : <div className="img" style={{ background: "var(--champagne)" }} />
+                }
+              </div>
               <div className="meta">{post.category} · {post.date}</div>
               <h3>{post.title}</h3>
               <p>{post.excerpt}</p>
@@ -455,6 +481,12 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
   const relatedProducts = (post.relatedRefs || [])
     .map(ref => DRESSES.find(d => d.ref === ref))
     .filter(Boolean);
+  const dressName = (p) => {
+    const raw = isBg ? p.name_bg : p.name_en;
+    if (raw && raw !== p.ref && !/^(Style\s)?\d+$/.test(raw.trim())) return raw;
+    const col = { demetrios: 'Demetrios', cosmobella: 'Cosmobella', platinum: 'Platinum', destination: 'Destination' }[p.collection] || '';
+    return `${col} ${p.ref}`.trim();
+  };
   useSeo({
     title: post.seo_title || post.title,
     description: post.seo_description || post.excerpt,
@@ -491,63 +523,77 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
         </div>
       </div>
 
-      {/* Content */}
-      <div className="blog-post-body">
-        <button
-          className="btn-link"
-          style={{ marginBottom: 40, display: "inline-flex", alignItems: "center", gap: 8 }}
-          onClick={() => setRoute("blog")}
-        >
-          ← {isBg ? "Обратно към дневника" : "Back to journal"}
-        </button>
-
-        <div
-          className="blog-post-content"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
-
-        <div style={{ marginTop: 64, paddingTop: 40, borderTop: "1px solid var(--champagne)" }}>
-          <button className="btn" onClick={() => setRoute("booking")}>
-            {isBg ? "Запази проба →" : "Book a fitting →"}
+      {/* Content + Sidebar layout */}
+      <div className="blog-post-layout">
+        {/* Main content */}
+        <div className="blog-post-body">
+          <button
+            className="btn-link"
+            style={{ marginBottom: 40, display: "inline-flex", alignItems: "center", gap: 8 }}
+            onClick={() => setRoute("blog")}
+          >
+            ← {isBg ? "Обратно към дневника" : "Back to journal"}
           </button>
-        </div>
-      </div>
 
-      {/* Related products */}
-      {relatedProducts.length > 0 && (
-        <div style={{ background: "var(--bg-deep)", padding: "var(--s-9) var(--gutter)" }}>
-          <div style={{ maxWidth: "var(--maxw)", margin: "0 auto" }}>
-            <div className="sec-head" style={{ marginBottom: 40 }}>
-              <div className="left">— {isBg ? "Споменати в статията" : "Featured in this article"}</div>
-              <h2 style={{ fontSize: "clamp(28px, 3vw, 44px)" }}>
-                {isBg ? "Свързани" : "Related"} <em>{isBg ? "рокли" : "gowns"}</em>
-              </h2>
+          {/* Mobile sidebar — horizontal scroll strip */}
+          {relatedProducts.length > 0 && (
+            <div className="blog-sidebar-mobile">
+              <div className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</div>
+              <div className="blog-sidebar-scroll">
+                {relatedProducts.map(p => (
+                  <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
+                    <img src={p.imgs?.[0] || p.img} alt={dressName(p)} loading="lazy" decoding="async" />
+                    <div className="blog-sidebar-card-info">
+                      <h4>{dressName(p)}</h4>
+                      <span>{p.silhouette}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18 }}>
+          )}
+
+          <div
+            className="blog-post-content"
+            dangerouslySetInnerHTML={{ __html: sanitizeHTML(post.content) }}
+            onClick={(e) => {
+              const link = e.target.closest('.blog-internal-link');
+              if (link) {
+                e.preventDefault();
+                const route = link.dataset.route;
+                if (route) setRoute(route);
+              }
+            }}
+          />
+
+          <div style={{ marginTop: 64, paddingTop: 40, borderTop: "1px solid var(--champagne)" }}>
+            <button className="btn" onClick={() => setRoute("booking")}>
+              {isBg ? "Запази проба →" : "Book a fitting →"}
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop sidebar */}
+        {relatedProducts.length > 0 && (
+          <aside className="blog-sidebar">
+            <div className="blog-sidebar-sticky">
+              <div className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</div>
               {relatedProducts.map(p => (
-                <article
-                  key={p.ref}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => goProduct && goProduct(p.ref)}
-                >
-                  <img src={p.imgs?.[0] || p.img} alt={p.name_bg} loading="lazy" decoding="async"
-                       style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block", marginBottom: 12 }} />
-                  <div style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--champagne-deep)", marginBottom: 4 }}>
-                    {p.silhouette}
+                <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
+                  <img src={p.imgs?.[0] || p.img} alt={dressName(p)} loading="lazy" decoding="async" />
+                  <div className="blog-sidebar-card-info">
+                    <h4>{dressName(p)}</h4>
+                    <span>{p.silhouette}</span>
                   </div>
-                  <h3 style={{ fontFamily: "var(--f-serif)", fontSize: 18, fontWeight: 400, marginBottom: 4 }}>{p.name_bg}</h3>
-                  <div style={{ fontSize: 12, color: "var(--ink-mute)" }}>Реф. {p.ref}</div>
                 </article>
               ))}
-            </div>
-            <div style={{ textAlign: "center", marginTop: 32 }}>
-              <button className="btn" onClick={() => setRoute("booking")}>
+              <button className="btn" style={{ width: "100%", marginTop: 16 }} onClick={() => goBooking && goBooking()}>
                 {isBg ? "Запази проба →" : "Book a fitting →"}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+          </aside>
+        )}
+      </div>
 
       {/* Related posts */}
       {others.length > 0 && (
