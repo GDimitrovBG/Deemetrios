@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import i18n from './i18n';
 import { Img } from './components';
 import { DRESSES, COLLECTIONS } from './data';
-import { useSeo } from './seo';
+import { useSeo, orgSchema, breadcrumbSchema } from './seo';
 import { createBooking } from './api';
 
 // =====================================================
@@ -481,6 +481,13 @@ function BookingPage({ lang, setRoute, dress = null }) {
       : "Book a free wedding dress fitting at Areti, Sofia. Personal consultation with an expert, no obligation. Choose date, time and consultation type.",
     url: "/booking", lang,
     keywords: "запази час булчинска рокля, проба сватбена рокля София, безплатна консултация Арети",
+    jsonLd: { "@graph": [
+      orgSchema(),
+      breadcrumbSchema([
+        { name: lang === "bg" ? "Начало" : "Home", url: "/" },
+        { name: lang === "bg" ? "Запази час" : "Book a Fitting", url: "/booking" },
+      ]),
+    ]},
   });
   const [step, setStep] = useState(0);
   const [data, setData] = useState({});

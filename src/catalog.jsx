@@ -124,6 +124,13 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
     url: initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
     keywords: "колекции булчински рокли, Demetrios, Cosmobella, Platinum, Destination Romance, сватбени рокли София",
+    jsonLd: { "@graph": [
+      breadcrumbSchema([
+        { name: isBg ? "Начало" : "Home", url: "/" },
+        { name: isBg ? "Колекция" : "Collection", url: "/collection" },
+        ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
+      ]),
+    ]},
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
@@ -617,11 +624,15 @@ function AccessoriesPage({ lang, setRoute }) {
   useSeo({
     title: lang === "bg" ? "Аксесоари за булки — воали, диадеми, бижута" : "Bridal Accessories — Veils, Tiaras, Jewellery",
     description: lang === "bg"
-      ? "Луксозни булчински аксесоари в Арети — воали, диадеми, обици, обувки и бижута. Внимателно подбрана селекция за финалния штрих на сватбената визия."
+      ? "Луксозни булчински аксесоари в Арети — воали, диадеми, обици, обувки и бижута. Внимателно подбрана селекция за финалния щрих на сватбената визия."
       : "Luxury bridal accessories at Areti — veils, tiaras, earrings, shoes and jewellery. A curated selection for the final touch of your bridal look.",
     url: "/accessories",
     lang,
     keywords: "булчински аксесоари, воали, диадеми, бижута за булки, обувки за сватба, Арети София",
+    jsonLd: breadcrumbSchema([
+      { name: lang === "bg" ? "Начало" : "Home", url: "/" },
+      { name: lang === "bg" ? "Аксесоари" : "Accessories", url: "/accessories" },
+    ]),
   });
   const t = i18n[lang];
   const [cat, setCat] = useState(t.accessories.categories[0]);

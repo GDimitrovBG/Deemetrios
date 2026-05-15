@@ -216,6 +216,25 @@ function DemetriosPage({ lang, setRoute }) {
       : "Demetrios James Elias — Greek-American designer, founder of Demetrios Bridal in 1982. The Demetrios, Platinum, Destination and Cosmobella collections at Areti — official representative in Bulgaria.",
     url: "/demetrios", lang,
     keywords: "Demetrios James Elias, Деметриос дизайнер, Demetrios Bridal, Demetrios колекции, Cosmobella, Platinum",
+    jsonLd: { "@graph": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Demetrios James Elias",
+        "jobTitle": "Fashion Designer",
+        "birthPlace": "Greece",
+        "nationality": "Greek-American",
+        "foundingDate": "1982",
+        "brand": { "@type": "Brand", "name": "Demetrios" },
+        "description": isBg
+          ? "Гръцко-американски дизайнер, основател на Demetrios Bridal — световен лидер в булчинската мода."
+          : "Greek-American designer, founder of Demetrios Bridal — a global leader in bridal fashion.",
+      },
+      breadcrumbSchema([
+        { name: isBg ? "Начало" : "Home", url: "/" },
+        { name: "Demetrios", url: "/demetrios" },
+      ]),
+    ]},
   });
   return (
     <div className="page-enter">
@@ -416,6 +435,10 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
       : "The Areti journal — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
     image: featured?.image, url: "/blog", lang,
     keywords: "блог булчински рокли, съвети за булки, сватбен стил, тенденции 2026, Demetrios истории",
+    jsonLd: breadcrumbSchema([
+      { name: isBg ? "Начало" : "Home", url: "/" },
+      { name: isBg ? "Дневник" : "Journal", url: "/blog" },
+    ]),
   });
 
   return (
