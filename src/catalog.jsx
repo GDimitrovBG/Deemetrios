@@ -475,7 +475,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         </div>
         <div className="product-main">
           <div className="product-gallery">
-            <Img src={galleryImgs[0]} label={`${name} · main`} className="main-img" style={{ cursor: "zoom-in" }} />
+            <Img src={galleryImgs[0]} label={`${name} · main`} className="main-img" style={{ cursor: "zoom-in" }} priority />
             {galleryImgs.slice(1, 4).map((imgSrc, i) => (
               <Img key={i} src={imgSrc} label={`${name} · ${i + 2}`} className="thumb" style={{ cursor: "zoom-in" }} />
             ))}

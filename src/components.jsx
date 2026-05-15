@@ -13,7 +13,7 @@ function useImageBg(src) {
   return { backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 }
 
-function Img({ src, label, className = "", style = {} }) {
+function Img({ src, label, className = "", style = {}, priority = false }) {
   // gracious image with built-in placeholder fallback
   const [errored, setErrored] = useState(false);
   if (!src || errored) {
@@ -32,7 +32,9 @@ function Img({ src, label, className = "", style = {} }) {
         alt={label || ""}
         onError={() => setErrored(true)}
         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }}
-        loading="lazy"
+        loading={priority ? "eager" : "lazy"}
+        fetchpriority={priority ? "high" : "low"}
+        decoding={priority ? "sync" : "async"}
       />
     </div>
   );

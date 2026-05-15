@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Nav, Footer, FloatDial } from './components';
 import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
 import { AboutPage, ContactPage, BlogPage, DemetriosPage } from './info';
-import AdminPanel from './admin';
-import {
-  useTweaks, TweaksPanel, TweakSection,
-  TweakRadio, TweakColor, TweakSelect, TweakToggle,
-} from './TweaksPanel';
+import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
+
+// Heavy pages loaded only when needed
+const AdminPanel = lazy(() => import('./admin'));
 
 // =====================================================
 //  APP — Router + Tweaks panel + state
@@ -106,7 +105,11 @@ export default function App() {
     default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
   }
 
-  if (route === "admin") return <AdminPanel setRoute={setRoute} />;
+  if (route === "admin") return (
+    <Suspense fallback={<div style={{ display:"grid", placeItems:"center", height:"100vh", fontFamily:"var(--f-serif)", fontSize:18, color:"var(--ink-soft)" }}>Зарежда…</div>}>
+      <AdminPanel setRoute={setRoute} />
+    </Suspense>
+  );
 
   return (
     <>

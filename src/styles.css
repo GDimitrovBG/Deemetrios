@@ -26,7 +26,7 @@
   --f-display: "Italiana", "Cormorant Garamond", serif;
   --f-serif: "Cormorant Garamond", "Times New Roman", serif;
   --f-sans: "Jost", "Helvetica Neue", system-ui, sans-serif;
-  --f-mono: "JetBrains Mono", ui-monospace, monospace;
+  --f-mono: ui-monospace, "SF Mono", "Cascadia Code", monospace;
 
   /* Spacing scale */
   --s-1: 4px;
