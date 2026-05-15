@@ -30,11 +30,18 @@
   <meta name="twitter:image" content="https://demetriosbride-bg.com/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.jpg" />
 
   <link rel="canonical" href="https://demetriosbride-bg.com/" />
+  <link rel="alternate" hreflang="bg" href="https://demetriosbride-bg.com/" />
+  <link rel="alternate" hreflang="en" href="https://demetriosbride-bg.com/" />
+  <link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/" />
 
-  <!-- DNS + connection setup for Google Fonts -->
+  <!-- DNS + connection setup for Google Fonts + image CDN (LCP boost) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://demetriosbride-bg.com" crossorigin />
   <link rel="dns-prefetch" href="https://demetriosbride-bg.com" />
+
+  <!-- Preload hero image for fastest LCP on home page -->
+  <link rel="preload" as="image" href="https://demetriosbride-bg.com/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.jpg" fetchpriority="high" />
 
   <!--
     CRITICAL fonts (block render): Italiana + Cormorant + Jost

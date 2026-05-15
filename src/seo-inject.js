@@ -3,6 +3,11 @@ import { getSettings } from './api';
 
 let injected = false;
 
+const VALID_GA  = /^G-[A-Z0-9]{4,12}$/;
+const VALID_GTM = /^GTM-[A-Z0-9]{4,12}$/;
+const VALID_FB  = /^\d{10,20}$/;
+const VALID_META = /^[A-Za-z0-9_-]{10,80}$/;
+
 function injectScript(src, attrs = {}) {
   if (document.querySelector(`script[src="${src}"]`)) return;
   const el = document.createElement('script');
@@ -40,17 +45,26 @@ export function useSeoInject() {
     getSettings().then(s => {
       if (!s) return;
 
-      if (s.ga_id) {
+      let prefs = { analytics: false, marketing: false };
+      try {
+        const raw = localStorage.getItem('areti_cookies');
+        if (raw === 'all') prefs = { analytics: true, marketing: true };
+        else if (raw && raw !== 'essential') prefs = JSON.parse(raw);
+      } catch {}
+      const allowAnalytics = prefs.analytics;
+      const allowMarketing = prefs.marketing;
+
+      if (allowAnalytics && s.ga_id && VALID_GA.test(s.ga_id)) {
         injectScript(`https://www.googletagmanager.com/gtag/js?id=${s.ga_id}`);
         injectInlineScript('ga-init', `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${s.ga_id}');
+          gtag('config', '${s.ga_id}', { anonymize_ip: true });
         `);
       }
 
-      if (s.gtm_id) {
+      if (allowAnalytics && s.gtm_id && VALID_GTM.test(s.gtm_id)) {
         injectInlineScript('gtm-init', `
           (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -60,7 +74,7 @@ export function useSeoInject() {
         `);
       }
 
-      if (s.fb_pixel) {
+      if (allowMarketing && s.fb_pixel && VALID_FB.test(s.fb_pixel)) {
         injectInlineScript('fb-pixel', `
           !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -72,13 +86,13 @@ export function useSeoInject() {
         `);
       }
 
-      if (s.gsc_verification) {
+      if (s.gsc_verification && VALID_META.test(s.gsc_verification)) {
         injectMeta('google-site-verification', s.gsc_verification);
       }
-      if (s.bing_verification) {
+      if (s.bing_verification && VALID_META.test(s.bing_verification)) {
         injectMeta('msvalidate.01', s.bing_verification);
       }
-      if (s.yandex_verification) {
+      if (s.yandex_verification && VALID_META.test(s.yandex_verification)) {
         injectMeta('yandex-verification', s.yandex_verification);
       }
     }).catch(() => {});

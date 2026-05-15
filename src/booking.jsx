@@ -9,22 +9,16 @@ import { createBooking } from './api';
 //  BOOKING — 4-step reservation flow
 // =====================================================
 
-// Brevo (Sendinblue) transactional email
-const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY || '';
-const ARETI_EMAIL  = import.meta.env.VITE_ARETI_EMAIL || 'info@demetriosbride-bg.com';
-const ARETI_NAME   = 'Арети — Bridal Couture';
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const ARETI_EMAIL = 'info@demetriosbride-bg.com';
+const ARETI_NAME = 'Арети — Bridal Couture';
 
 async function sendBrevoEmail({ to, toName, subject, html }) {
   try {
-    await fetch('https://api.brevo.com/v3/smtp/email', {
+    await fetch(`${API_BASE}/api/email/send-booking`, {
       method: 'POST',
-      headers: { 'accept': 'application/json', 'content-type': 'application/json', 'api-key': BREVO_API_KEY },
-      body: JSON.stringify({
-        sender: { name: ARETI_NAME, email: ARETI_EMAIL },
-        to: [{ email: to, name: toName || '' }],
-        subject,
-        htmlContent: html,
-      }),
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ to, toName, subject, html }),
     });
   } catch { /* silent — booking still succeeds even if email fails */ }
 }

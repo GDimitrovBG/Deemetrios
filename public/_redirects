@@ -1,0 +1,42 @@
+# Old WordPress URLs → new SPA routes (Netlify/Cloudflare Pages syntax)
+# Status 301 transfers full SEO equity from the old pages.
+
+/za-nas               /about                       301
+/za-nas/              /about                       301
+/kontakti             /contact                     301
+/kontakti/            /contact                     301
+/zapishi-chas         /booking                     301
+/zapishi-chas/        /booking                     301
+/za-demetrios         /demetrios                   301
+/za-demetrios/        /demetrios                   301
+/demetrios-platinum   /collection/platinum         301
+/demetrios-platinum/  /collection/platinum         301
+/cosmobella           /collection/cosmobella       301
+/cosmobella/          /collection/cosmobella       301
+/destination-romance  /collection/destination      301
+/destination-romance/ /collection/destination      301
+/otzivi               /about                       301
+/otzivi/              /about                       301
+/fqa                  /contact                     301
+/fqa/                 /contact                     301
+/nashite-bulki        /about                       301
+/nashite-bulki/       /about                       301
+/author/areti1        /                            301
+/author/areti1/       /                            301
+/bulchinski-rokli     /collection/demetrios        301
+/bulchinski-rokli/    /collection/demetrios        301
+/bulchinski-rokli-2   /collection                  301
+/bulchinski-rokli-2/  /collection                  301
+/bulchenski-rokli-sofia  /collection               301
+/bulchenski-rokli-sofia/ /collection               301
+/vecherni-rokli       /collection/evening          301
+/vecherni-rokli/      /collection/evening          301
+
+# Paginated and category WP routes
+/bulchinski-rokli/page/*  /collection/demetrios    301
+/vecherni-rokli/page/*    /collection/evening      301
+/blog/page/*              /blog                    301
+/product-category/*       /collection              301
+
+# SPA fallback: every unknown route serves index.html so the client router resolves it
+/*                    /index.html                  200

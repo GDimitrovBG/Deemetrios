@@ -236,8 +236,8 @@ const i18n = {
       atelier: "Ателие",
       atelier_links: ["За нас", "За Деметриос", "Дневник", "Контакти"],
       help: "Помощ",
-      help_links: ["Запази проба", "Контакти", "Размери", "Условия"],
-      copyright: "© MMXXVI Арети ООД · Всички права запазени",
+      help_links: ["Запази проба", "Контакти", "Общи условия", "Поверителност", "Бисквитки"],
+      copyright: "© MMXXVI Арети-Томос ЕООД · Всички права запазени",
       lang_marker: "Езици · BG / EN",
     },
     common: {
@@ -255,6 +255,215 @@ const i18n = {
       placeholder_wedding: "Септември 2026",
       free_note: "Резервацията е безплатна и може да бъде променяна до 24 часа преди срещата.",
       ref_short: "Реф.",
+    },
+    legal: {
+      privacy: {
+        seo_title: "Политика за поверителност — Арети Bridal Couture",
+        seo_desc: "Политика за поверителност на АРЕТИ-ТОМОС ЕООД. Как събираме, обработваме и защитаваме вашите лични данни в съответствие с GDPR.",
+        eyebrow: "— Правна информация",
+        title: "Политика за поверителност",
+        updated: "Последна актуализация: 15 май 2026 г.",
+        contact_note: "За въпроси относно обработката на лични данни, свържете се с нас на: info@areti.bg",
+        sections: [
+          {
+            title: "1. Администратор на лични данни",
+            paragraphs: [
+              "АРЕТИ-ТОМОС ЕООД, ЕИК: 200309385, ДДС: BG200309385, със седалище и адрес на управление: ул. Крум Попов 63, ет. 3, ап. 6, 1421 София, България.",
+              "Email: info@areti.bg | Телефон: +359 878 521 660",
+              "Дружеството не е назначило Длъжностно лице по защита на данните (DPO). За всички въпроси относно лични данни се обръщайте към: info@areti.bg.",
+            ],
+          },
+          {
+            title: "2. Какви данни събираме",
+            paragraphs: [
+              "Лични данни, предоставени от вас: име, телефон, имейл адрес, дата на сватба и бележки при резервация на час за проба.",
+              "Автоматично събирани данни: IP адрес, тип на браузъра, операционна система, посетени страници, времетраене на посещението — чрез бисквитки и Google Analytics.",
+              "Не събираме чувствителни лични данни (здравни, биометрични, генетични).",
+            ],
+          },
+          {
+            title: "3. Цел на обработването",
+            paragraphs: [
+              "Организиране и управление на резервации за пробни срещи в нашия салон.",
+              "Комуникация с вас във връзка с ваша резервация или запитване.",
+              "Подобряване на нашия уебсайт и потребителското преживяване чрез анализ на трафика.",
+              "Изпращане на маркетингови съобщения (само при изрично съгласие). Абонаментът за бюлетин използва двойно потвърждение (double opt-in).",
+            ],
+          },
+          {
+            title: "4. Правно основание",
+            paragraphs: [
+              "Обработваме вашите данни на основание: (а) вашето съгласие — при резервация или абониране за бюлетин; (б) изпълнение на договор — при предоставяне на нашите услуги; (в) легитимен интерес — за подобряване на сайта и услугите ни.",
+            ],
+          },
+          {
+            title: "5. Споделяне на данни с трети страни",
+            paragraphs: [
+              "Не продаваме вашите лични данни. Можем да ги споделяме със: Google (Analytics), Brevo (имейл маркетинг), Facebook (рекламни пиксели) — само при наличие на вашето съгласие за бисквитки.",
+              "Всички трети страни са задължени да спазват GDPR и да обработват данните ви единствено за посочените цели. С всички обработващи лични данни сме сключили договори за обработка на данни (DPA) съгласно чл. 28 от GDPR.",
+            ],
+          },
+          {
+            title: "5а. Международен трансфер на данни",
+            paragraphs: [
+              "Някои от нашите доставчици на услуги (Google LLC, Meta Platforms Inc.) могат да прехвърлят данни в САЩ. Тези трансфери се основават на Рамката за защита на данните ЕС-САЩ (EU-US Data Privacy Framework) и стандартни договорни клаузи (SCCs), одобрени от Европейската комисия.",
+            ],
+          },
+          {
+            title: "6. Срок на съхранение",
+            paragraphs: [
+              "Данните от резервации се съхраняват до 12 месеца след датата на срещата. Данните от бюлетин — до отписване. Аналитични данни — до 26 месеца (Google Analytics).",
+            ],
+          },
+          {
+            title: "7. Вашите права",
+            paragraphs: [
+              "Съгласно GDPR имате право на: достъп до данните си; коригиране на неточности; изтриване (\"правото да бъдеш забравен\"); ограничаване на обработването; преносимост на данните; възражение срещу обработването.",
+              "Имате право да оттеглите съгласието си по всяко време, без това да засяга законосъобразността на обработването преди оттеглянето (чл. 7, ал. 3 GDPR).",
+              "За упражняване на вашите права, изпратете заявка на info@areti.bg. Ще отговорим в рамките на 30 дни.",
+            ],
+          },
+          {
+            title: "8. Бисквитки",
+            paragraphs: [
+              "Използваме бисквитки за функционалност на сайта, анализ на трафика и маркетинг. Можете да управлявате предпочитанията си от банера за бисквитки или от страницата ни за бисквитки.",
+            ],
+          },
+          {
+            title: "9. Сигурност",
+            paragraphs: [
+              "Прилагаме подходящи технически и организационни мерки за защита на вашите данни — криптирана връзка (HTTPS), ограничен достъп, редовни актуализации на софтуера.",
+            ],
+          },
+          {
+            title: "10. Жалби",
+            paragraphs: [
+              "Ако считате, че правата ви са нарушени, можете да подадете жалба до Комисия за защита на личните данни (КЗЛД): бул. Проф. Цветан Лазаров № 2, 1592 София, kzld.bg.",
+            ],
+          },
+        ],
+      },
+      terms: {
+        seo_title: "Общи условия — Арети Bridal Couture",
+        seo_desc: "Общи условия за ползване на уебсайта на АРЕТИ-ТОМОС ЕООД и за резервации на пробни срещи в салона.",
+        eyebrow: "— Правна информация",
+        title: "Общи условия",
+        updated: "Последна актуализация: 15 май 2026 г.",
+        contact_note: "За въпроси относно общите условия, свържете се с нас на: info@areti.bg",
+        sections: [
+          {
+            title: "1. Общи разпоредби",
+            paragraphs: [
+              "Настоящите общи условия уреждат отношенията между АРЕТИ-ТОМОС ЕООД, ЕИК 200309385 (\"Арети\", \"ние\") и потребителите на уебсайта demetriosbride-bg.com.",
+              "С използването на сайта вие приемате тези условия. Ако не сте съгласни, моля не използвайте сайта.",
+            ],
+          },
+          {
+            title: "2. Услуги",
+            paragraphs: [
+              "Арети предлага булчински и вечерни рокли от колекциите на Demetrios — Demetrios, Cosmobella, Platinum и Destination Romance.",
+              "Чрез сайта можете да разглеждате колекцията, да резервирате пробна среща и да се свързвате с нас.",
+            ],
+          },
+          {
+            title: "3. Резервации",
+            paragraphs: [
+              "Резервацията за пробна среща е безплатна и необвързваща. Тя може да бъде отменена или променена до 24 часа преди уговорения час.",
+              "При неявяване без предупреждение повече от 2 пъти, Арети си запазва правото да откаже бъдещи резервации.",
+              "Потвърждение на резервацията ще получите по имейл в рамките на 24 часа.",
+            ],
+          },
+          {
+            title: "4. Цени и плащане",
+            paragraphs: [
+              "Всички цени на сайта са ориентировъчни и могат да се различават в зависимост от конкретния модел, размер и персонализации.",
+              "Окончателната цена се определя в салона след консултация. Плащането може да бъде извършено в брой, с банков превод или с кредитна/дебитна карта.",
+            ],
+          },
+          {
+            title: "5. Интелектуална собственост",
+            paragraphs: [
+              "Всички изображения, текстове, лога и дизайн на сайта са собственост на АРЕТИ-ТОМОС ЕООД или на Demetrios Group и са защитени от закона за авторското право.",
+              "Забранено е копирането, разпространението или използването на материали от сайта без писмено разрешение.",
+            ],
+          },
+          {
+            title: "6. Ограничаване на отговорността",
+            paragraphs: [
+              "Арети полага усилия за актуалността на информацията на сайта, но не гарантира нейната пълнота или точност. Снимките на рокли могат да се различават от реалния продукт по цвят и детайли.",
+              "Арети не носи отговорност за временна недостъпност на сайта, причинена от технически проблеми.",
+            ],
+          },
+          {
+            title: "7. Приложимо право",
+            paragraphs: [
+              "Настоящите условия се уреждат от законодателството на Република България. Всички спорове ще бъдат решавани от компетентния български съд.",
+              "Потребителите имат право на рекламация съгласно Закона за защита на потребителите (ЗЗП). За подаване на жалба можете да се обърнете към Комисия за защита на потребителите (КЗП): kzp.bg.",
+            ],
+          },
+        ],
+      },
+      cookies: {
+        seo_title: "Политика за бисквитки — Арети Bridal Couture",
+        seo_desc: "Информация за бисквитките, които използваме на сайта demetriosbride-bg.com, и как можете да ги управлявате.",
+        eyebrow: "— Правна информация",
+        title: "Политика за бисквитки",
+        updated: "Последна актуализация: 15 май 2026 г.",
+        contact_note: "За въпроси относно бисквитките, свържете се с нас на: info@areti.bg",
+        sections: [
+          {
+            title: "1. Какво са бисквитките?",
+            paragraphs: [
+              "Бисквитките (cookies) са малки текстови файлове, които се съхраняват на вашето устройство при посещение на уебсайт. Те помагат на сайта да запомни вашите предпочитания и да подобри вашето преживяване.",
+            ],
+          },
+          {
+            title: "2. Видове бисквитки, които използваме",
+            paragraphs: [
+              "Необходими бисквитки: Осигуряват основната функционалност на сайта — запомняне на езиковите настройки, кошница, съгласие за бисквитки. Тези бисквитки не могат да бъдат отказани.",
+              "Аналитични бисквитки (Google Analytics): Събират анонимна информация за начина, по който посетителите използват сайта — брой посещения, посетени страници, времетраене. Помагат ни да подобрим структурата и съдържанието.",
+              "Маркетингови бисквитки (Facebook Pixel, Google Ads): Използват се за показване на релевантни реклами и за проследяване на ефективността на рекламните ни кампании.",
+            ],
+          },
+          {
+            title: "3. Конкретни бисквитки",
+            paragraphs: [
+              "areti_cookies — Запомня вашия избор за бисквитки (необходима, 1 година).",
+              "areti_tweaks — Съхранява визуалните настройки на сайта (необходима, 1 година).",
+              "_ga, _ga_* — Google Analytics: анализ на трафика (аналитична, 2 години).",
+              "_fbp — Facebook Pixel: рекламно проследяване (маркетингова, 3 месеца).",
+              "_gcl_au — Google Ads: рекламна атрибуция (маркетингова, 3 месеца).",
+            ],
+          },
+          {
+            title: "4. Управление на бисквитките",
+            paragraphs: [
+              "При първото посещение на сайта ще видите банер, от който можете да приемете всички бисквитки или само необходимите.",
+              "Можете по всяко време да изтриете бисквитките от настройките на вашия браузър. Имайте предвид, че това може да засегне функционалността на сайта. За да промените настройките си, изчистете бисквитките на браузъра — при следващото посещение ще видите банера отново.",
+            ],
+          },
+          {
+            title: "5. Промени",
+            paragraphs: [
+              "Арети си запазва правото да актуализира тази политика. Промените влизат в сила от момента на публикуването им на сайта.",
+            ],
+          },
+        ],
+      },
+    },
+    cookie_banner: {
+      text: "Използваме бисквитки за подобряване на вашето преживяване.",
+      link: "Политика за бисквитки",
+      essential: "Само необходими",
+      accept: "Приемам всички",
+      manage: "Настройки",
+      save: "Запази избора",
+      cat_essential: "Необходими",
+      cat_essential_desc: "Основна функционалност на сайта. Не могат да бъдат изключени.",
+      cat_analytics: "Аналитични",
+      cat_analytics_desc: "Google Analytics — анонимна статистика за посещенията.",
+      cat_marketing: "Маркетингови",
+      cat_marketing_desc: "Facebook Pixel, Google Ads — релевантни реклами.",
     },
   },
   en: {
@@ -492,8 +701,8 @@ const i18n = {
       atelier: "Atelier",
       atelier_links: ["About us", "Demetrios", "Journal", "Contact"],
       help: "Help",
-      help_links: ["Book a fitting", "Contact", "Size guide", "Terms"],
-      copyright: "© MMXXVI Areti Ltd · All rights reserved",
+      help_links: ["Book a fitting", "Contact", "Terms & Conditions", "Privacy Policy", "Cookies"],
+      copyright: "© MMXXVI Areti-Tomos Ltd · All rights reserved",
       lang_marker: "Languages · BG / EN",
     },
     common: {
@@ -511,6 +720,215 @@ const i18n = {
       placeholder_wedding: "September 2026",
       free_note: "Reservation is free and can be changed up to 24 hours before the appointment.",
       ref_short: "Ref.",
+    },
+    legal: {
+      privacy: {
+        seo_title: "Privacy Policy — Areti Bridal Couture",
+        seo_desc: "ARETI-TOMOS Ltd. privacy policy. How we collect, process and protect your personal data in accordance with GDPR.",
+        eyebrow: "— Legal",
+        title: "Privacy Policy",
+        updated: "Last updated: May 15, 2026",
+        contact_note: "For questions about data processing, contact us at: info@areti.bg",
+        sections: [
+          {
+            title: "1. Data Controller",
+            paragraphs: [
+              "ARETI-TOMOS Ltd. (EOOD), UIC: 200309385, VAT: BG200309385, registered address: 63 Krum Popov St., fl. 3, apt. 6, 1421 Sofia, Bulgaria.",
+              "Email: info@areti.bg | Phone: +359 878 521 660",
+              "The company has not appointed a Data Protection Officer (DPO). For all data-related inquiries, contact: info@areti.bg.",
+            ],
+          },
+          {
+            title: "2. Data We Collect",
+            paragraphs: [
+              "Personal data you provide: name, phone, email address, wedding date, and notes when booking a fitting appointment.",
+              "Automatically collected data: IP address, browser type, operating system, pages visited, visit duration — via cookies and Google Analytics.",
+              "We do not collect sensitive personal data (health, biometric, genetic).",
+            ],
+          },
+          {
+            title: "3. Purpose of Processing",
+            paragraphs: [
+              "Organizing and managing fitting appointment reservations at our salon.",
+              "Communicating with you regarding your reservation or inquiry.",
+              "Improving our website and user experience through traffic analysis.",
+              "Sending marketing communications (only with your explicit consent). Newsletter subscription uses double opt-in confirmation.",
+            ],
+          },
+          {
+            title: "4. Legal Basis",
+            paragraphs: [
+              "We process your data based on: (a) your consent — when booking or subscribing to our newsletter; (b) contract performance — when providing our services; (c) legitimate interest — for improving our site and services.",
+            ],
+          },
+          {
+            title: "5. Third-Party Sharing",
+            paragraphs: [
+              "We do not sell your personal data. We may share it with: Google (Analytics), Brevo (email marketing), Facebook (advertising pixels) — only when you have consented to cookies.",
+              "All third parties are obligated to comply with GDPR and process your data solely for the stated purposes. We have concluded data processing agreements (DPAs) with all processors in accordance with Art. 28 GDPR.",
+            ],
+          },
+          {
+            title: "5a. International Data Transfers",
+            paragraphs: [
+              "Some of our service providers (Google LLC, Meta Platforms Inc.) may transfer data to the United States. These transfers are based on the EU-US Data Privacy Framework and Standard Contractual Clauses (SCCs) approved by the European Commission.",
+            ],
+          },
+          {
+            title: "6. Data Retention",
+            paragraphs: [
+              "Reservation data is stored for up to 12 months after the appointment date. Newsletter data — until unsubscription. Analytics data — up to 26 months (Google Analytics).",
+            ],
+          },
+          {
+            title: "7. Your Rights",
+            paragraphs: [
+              "Under GDPR you have the right to: access your data; rectify inaccuracies; erasure (\"right to be forgotten\"); restrict processing; data portability; object to processing.",
+              "You have the right to withdraw your consent at any time, without affecting the lawfulness of processing based on consent before its withdrawal (Art. 7(3) GDPR).",
+              "To exercise your rights, send a request to info@areti.bg. We will respond within 30 days.",
+            ],
+          },
+          {
+            title: "8. Cookies",
+            paragraphs: [
+              "We use cookies for site functionality, traffic analysis, and marketing. You can manage your preferences via the cookie banner or our cookie policy page.",
+            ],
+          },
+          {
+            title: "9. Security",
+            paragraphs: [
+              "We apply appropriate technical and organizational measures to protect your data — encrypted connection (HTTPS), restricted access, regular software updates.",
+            ],
+          },
+          {
+            title: "10. Complaints",
+            paragraphs: [
+              "If you believe your rights have been violated, you may file a complaint with the Commission for Personal Data Protection (CPDP): 2 Prof. Tsvetan Lazarov Blvd., 1592 Sofia, cpdp.bg.",
+            ],
+          },
+        ],
+      },
+      terms: {
+        seo_title: "Terms & Conditions — Areti Bridal Couture",
+        seo_desc: "Terms and conditions for using the ARETI-TOMOS Ltd. website and booking fitting appointments.",
+        eyebrow: "— Legal",
+        title: "Terms & Conditions",
+        updated: "Last updated: May 15, 2026",
+        contact_note: "For questions about our terms, contact us at: info@areti.bg",
+        sections: [
+          {
+            title: "1. General Provisions",
+            paragraphs: [
+              "These terms and conditions govern the relationship between ARETI-TOMOS Ltd. (EOOD), UIC 200309385 (\"Areti\", \"we\") and users of the website demetriosbride-bg.com.",
+              "By using the site, you accept these terms. If you do not agree, please do not use the site.",
+            ],
+          },
+          {
+            title: "2. Services",
+            paragraphs: [
+              "Areti offers bridal and evening dresses from Demetrios collections — Demetrios, Cosmobella, Platinum, and Destination Romance.",
+              "Through the site, you can browse the collection, book a fitting appointment, and contact us.",
+            ],
+          },
+          {
+            title: "3. Reservations",
+            paragraphs: [
+              "Fitting appointment reservations are free and non-binding. They may be cancelled or changed up to 24 hours before the scheduled time.",
+              "In case of no-show without notice more than 2 times, Areti reserves the right to decline future reservations.",
+              "Reservation confirmation will be sent by email within 24 hours.",
+            ],
+          },
+          {
+            title: "4. Prices & Payment",
+            paragraphs: [
+              "All prices on the site are approximate and may vary depending on the specific model, size, and customizations.",
+              "The final price is determined at the salon after consultation. Payment can be made in cash, bank transfer, or credit/debit card.",
+            ],
+          },
+          {
+            title: "5. Intellectual Property",
+            paragraphs: [
+              "All images, text, logos, and designs on the site are the property of ARETI-TOMOS Ltd. or Demetrios Group and are protected by copyright law.",
+              "Copying, distribution, or use of site materials without written permission is prohibited.",
+            ],
+          },
+          {
+            title: "6. Limitation of Liability",
+            paragraphs: [
+              "Areti strives to keep site information current but does not guarantee its completeness or accuracy. Dress photos may differ from the actual product in color and detail.",
+              "Areti is not responsible for temporary site unavailability caused by technical issues.",
+            ],
+          },
+          {
+            title: "7. Governing Law",
+            paragraphs: [
+              "These terms are governed by the laws of the Republic of Bulgaria. All disputes shall be resolved by the competent Bulgarian court.",
+              "Consumers have the right to file complaints under the Bulgarian Consumer Protection Act (ZZP). Complaints can be submitted to the Commission for Consumer Protection (KZP): kzp.bg.",
+            ],
+          },
+        ],
+      },
+      cookies: {
+        seo_title: "Cookie Policy — Areti Bridal Couture",
+        seo_desc: "Information about the cookies we use on demetriosbride-bg.com and how you can manage them.",
+        eyebrow: "— Legal",
+        title: "Cookie Policy",
+        updated: "Last updated: May 15, 2026",
+        contact_note: "For questions about cookies, contact us at: info@areti.bg",
+        sections: [
+          {
+            title: "1. What Are Cookies?",
+            paragraphs: [
+              "Cookies are small text files stored on your device when you visit a website. They help the site remember your preferences and improve your experience.",
+            ],
+          },
+          {
+            title: "2. Types of Cookies We Use",
+            paragraphs: [
+              "Essential cookies: Ensure the basic functionality of the site — language preferences, cart, cookie consent. These cookies cannot be declined.",
+              "Analytics cookies (Google Analytics): Collect anonymous information about how visitors use the site — number of visits, pages visited, duration. Help us improve structure and content.",
+              "Marketing cookies (Facebook Pixel, Google Ads): Used to show relevant ads and track the effectiveness of our advertising campaigns.",
+            ],
+          },
+          {
+            title: "3. Specific Cookies",
+            paragraphs: [
+              "areti_cookies — Remembers your cookie preference (essential, 1 year).",
+              "areti_tweaks — Stores your site visual preferences (essential, 1 year).",
+              "_ga, _ga_* — Google Analytics: traffic analysis (analytics, 2 years).",
+              "_fbp — Facebook Pixel: advertising tracking (marketing, 3 months).",
+              "_gcl_au — Google Ads: ad attribution (marketing, 3 months).",
+            ],
+          },
+          {
+            title: "4. Managing Cookies",
+            paragraphs: [
+              "On your first visit you will see a banner where you can accept all cookies or only essential ones.",
+              "You can delete cookies at any time from your browser settings. Please note that this may affect site functionality. To change your cookie preferences, clear your browser cookies — the consent banner will reappear on your next visit.",
+            ],
+          },
+          {
+            title: "5. Changes",
+            paragraphs: [
+              "Areti reserves the right to update this policy. Changes take effect upon publication on the site.",
+            ],
+          },
+        ],
+      },
+    },
+    cookie_banner: {
+      text: "We use cookies to improve your experience.",
+      link: "Cookie policy",
+      essential: "Essential only",
+      accept: "Accept all",
+      manage: "Settings",
+      save: "Save preferences",
+      cat_essential: "Essential",
+      cat_essential_desc: "Core site functionality. Cannot be disabled.",
+      cat_analytics: "Analytics",
+      cat_analytics_desc: "Google Analytics — anonymous visit statistics.",
+      cat_marketing: "Marketing",
+      cat_marketing_desc: "Facebook Pixel, Google Ads — relevant advertising.",
     },
   },
 };

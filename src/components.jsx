@@ -13,14 +13,15 @@ function useImageBg(src) {
   return { backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 }
 
-function Img({ src, label, className = "", style = {}, priority = false }) {
-  // gracious image with built-in placeholder fallback
+function Img({ src, label, alt, className = "", style = {}, priority = false, width, height }) {
   const [errored, setErrored] = useState(false);
+  const a = alt ?? label ?? "";
   if (!src || errored) {
     return (
       <div
         className={`ph ${className}`}
-        data-label={label || "image"}
+        role="img"
+        aria-label={a || "image"}
         style={style}
       ></div>
     );
@@ -29,7 +30,9 @@ function Img({ src, label, className = "", style = {}, priority = false }) {
     <div className={`ph ph-img ${className}`} style={style}>
       <img
         src={src}
-        alt={label || ""}
+        alt={a}
+        width={width}
+        height={height}
         onError={() => setErrored(true)}
         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }}
         loading={priority ? "eager" : "lazy"}
@@ -229,7 +232,10 @@ function Footer({ lang, setRoute }) {
           </div>
           <div>
             <h4>{t.help}</h4>
-            <ul>{t.help_links.map((x, i) => <li key={i}><a onClick={() => setRoute(i === 0 ? "booking" : i === 1 ? "contact" : "contact")}>{x}</a></li>)}</ul>
+            <ul>{t.help_links.map((x, i) => {
+              const routes = ["booking", "contact", "terms", "privacy", "cookies"];
+              return <li key={i}><a onClick={() => setRoute(routes[i] || "contact")}>{x}</a></li>;
+            })}</ul>
           </div>
         </div>
         <div className="bottom">

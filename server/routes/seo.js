@@ -21,12 +21,20 @@ router.get('/sitemap.xml', async (req, res) => {
     const staticPages = [
       { loc: '/', priority: '1.0', changefreq: 'weekly' },
       { loc: '/collection', priority: '0.9', changefreq: 'weekly' },
+      { loc: '/collection/demetrios',   priority: '0.85', changefreq: 'weekly' },
+      { loc: '/collection/cosmobella',  priority: '0.85', changefreq: 'weekly' },
+      { loc: '/collection/platinum',    priority: '0.85', changefreq: 'weekly' },
+      { loc: '/collection/destination', priority: '0.85', changefreq: 'weekly' },
+      { loc: '/collection/evening',     priority: '0.85', changefreq: 'weekly' },
       { loc: '/about', priority: '0.6', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
       { loc: '/booking', priority: '0.8', changefreq: 'monthly' },
       { loc: '/blog', priority: '0.7', changefreq: 'weekly' },
       { loc: '/accessories', priority: '0.6', changefreq: 'monthly' },
       { loc: '/demetrios', priority: '0.5', changefreq: 'monthly' },
+      { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
+      { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
+      { loc: '/cookies', priority: '0.3', changefreq: 'yearly' },
     ];
 
     const now = new Date().toISOString().split('T')[0];

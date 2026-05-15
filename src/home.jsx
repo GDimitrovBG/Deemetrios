@@ -3,6 +3,7 @@ import i18n from './i18n';
 import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { useSeo, orgSchema, websiteSchema } from './seo';
+import { getProductCardName, getProductAlt } from './seo-helpers';
 
 // =====================================================
 //  HOME — 3 hero variations + shared sections
@@ -189,9 +190,10 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
 
 function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
   const t = i18n[lang];
-  const name = lang === "bg" ? d.name_bg : d.name_en;
+  const name = getProductCardName(d, lang);
   const sil = lang === "bg" ? d.silhouette : d.silhouette_en;
   const isFav = favorites.includes(d.ref);
+  const imgAlt = getProductAlt(d, lang, 0);
   return (
     <article className="dress-card" onClick={onClick}>
       {d.badge && <span className="badge">{d.badge}</span>}
@@ -206,7 +208,7 @@ function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
           </svg>
         </button>
       )}
-      <Img src={d.img} label={name} className="dress-img" />
+      <Img src={d.img} alt={imgAlt} className="dress-img" width={600} height={800} />
       <span className="quick">View · {d.ref}</span>
       <div className="dress-info">
         <div>
@@ -224,7 +226,7 @@ function StorySection({ t, setRoute }) {
     <section className="section">
       <div className="editorial">
         <div>
-          <Img src={IMG.about} label="atelier interior" className="editorial-img" />
+          <Img src="/images/atelier-story.webp" alt="Сватбен салон Арети — интериор на бутика в София, булчински рокли Demetrios" className="editorial-img" width={900} height={1100} />
         </div>
         <div className="editorial-content">
           <div className="t-eyebrow" style={{ marginBottom: 24 }}>{t.home.story_eye}</div>

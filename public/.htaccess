@@ -1,0 +1,33 @@
+# Apache rewrite rules for shared hosting (e.g. cPanel)
+# Issues 301 redirects from old WordPress URLs and SPA-fallbacks everything else to /index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Old WordPress URLs → new SPA routes (R=301 = permanent)
+  RewriteRule ^za-nas/?$              /about                       [R=301,L]
+  RewriteRule ^kontakti/?$            /contact                     [R=301,L]
+  RewriteRule ^zapishi-chas/?$        /booking                     [R=301,L]
+  RewriteRule ^za-demetrios/?$        /demetrios                   [R=301,L]
+  RewriteRule ^demetrios-platinum/?$  /collection/platinum         [R=301,L]
+  RewriteRule ^cosmobella/?$          /collection/cosmobella       [R=301,L]
+  RewriteRule ^destination-romance/?$ /collection/destination      [R=301,L]
+  RewriteRule ^otzivi/?$              /about                       [R=301,L]
+  RewriteRule ^fqa/?$                 /contact                     [R=301,L]
+  RewriteRule ^nashite-bulki/?$       /about                       [R=301,L]
+  RewriteRule ^author/areti1/?$       /                            [R=301,L]
+  RewriteRule ^bulchinski-rokli/?$    /collection/demetrios        [R=301,L]
+  RewriteRule ^bulchinski-rokli-2/?$  /collection                  [R=301,L]
+  RewriteRule ^bulchenski-rokli-sofia/?$ /collection               [R=301,L]
+  RewriteRule ^vecherni-rokli/?$      /collection/evening          [R=301,L]
+
+  RewriteRule ^bulchinski-rokli/page/[0-9]+/?$ /collection/demetrios [R=301,L]
+  RewriteRule ^vecherni-rokli/page/[0-9]+/?$   /collection/evening   [R=301,L]
+  RewriteRule ^blog/page/[0-9]+/?$             /blog                 [R=301,L]
+  RewriteRule ^product-category/.*$            /collection           [R=301,L]
+
+  # SPA fallback: serve index.html for anything that isn't an existing file/directory
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>

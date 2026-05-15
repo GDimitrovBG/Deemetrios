@@ -1,0 +1,41 @@
+{
+  "redirects": [
+    { "source": "/za-nas",              "destination": "/about",                  "statusCode": 301 },
+    { "source": "/za-nas/",             "destination": "/about",                  "statusCode": 301 },
+    { "source": "/kontakti",            "destination": "/contact",                "statusCode": 301 },
+    { "source": "/kontakti/",           "destination": "/contact",                "statusCode": 301 },
+    { "source": "/zapishi-chas",        "destination": "/booking",                "statusCode": 301 },
+    { "source": "/zapishi-chas/",       "destination": "/booking",                "statusCode": 301 },
+    { "source": "/za-demetrios",        "destination": "/demetrios",              "statusCode": 301 },
+    { "source": "/za-demetrios/",       "destination": "/demetrios",              "statusCode": 301 },
+    { "source": "/demetrios-platinum",  "destination": "/collection/platinum",    "statusCode": 301 },
+    { "source": "/demetrios-platinum/", "destination": "/collection/platinum",    "statusCode": 301 },
+    { "source": "/cosmobella",          "destination": "/collection/cosmobella",  "statusCode": 301 },
+    { "source": "/cosmobella/",         "destination": "/collection/cosmobella",  "statusCode": 301 },
+    { "source": "/destination-romance", "destination": "/collection/destination", "statusCode": 301 },
+    { "source": "/destination-romance/","destination": "/collection/destination", "statusCode": 301 },
+    { "source": "/otzivi",              "destination": "/about",                  "statusCode": 301 },
+    { "source": "/otzivi/",             "destination": "/about",                  "statusCode": 301 },
+    { "source": "/fqa",                 "destination": "/contact",                "statusCode": 301 },
+    { "source": "/fqa/",                "destination": "/contact",                "statusCode": 301 },
+    { "source": "/nashite-bulki",       "destination": "/about",                  "statusCode": 301 },
+    { "source": "/nashite-bulki/",      "destination": "/about",                  "statusCode": 301 },
+    { "source": "/author/areti1",       "destination": "/",                       "statusCode": 301 },
+    { "source": "/author/areti1/",      "destination": "/",                       "statusCode": 301 },
+    { "source": "/bulchinski-rokli",    "destination": "/collection/demetrios",   "statusCode": 301 },
+    { "source": "/bulchinski-rokli/",   "destination": "/collection/demetrios",   "statusCode": 301 },
+    { "source": "/bulchinski-rokli-2",  "destination": "/collection",             "statusCode": 301 },
+    { "source": "/bulchinski-rokli-2/", "destination": "/collection",             "statusCode": 301 },
+    { "source": "/bulchenski-rokli-sofia",  "destination": "/collection",         "statusCode": 301 },
+    { "source": "/bulchenski-rokli-sofia/", "destination": "/collection",         "statusCode": 301 },
+    { "source": "/vecherni-rokli",      "destination": "/collection/evening",     "statusCode": 301 },
+    { "source": "/vecherni-rokli/",     "destination": "/collection/evening",     "statusCode": 301 },
+    { "source": "/bulchinski-rokli/page/:n*", "destination": "/collection/demetrios", "statusCode": 301 },
+    { "source": "/vecherni-rokli/page/:n*",   "destination": "/collection/evening",   "statusCode": 301 },
+    { "source": "/blog/page/:n*",       "destination": "/blog",                   "statusCode": 301 },
+    { "source": "/product-category/:slug*", "destination": "/collection",         "statusCode": 301 }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

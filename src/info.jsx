@@ -1,23 +1,17 @@
+import DOMPurify from 'dompurify';
 import i18n from './i18n';
 import { IMG, DRESSES } from './data';
 import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
 import { useSeo, orgSchema, articleSchema, breadcrumbSchema } from './seo';
 
-// Simple HTML sanitizer — strips dangerous tags and event-handler attributes
 function sanitizeHTML(html) {
   if (!html) return '';
-  // Remove <script>, <iframe>, <object>, <embed>, <form>, <link>, <meta> tags and their content
-  let clean = html.replace(/<\s*(script|iframe|object|embed|form|link|meta)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '');
-  // Remove self-closing or unclosed versions of those tags
-  clean = clean.replace(/<\s*(script|iframe|object|embed|form|link|meta)[^>]*\/?>/gi, '');
-  // Remove event-handler attributes (on*)
-  clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-  // Remove javascript: URLs in href/src/action attributes
-  clean = clean.replace(/(href|src|action)\s*=\s*(?:"javascript:[^"]*"|'javascript:[^']*')/gi, '$1=""');
-  // Remove data: URLs in src (except for images which are safe in img tags)
-  clean = clean.replace(/<(?!img\b)\w+[^>]*\ssrc\s*=\s*(?:"data:[^"]*"|'data:[^']*')/gi, (m) => m.replace(/src\s*=\s*(?:"data:[^"]*"|'data:[^']*')/i, 'src=""'));
-  return clean;
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p','br','b','strong','i','em','u','a','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','span','div','figure','figcaption'],
+    ALLOWED_ATTR: ['href','src','alt','title','class','style','target','rel','width','height'],
+    ALLOW_DATA_ATTR: false,
+  });
 }
 
 // Merge static BLOG_POSTS with any admin edits stored in localStorage
@@ -80,7 +74,7 @@ function AboutPage({ lang, setRoute }) {
         <p className="lede">{t.lede}</p>
       </div>
       <div style={{ padding: "0 var(--gutter)", maxWidth: "var(--maxw)", margin: "0 auto" }}>
-        <Img src={IMG.about} label="atelier" className="about-feature-img" />
+        <Img src="/images/about-hero.webp" label="atelier" className="about-feature-img" />
       </div>
       <div className="about-stats">
         {t.stats.map((s, i) => (

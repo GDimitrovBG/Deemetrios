@@ -1,11 +1,13 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Nav, Footer, FloatDial } from './components';
 import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
 import { AboutPage, ContactPage, BlogPage, BlogPostPage, DemetriosPage } from './info';
+import { PrivacyPage, TermsPage, CookiePolicyPage, CookieConsent } from './legal';
 import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
 import { useSeoInject } from './seo-inject';
+import { pathToState, stateToPath, readInitialState } from './router';
 
 // Heavy pages loaded only when needed
 const AdminPanel = lazy(() => import('./admin'));
@@ -24,7 +26,8 @@ const TWEAKS = {
 };
 
 export default function App() {
-  const [route, setRouteRaw] = useState("home");
+  const initial = useRef(readInitialState()).current;
+  const [route, setRouteRaw] = useState(initial.route || "home");
   const [tweaks, setTweak] = useTweaks(TWEAKS);
   const [lang, setLang] = useState(tweaks.lang || "bg");
   useSeoInject();
@@ -66,11 +69,47 @@ export default function App() {
     if (lang !== tweaks.lang) setTweak("lang", lang);
   }, [lang]);
 
-  const [activeCollection, setActiveCollection] = useState(null);
-  const [activeProduct, setActiveProduct] = useState(null);
-  const [activeBlogPost, setActiveBlogPost] = useState(null);
+  const [activeCollection, setActiveCollection] = useState(initial.collectionId || null);
+  const [activeProduct, setActiveProduct] = useState(initial.productRef || null);
+  const [activeBlogPost, setActiveBlogPost] = useState(initial.blogPostId || null);
   const [favorites, setFavorites] = useState([]);
   const [bookingDress, setBookingDress] = useState(null);
+
+  // Sync state → URL whenever route or its params change
+  const firstSync = useRef(true);
+  useEffect(() => {
+    if (firstSync.current) { firstSync.current = false; return; }
+    if (route === "admin") return;
+    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost });
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, "", path);
+    }
+  }, [route, activeCollection, activeProduct, activeBlogPost]);
+
+  // Sync URL → state on back/forward
+  useEffect(() => {
+    const onPop = () => {
+      if (window.location.hash === "#admin") { setRouteRaw("admin"); return; }
+      const s = pathToState(window.location.pathname);
+      if (s.redirect) {
+        window.history.replaceState({}, "", s.redirect);
+        const next = pathToState(s.redirect);
+        if (next.route) {
+          setRouteRaw(next.route);
+          setActiveCollection(next.collectionId || null);
+          setActiveProduct(next.productRef || null);
+          setActiveBlogPost(next.blogPostId || null);
+        }
+      } else if (s.route) {
+        setRouteRaw(s.route);
+        setActiveCollection(s.collectionId || null);
+        setActiveProduct(s.productRef || null);
+        setActiveBlogPost(s.blogPostId || null);
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const toggleFavorite = (ref) => {
     setFavorites(prev => prev.includes(ref) ? prev.filter(r => r !== ref) : [...prev, ref]);
@@ -110,6 +149,9 @@ export default function App() {
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
     case "blog": page = <BlogPage lang={lang} setRoute={setRoute} goBlogPost={goBlogPost} />; break;
     case "blog-post": page = <BlogPostPage lang={lang} setRoute={setRoute} postId={activeBlogPost} goBlogPost={goBlogPost} goProduct={goProduct} goBooking={goBooking} />; break;
+    case "privacy": page = <PrivacyPage lang={lang} setRoute={setRoute} />; break;
+    case "terms": page = <TermsPage lang={lang} setRoute={setRoute} />; break;
+    case "cookies": page = <CookiePolicyPage lang={lang} setRoute={setRoute} />; break;
     case "admin": page = null; break;
     default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
   }
@@ -126,6 +168,7 @@ export default function App() {
       <main>{page}</main>
       <Footer lang={lang} setRoute={setRoute} />
       <FloatDial setRoute={setRoute} lang={lang} />
+      <CookieConsent lang={lang} setRoute={setRoute} />
       <TweaksPanel title="Tweaks">
         <TweakSection label="Херо вариант">
           <TweakRadio

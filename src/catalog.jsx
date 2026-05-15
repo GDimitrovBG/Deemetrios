@@ -5,6 +5,7 @@ import { IMG, DRESSES, ACCESSORIES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { DressCard } from './home';
 import { useSeo, productSchema, breadcrumbSchema } from './seo';
+import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema } from './seo-helpers';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -130,6 +131,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         { name: isBg ? "Колекция" : "Collection", url: "/collection" },
         ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
       ]),
+      collectionItemListSchema(
+        (initCollection ? DRESSES.filter(d => d.collection === initCollection) : DRESSES),
+        lang,
+      ),
     ]},
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -482,13 +487,14 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const dress = DRESSES.find(d => d.ref === productRef) || DRESSES[0];
   const isFav = favorites.includes(dress.ref);
-  const name = lang === "bg" ? dress.name_bg : dress.name_en;
   const isBg = lang === "bg";
+  const heading = getProductHeading(dress, lang);
+  const cardName = `Style ${dress.ref}`;
   const productDescription = isBg ? (dress.description_bg || t.product.desc) : (dress.description_en || t.product.desc);
   const colData = COLLECTIONS.find(c => c.id === dress.collection);
 
   useSeo({
-    title: isBg ? (dress.seo_title_bg || `${name} — Булчинска рокля`) : (dress.seo_title_en || `${name} — Wedding Dress`),
+    title: isBg ? (dress.seo_title_bg || `${heading}`) : (dress.seo_title_en || `${heading}`),
     description: isBg ? dress.seo_description_bg : dress.seo_description_en,
     image: dress.imgs?.[0] || dress.img,
     url: `/product/${dress.ref}`,
@@ -497,11 +503,12 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
     keywords: `булчинска рокля ${dress.ref}, ${dress.silhouette}, ${colData?.label || ''}, Demetrios, Арети София`,
     jsonLd: {
       "@graph": [
-        productSchema(dress, lang),
+        enhancedProductSchema(dress, lang),
         breadcrumbSchema([
           { name: "Арети",                         url: "/" },
           { name: isBg ? "Колекция" : "Collection", url: "/collection" },
-          { name,                                  url: `/product/${dress.ref}` },
+          ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
+          { name: heading,                         url: `/product/${dress.ref}` },
         ]),
       ],
     },
@@ -518,13 +525,13 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         <div className="product-crumb">
           <a onClick={() => setRoute("home")} style={{ cursor: "pointer" }}>Areti</a>
           <a onClick={() => setRoute("collection")} style={{ cursor: "pointer" }}>{t.product.crumb_back}</a>
-          <span style={{ color: "var(--ink)" }}>{name}</span>
+          <span style={{ color: "var(--ink)" }}>{cardName}</span>
         </div>
         <div className="product-main">
           <div className="product-gallery">
-            <Img src={galleryImgs[0]} label={`${name} · main`} className="main-img" style={{ cursor: "zoom-in" }} priority />
+            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} />
             {galleryImgs.slice(1, 4).map((imgSrc, i) => (
-              <Img key={i} src={imgSrc} label={`${name} · ${i + 2}`} className="thumb" style={{ cursor: "zoom-in" }} />
+              <Img key={i} src={imgSrc} alt={getProductAlt(dress, lang, i + 1)} className="thumb" style={{ cursor: "zoom-in" }} width={600} height={800} />
             ))}
             {galleryImgs.length > 4 && (
               <div className="thumb" style={{ background: "var(--bg-deep)", display: "grid", placeItems: "center", cursor: "pointer" }} onClick={() => setLightboxIdx(0)}>
@@ -534,7 +541,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
           </div>
           <aside className="product-info">
             <div className="designer">{t.product.designer}</div>
-            <h1>{name}</h1>
+            <h1>{heading}</h1>
             <div className="ref">{t.product.ref}: {dress.ref}</div>
             <div className="price">{t.product.price_from} {dress.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>
             <div className="price-note">{t.product.price_note}</div>
@@ -593,13 +600,13 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         </section>
       </div>
       {lightboxIdx !== null && (
-        <Lightbox imgs={galleryImgs} idx={lightboxIdx} setIdx={setLightboxIdx} label={name} />
+        <Lightbox imgs={galleryImgs} idx={lightboxIdx} setIdx={setLightboxIdx} label={heading} dress={dress} lang={lang} />
       )}
     </div>
   );
 }
 
-function Lightbox({ imgs, idx, setIdx, label }) {
+function Lightbox({ imgs, idx, setIdx, label, dress, lang }) {
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") setIdx(null);
@@ -613,7 +620,7 @@ function Lightbox({ imgs, idx, setIdx, label }) {
     <div className="lightbox" onClick={() => setIdx(null)}>
       <button className="lightbox-close" onClick={() => setIdx(null)}>Close ×</button>
       <button className="lightbox-nav prev" onClick={(e) => { e.stopPropagation(); setIdx((idx - 1 + imgs.length) % imgs.length); }}>‹</button>
-      <Img src={imgs[idx]} label={label} style={{ aspectRatio: "3/4", height: "85vh", width: "auto" }} />
+      <Img src={imgs[idx]} alt={dress ? getProductAlt(dress, lang || 'bg', idx) : label} style={{ aspectRatio: "3/4", height: "85vh", width: "auto" }} />
       <button className="lightbox-nav next" onClick={(e) => { e.stopPropagation(); setIdx((idx + 1) % imgs.length); }}>›</button>
       <div className="lightbox-counter">{(idx + 1).toString().padStart(2, "0")} / {imgs.length.toString().padStart(2, "0")}</div>
     </div>
@@ -667,7 +674,7 @@ function AccessoriesPage({ lang, setRoute }) {
       <div className="acc-grid">
         {items.map((a, i) => (
           <article key={i} className="acc-card">
-            <Img src={a.img} label={lang === "bg" ? a.name_bg : a.name_en} className="img" />
+            <Img src={a.img} alt={getAccessoryAlt(a, lang)} className="img" width={600} height={800} />
             <div className="info">
               <div>
                 <h3>{lang === "bg" ? a.name_bg : a.name_en}</h3>
@@ -746,11 +753,11 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
         <div style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 var(--gutter) var(--s-10)" }}>
           <div className="wishlist-grid">
             {favDresses.map(d => {
-              const name = lang === "bg" ? d.name_bg : d.name_en;
+              const name = `Style ${d.ref}`;
               const sil = lang === "bg" ? d.silhouette : d.silhouette_en;
               return (
                 <div key={d.ref} className="wishlist-card">
-                  <Img src={d.img} label={name} className="wishlist-img" />
+                  <Img src={d.img} alt={getProductAlt(d, lang, 0)} className="wishlist-img" width={500} height={650} />
                   <div className="wishlist-card-info">
                     <div>
                       <div className="wishlist-card-name">{name}</div>

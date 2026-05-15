@@ -40,12 +40,24 @@ async function request(path, opts = {}) {
   return data;
 }
 
-// Auth
+// Auth — login returns either { token, user } or { require2FA, challenge, emailHint }
 export const login = (email, password) =>
   request('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+export const verifyTwoFA = (challenge, code) =>
+  request('/api/auth/verify-2fa', { method: 'POST', body: JSON.stringify({ challenge, code }) });
+export const resendTwoFA = (challenge) =>
+  request('/api/auth/resend-2fa', { method: 'POST', body: JSON.stringify({ challenge }) });
 export const getMe = () => request('/api/auth/me');
 export const changeMyPassword = (currentPassword, newPassword) =>
   request('/api/auth/me/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) });
+
+// 2FA management (requires auth)
+export const init2FA = () =>
+  request('/api/auth/2fa/init', { method: 'POST', body: JSON.stringify({}) });
+export const enable2FA = (code) =>
+  request('/api/auth/2fa/enable', { method: 'POST', body: JSON.stringify({ code }) });
+export const disable2FA = (password) =>
+  request('/api/auth/2fa/disable', { method: 'POST', body: JSON.stringify({ password }) });
 
 // Users (admin only)
 export const getUsers = () => request('/api/users');

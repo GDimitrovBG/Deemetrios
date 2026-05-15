@@ -7,6 +7,12 @@ const userSchema = new mongoose.Schema({
   name:     { type: String, required: true, trim: true },
   role:     { type: String, enum: ['admin', 'editor'], default: 'editor' },
   active:   { type: Boolean, default: true },
+
+  // 2FA via email
+  twoFAEnabled:        { type: Boolean, default: false },
+  twoFACodeHash:       { type: String, default: null },
+  twoFACodeExpiresAt:  { type: Date,   default: null },
+  twoFAAttempts:       { type: Number, default: 0 },
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
@@ -22,6 +28,9 @@ userSchema.methods.comparePassword = function (candidate) {
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
+  delete obj.twoFACodeHash;
+  delete obj.twoFACodeExpiresAt;
+  delete obj.twoFAAttempts;
   return obj;
 };
 

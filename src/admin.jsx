@@ -326,18 +326,53 @@ function AdminLogin({ onLogin }) {
   const [pass, setPass] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [stage, setStage] = useState("password"); // "password" | "2fa"
+  const [challenge, setChallenge] = useState("");
+  const [emailHint, setEmailHint] = useState("");
+  const [code, setCode] = useState("");
+  const [resent, setResent] = useState(false);
 
-  const tryLogin = async () => {
+  const submitPassword = async () => {
     if (!email || !pass) { setErr("Въведете email и парола"); return; }
     setLoading(true); setErr("");
     try {
-      const { token, user } = await api.login(email, pass);
-      api.setToken(token);
-      onLogin(user);
+      const result = await api.login(email, pass);
+      if (result.require2FA) {
+        setChallenge(result.challenge);
+        setEmailHint(result.emailHint || "");
+        setStage("2fa");
+      } else {
+        api.setToken(result.token);
+        onLogin(result.user);
+      }
     } catch (e) {
       setErr(e.message || "Грешка при вход");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const submitCode = async () => {
+    if (!code || code.length < 4) { setErr("Въведете кода"); return; }
+    setLoading(true); setErr("");
+    try {
+      const { token, user } = await api.verifyTwoFA(challenge, code);
+      api.setToken(token);
+      onLogin(user);
+    } catch (e) {
+      setErr(e.message || "Грешен код");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resend = async () => {
+    setErr(""); setResent(false);
+    try {
+      await api.resendTwoFA(challenge);
+      setResent(true);
+    } catch (e) {
+      setErr(e.message || "Грешка при изпращане");
     }
   };
 
@@ -346,20 +381,57 @@ function AdminLogin({ onLogin }) {
       <div className="adm-login-box">
         <div className="adm-login-logo">А</div>
         <h2 style={{ color:"#f0e8d8", fontSize:22, fontWeight:400, margin:"16px 0 4px", fontFamily:"var(--f-serif,serif)", fontStyle:"italic" }}>Арети</h2>
-        <p style={{ color:"#888", fontSize:13, marginBottom:24 }}>Администраторски панел</p>
-        <input className="adm-input" type="email" value={email}
-          onChange={e => { setEmail(e.target.value); setErr(""); }}
-          onKeyDown={e => e.key === "Enter" && tryLogin()}
-          placeholder="Email" autoFocus style={{ marginBottom:8 }} />
-        <input className="adm-input" type="password" value={pass}
-          onChange={e => { setPass(e.target.value); setErr(""); }}
-          onKeyDown={e => e.key === "Enter" && tryLogin()}
-          placeholder="Парола" style={{ marginBottom:8 }} />
-        {err && <p className="adm-err">{err}</p>}
-        <button className="adm-btn-solid" onClick={tryLogin} disabled={loading}
-          style={{ width:"100%", marginTop:8, opacity: loading ? 0.6 : 1 }}>
-          {loading ? "Влизане…" : "Вход →"}
-        </button>
+        <p style={{ color:"#888", fontSize:13, marginBottom:24 }}>
+          {stage === "password" ? "Администраторски панел" : "Двуфакторна проверка"}
+        </p>
+
+        {stage === "password" && (
+          <>
+            <input className="adm-input" type="email" value={email}
+              onChange={e => { setEmail(e.target.value); setErr(""); }}
+              onKeyDown={e => e.key === "Enter" && submitPassword()}
+              placeholder="Email" autoFocus style={{ marginBottom:8 }} />
+            <input className="adm-input" type="password" value={pass}
+              onChange={e => { setPass(e.target.value); setErr(""); }}
+              onKeyDown={e => e.key === "Enter" && submitPassword()}
+              placeholder="Парола" style={{ marginBottom:8 }} />
+            {err && <p className="adm-err">{err}</p>}
+            <button className="adm-btn-solid" onClick={submitPassword} disabled={loading}
+              style={{ width:"100%", marginTop:8, opacity: loading ? 0.6 : 1 }}>
+              {loading ? "Влизане…" : "Вход →"}
+            </button>
+          </>
+        )}
+
+        {stage === "2fa" && (
+          <>
+            <p style={{ color:"#bbb", fontSize:13, marginBottom:16, lineHeight:1.5 }}>
+              Изпратихме 6-цифрен код на <strong style={{ color:"#f0e8d8" }}>{emailHint}</strong>. Въведете го за да продължите.
+            </p>
+            <input className="adm-input" type="text" inputMode="numeric" maxLength={6} value={code}
+              onChange={e => { setCode(e.target.value.replace(/\D/g, "")); setErr(""); setResent(false); }}
+              onKeyDown={e => e.key === "Enter" && submitCode()}
+              placeholder="••••••"
+              autoFocus
+              style={{ marginBottom:8, fontSize:20, letterSpacing:6, textAlign:"center", fontFamily:"monospace" }} />
+            {err && <p className="adm-err">{err}</p>}
+            {resent && <p style={{ color:"#5a9e6f", fontSize:12, margin:"4px 0" }}>Нов код е изпратен.</p>}
+            <button className="adm-btn-solid" onClick={submitCode} disabled={loading}
+              style={{ width:"100%", marginTop:8, opacity: loading ? 0.6 : 1 }}>
+              {loading ? "Проверка…" : "Потвърди →"}
+            </button>
+            <div style={{ display:"flex", justifyContent:"space-between", marginTop:12 }}>
+              <button type="button" onClick={() => { setStage("password"); setCode(""); setChallenge(""); setErr(""); }}
+                style={{ background:"none", border:"none", color:"#888", fontSize:12, cursor:"pointer", padding:0 }}>
+                ← Назад
+              </button>
+              <button type="button" onClick={resend}
+                style={{ background:"none", border:"none", color:"#c4a373", fontSize:12, cursor:"pointer", padding:0 }}>
+                Изпрати нов код
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -925,6 +997,51 @@ function SettingsSection({ user, onLogout }) {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [curPass, setCurPass] = useState(""); const [newPass, setNewPass] = useState(""); const [passErr, setPassErr] = useState(""); const [passOk, setPassOk] = useState(false);
+  const [me, setMe] = useState(user);
+  const [tfStage, setTfStage] = useState("idle"); // idle | sending | confirm | disabling
+  const [tfHint, setTfHint] = useState(""); const [tfCode, setTfCode] = useState(""); const [tfPass, setTfPass] = useState(""); const [tfErr, setTfErr] = useState(""); const [tfOk, setTfOk] = useState("");
+
+  const refreshMe = async () => {
+    try { const { user: u } = await api.getMe(); setMe(u); } catch {}
+  };
+
+  const startEnable2FA = async () => {
+    setTfErr(""); setTfOk(""); setTfStage("sending");
+    try {
+      const { emailHint } = await api.init2FA();
+      setTfHint(emailHint || "");
+      setTfStage("confirm");
+    } catch (e) {
+      setTfErr(e.message || "Грешка");
+      setTfStage("idle");
+    }
+  };
+
+  const confirmEnable2FA = async () => {
+    setTfErr("");
+    try {
+      await api.enable2FA(tfCode);
+      setTfCode(""); setTfHint(""); setTfStage("idle");
+      setTfOk("2FA е активирана");
+      await refreshMe();
+      setTimeout(() => setTfOk(""), 3000);
+    } catch (e) {
+      setTfErr(e.message || "Грешен код");
+    }
+  };
+
+  const disable2FA = async () => {
+    setTfErr("");
+    try {
+      await api.disable2FA(tfPass);
+      setTfPass(""); setTfStage("idle");
+      setTfOk("2FA е деактивирана");
+      await refreshMe();
+      setTimeout(() => setTfOk(""), 3000);
+    } catch (e) {
+      setTfErr(e.message || "Грешка");
+    }
+  };
 
   useEffect(() => {
     api.getSettings().then(data => { setS(data); setLoading(false); }).catch(() => setLoading(false));
@@ -1059,6 +1176,65 @@ function SettingsSection({ user, onLogout }) {
           {passOk && <span style={{ color: '#5a9e6f', fontSize: 13 }}>Паролата е сменена!</span>}
         </div>
         {passErr&&<p className="adm-err" style={{marginTop:8}}>{passErr}</p>}
+      </div>
+
+      <div className="adm-settings-block">
+        <h3 className="adm-subtitle">🔐 Двуфакторна защита (2FA)</h3>
+        <p style={{fontSize:12,color:"#888",marginBottom:16,lineHeight:1.5}}>
+          При вход ще получавате 6-цифрен код на имейла си <strong style={{color:"#bbb"}}>{me?.email}</strong>. Дори някой да открадне паролата ви, няма да може да влезе без достъп до пощата.
+        </p>
+
+        {me?.twoFAEnabled ? (
+          <>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+              <span style={{color:"#5a9e6f",fontSize:14,fontWeight:500}}>✓ Активирана</span>
+            </div>
+            {tfStage === "disabling" ? (
+              <>
+                <p style={{fontSize:13,color:"#bbb",marginBottom:8}}>За потвърждение въведете паролата си:</p>
+                <div className="adm-form-grid" style={{maxWidth:360}}>
+                  <AInput label="Парола" value={tfPass} onChange={v=>{setTfPass(v);setTfErr("");}} type="password" placeholder="••••••••" />
+                </div>
+                <div style={{display:"flex",gap:8,marginTop:12}}>
+                  <button className="adm-btn-solid" onClick={disable2FA} style={{background:"#c47373"}}>Деактивирай 2FA</button>
+                  <button className="adm-btn" onClick={()=>{setTfStage("idle");setTfPass("");setTfErr("");}}>Откажи</button>
+                </div>
+              </>
+            ) : (
+              <button className="adm-btn" onClick={()=>setTfStage("disabling")} style={{color:"#c47373",borderColor:"#c4737344"}}>Деактивирай 2FA</button>
+            )}
+          </>
+        ) : (
+          <>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+              <span style={{color:"#888",fontSize:14}}>Не е активирана</span>
+            </div>
+            {tfStage === "idle" && (
+              <button className="adm-btn-solid" onClick={startEnable2FA}>Активирай 2FA →</button>
+            )}
+            {tfStage === "sending" && <p style={{fontSize:13,color:"#bbb"}}>Изпращаме код…</p>}
+            {tfStage === "confirm" && (
+              <>
+                <p style={{fontSize:13,color:"#bbb",marginBottom:8}}>
+                  Изпратихме код на <strong style={{color:"#f0e8d8"}}>{tfHint}</strong>. Въведете го, за да потвърдите.
+                </p>
+                <div style={{display:"flex",gap:8,alignItems:"flex-start",maxWidth:360}}>
+                  <input className="adm-input" type="text" inputMode="numeric" maxLength={6} value={tfCode}
+                    onChange={e=>{setTfCode(e.target.value.replace(/\D/g,""));setTfErr("");}}
+                    placeholder="••••••"
+                    style={{fontSize:18,letterSpacing:6,textAlign:"center",fontFamily:"monospace",flex:1}} />
+                  <button className="adm-btn-solid" onClick={confirmEnable2FA}>Потвърди</button>
+                </div>
+                <button type="button" onClick={()=>{setTfStage("idle");setTfCode("");setTfErr("");}}
+                  style={{background:"none",border:"none",color:"#888",fontSize:12,cursor:"pointer",padding:"8px 0 0",display:"block"}}>
+                  ← Откажи
+                </button>
+              </>
+            )}
+          </>
+        )}
+        {tfErr && <p className="adm-err" style={{marginTop:8}}>{tfErr}</p>}
+        {tfOk && <p style={{color:"#5a9e6f",fontSize:13,marginTop:8}}>{tfOk}</p>}
       </div>
 
       <div style={{display:"flex",gap:12,marginTop:32,alignItems:"center"}}>

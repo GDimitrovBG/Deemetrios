@@ -30,6 +30,22 @@ function setLink(rel, href) {
   }
   el.setAttribute('href', href);
 }
+function setHreflangs(path) {
+  // Remove existing hreflang entries
+  document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+  const variants = [
+    { lang: 'bg',      url: `${SITE_URL}${path}` },
+    { lang: 'en',      url: `${SITE_URL}${path}` },
+    { lang: 'x-default', url: `${SITE_URL}${path}` },
+  ];
+  for (const v of variants) {
+    const el = document.createElement('link');
+    el.setAttribute('rel', 'alternate');
+    el.setAttribute('hreflang', v.lang);
+    el.setAttribute('href', v.url);
+    document.head.appendChild(el);
+  }
+}
 function setJsonLd(id, data) {
   // remove existing
   const old = document.head.querySelector(`script[type="application/ld+json"][data-id="${id}"]`);
@@ -107,6 +123,10 @@ export function useSeo({
     // Canonical
     setLink('canonical', finalUrl);
 
+    // hreflang alternates (bg + en + x-default)
+    const path = url ? (url.startsWith('http') ? new URL(url).pathname : (url.startsWith('/') ? url : '/' + url)) : '/';
+    setHreflangs(path);
+
     // JSON-LD
     setJsonLd(jsonLdId, jsonLd);
   }, [title, description, image, url, type, lang, JSON.stringify(jsonLd), jsonLdId, keywords, noindex]);
@@ -179,7 +199,7 @@ export function productSchema(p, lang = 'bg') {
 }
 
 /** Article schema (used on blog post page) */
-export function articleSchema(post) {
+export function articleSchema(post, lang = 'bg') {
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -195,7 +215,7 @@ export function articleSchema(post) {
     },
     "description": post.excerpt || DEFAULT_DESC,
     "articleSection": post.category || "Блог",
-    "inLanguage": "bg",
+    "inLanguage": lang,
   };
 }
 

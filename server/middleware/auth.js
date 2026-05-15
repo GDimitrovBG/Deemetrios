@@ -8,6 +8,20 @@ export function signToken(userId) {
   return jwt.sign({ id: userId }, SECRET(), { expiresIn: EXPIRES });
 }
 
+export function signChallenge(userId) {
+  return jwt.sign({ id: userId, purpose: '2fa' }, SECRET(), { expiresIn: '10m' });
+}
+
+export function verifyChallenge(token) {
+  try {
+    const decoded = jwt.verify(token, SECRET());
+    if (decoded.purpose !== '2fa') return null;
+    return decoded.id;
+  } catch {
+    return null;
+  }
+}
+
 export async function requireAuth(req, res, next) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
