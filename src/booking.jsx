@@ -174,7 +174,7 @@ function Step2Location({ t, data, setData }) {
   );
 }
 
-function Step3Date({ t, data, setData }) {
+function Step3Date({ t, data, setData, lang }) {
   // simple month grid for the next 60 days
   const today = new Date();
   const [monthOffset, setMonthOffset] = useState(0);
@@ -200,7 +200,7 @@ function Step3Date({ t, data, setData }) {
   };
   const isSunday = (d) => {
     if (d == null) return false;
-    return new Date(focusDate.getFullYear(), focusDate.getMonth(), d).getDay() === 1;
+    return new Date(focusDate.getFullYear(), focusDate.getMonth(), d).getDay() === 0;
   };
   const setDate = (d) => {
     if (isPast(d) || isSunday(d)) return;
@@ -532,7 +532,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
         <div>
           {step === 0 && <Step1Type t={t} data={data} setData={setData} />}
           {step === 1 && <Step2Location t={t} data={data} setData={setData} />}
-          {step === 2 && <Step3Date t={t} data={data} setData={setData} />}
+          {step === 2 && <Step3Date t={t} data={data} setData={setData} lang={lang} />}
           {step === 3 && <Step4Details t={t} data={data} setData={setData} />}
           <div className="step-nav">
             <button className="btn" onClick={() => step > 0 && setStep(step - 1)} disabled={step === 0} style={{ opacity: step === 0 ? 0.3 : 1 }}>
