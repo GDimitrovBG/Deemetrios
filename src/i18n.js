@@ -104,6 +104,7 @@ const i18n = {
       step1_title: "Тип",
       step1_title_em: "среща",
       step1_help: "Избери преживяването, което желаеш. Можеш да го промениш по-късно.",
+      step1_note: "Намираме се в уютно студио с една пробна. Приемаме само по предварителна заявка — ние ще се свържем с вас да потвърдим часа.",
       step2_eye: "Стъпка 02 от 04",
       step2_title: "Студио",
       step2_help: "Двете ни студия предлагат пълно преживяване. Избери това, което ти е удобно.",
@@ -116,10 +117,8 @@ const i18n = {
       step4_title_em: "детайли",
       step4_help: "Малко информация, за да се подготвим за теб.",
       types: [
-        { tag: "Ново", title: "Първа консултация", desc: "90 мин. с консултант, чай, шампанско, достъп до цялата колекция.", price: "Безплатна" },
-        { tag: "Премиум", title: "Couture сесия", desc: "2 часа лично с дизайнерката. Колекция + персонализация.", price: "120 лв." },
-        { tag: "Експрес", title: "Бърза проба", desc: "45 мин. за конкретен модел, който вече сте набелязали.", price: "Безплатна" },
-        { tag: "За семейство", title: "Семейна проба", desc: "Удобна стая, място за свита от 4 души. Шампанско включено.", price: "Безплатна" },
+        { tag: "Първо посещение", title: "Първа консултация", desc: "90 мин. с консултант, чай, шампанско, достъп до цялата колекция без ограничение в броя рокли.", price: "30 €" },
+        { tag: "Безплатно", title: "Втора проба", desc: "Връщане на конкретен модел, който вече сте пробвали и обмисляте.", price: "Безплатна" },
       ],
       locations: [
         { name: "София", addr: "ул. Шипка 18, ет.2 · до НДК", hours: "Вт – Сб · 11:00 – 19:00" },
@@ -568,6 +567,7 @@ const i18n = {
       step1_title: "Choose",
       step1_title_em: "your visit",
       step1_help: "Pick the experience that suits you. You can adjust later.",
+      step1_note: "We're in an intimate studio with a single fitting room. Visits are by appointment only — we'll get in touch to confirm your time.",
       step2_eye: "Step 02 of 04",
       step2_title: "Pick a",
       step2_title_em: "studio",
@@ -581,10 +581,8 @@ const i18n = {
       step4_title_em: "details",
       step4_help: "A little information so we can prepare for you.",
       types: [
-        { tag: "New", title: "First Consultation", desc: "90 min with a stylist, tea, champagne, full collection.", price: "Complimentary" },
-        { tag: "Premium", title: "Couture Session", desc: "2 hours one-on-one with the designer. Collection + customization.", price: "60 EUR" },
-        { tag: "Express", title: "Quick Fitting", desc: "45 min for a specific dress you've already shortlisted.", price: "Complimentary" },
-        { tag: "Family", title: "Family Visit", desc: "Comfortable room for entourage of 4. Champagne included.", price: "Complimentary" },
+        { tag: "First visit", title: "First Consultation", desc: "90 min with a stylist, tea, champagne, full collection — no limit on number of dresses.", price: "30 EUR" },
+        { tag: "Complimentary", title: "Second Fitting", desc: "A return visit for a specific dress you've already tried and are considering.", price: "Complimentary" },
       ],
       locations: [
         { name: "Sofia", addr: "18 Shipka St., fl.2 · near NDK", hours: "Tue – Sat · 11:00 – 19:00" },

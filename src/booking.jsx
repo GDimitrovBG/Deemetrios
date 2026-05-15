@@ -121,6 +121,14 @@ function Step1Type({ t, data, setData }) {
       <div className="step-tag">{t.booking.step1_eye}</div>
       <h3>{t.booking.step1_title} <em>{t.booking.step1_title_em || "среща"}</em></h3>
       <p className="help">{t.booking.step1_help}</p>
+      {t.booking.step1_note && (
+        <div className="booking-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="16" height="16" style={{ flexShrink: 0, marginTop: 2 }}>
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>{t.booking.step1_note}</span>
+        </div>
+      )}
       <div className="option-cards">
         {t.booking.types.map((typ, i) => (
           <div
