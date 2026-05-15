@@ -1,6 +1,7 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import i18n from './i18n';
 import { Img } from './components';
+import { DRESSES, COLLECTIONS } from './data';
 import { useSeo } from './seo';
 import { createBooking } from './api';
 
@@ -249,7 +250,7 @@ function Step3Date({ t, data, setData }) {
           {/* Big selected summary */}
           <div className="time-confirm-top">
             <div className="time-confirm-date">
-              {data.date.toLocaleDateString("bg-BG", { weekday: "long", day: "numeric", month: "long" })}
+              {data.date.toLocaleDateString(lang === "bg" ? "bg-BG" : "en-US", { weekday: "long", day: "numeric", month: "long" })}
             </div>
             <div className="time-confirm-time">{data.time}</div>
           </div>
@@ -285,6 +286,7 @@ function Step3Date({ t, data, setData }) {
 
 function Step4Details({ t, data, setData }) {
   const lab = t.booking.labels;
+  const c = t.common;
   return (
     <div className="booking-form">
       <div className="step-tag">{t.booking.step4_eye}</div>
@@ -293,7 +295,7 @@ function Step4Details({ t, data, setData }) {
       <div className="fields-row">
         <div className="field">
           <label>{lab.name}</label>
-          <input value={data.name || ""} onChange={(e) => setData({ ...data, name: e.target.value })} placeholder="Мария Иванова" />
+          <input value={data.name || ""} onChange={(e) => setData({ ...data, name: e.target.value })} placeholder={c.placeholder_name} />
         </div>
         <div className="field">
           <label>{lab.phone}</label>
@@ -307,16 +309,13 @@ function Step4Details({ t, data, setData }) {
       <div className="fields-row">
         <div className="field">
           <label>{lab.wedding}</label>
-          <input value={data.wedding || ""} onChange={(e) => setData({ ...data, wedding: e.target.value })} placeholder="Септември 2026" />
+          <input value={data.wedding || ""} onChange={(e) => setData({ ...data, wedding: e.target.value })} placeholder={c.placeholder_wedding} />
         </div>
         <div className="field">
           <label>{lab.budget}</label>
           <select value={data.budget || ""} onChange={(e) => setData({ ...data, budget: e.target.value })} style={{ borderBottom: "1px solid var(--rule)", background: "transparent" }}>
-            <option value="">Избери...</option>
-            <option>под 1 500 €</option>
-            <option>1 500 – 2 500 €</option>
-            <option>2 500 – 4 000 €</option>
-            <option>над 4 000 €</option>
+            <option value="">{t.booking.budget_select}</option>
+            {t.booking.budget_options.map(o => <option key={o}>{o}</option>)}
           </select>
         </div>
       </div>
@@ -328,20 +327,78 @@ function Step4Details({ t, data, setData }) {
   );
 }
 
+function DressSearch({ t, dressRefs, setDressRefs }) {
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  const results = useMemo(() => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return DRESSES
+      .filter(d => !dressRefs.includes(d.ref))
+      .filter(d =>
+        d.ref.toLowerCase().includes(q) ||
+        (d.name_bg || '').toLowerCase().includes(q) ||
+        (d.name_en || '').toLowerCase().includes(q) ||
+        (d.collection || '').toLowerCase().includes(q)
+      )
+      .slice(0, 5);
+  }, [query, dressRefs]);
+
+  useEffect(() => {
+    const onClick = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  const pick = (ref) => {
+    setDressRefs([...dressRefs, ref]);
+    setQuery("");
+    setOpen(false);
+  };
+
+  const colLabel = (id) => COLLECTIONS.find(c => c.id === id)?.label || id;
+
+  return (
+    <div className="dress-search" ref={wrapRef}>
+      <input
+        className="dress-search-input"
+        value={query}
+        onChange={e => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => query && setOpen(true)}
+        placeholder={t.common.search_dress}
+      />
+      {open && results.length > 0 && (
+        <div className="dress-search-dropdown">
+          {results.map(d => (
+            <div key={d.ref} className="dress-search-item" onClick={() => pick(d.ref)}>
+              <img src={d.img} alt="" className="dress-search-thumb" />
+              <div className="dress-search-info">
+                <span className="dress-search-name">
+                  {(d.name_bg && d.name_bg !== d.ref) ? d.name_bg : `${colLabel(d.collection)} ${d.ref}`}
+                </span>
+                <span className="dress-search-meta">Реф. {d.ref} · {colLabel(d.collection)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {open && query && results.length === 0 && (
+        <div className="dress-search-dropdown">
+          <div className="dress-search-empty">{t.common.no_results}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Summary({ t, data, lang, dressRefs, setDressRefs }) {
   const monthNames = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
   const fmtDate = (d) => d ? `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}` : null;
-  const [refInput, setRefInput] = useState("");
-  const inputRef = useRef(null);
 
-  const addRef = () => {
-    const val = refInput.trim().replace(/\D/g, "");
-    if (val && !dressRefs.includes(val)) {
-      setDressRefs([...dressRefs, val]);
-    }
-    setRefInput("");
-    inputRef.current?.focus();
-  };
+  const dressInfo = (ref) => DRESSES.find(d => d.ref === ref);
+  const colLabel = (id) => COLLECTIONS.find(c => c.id === id)?.label || '';
 
   const rows = [
     data.type != null ? t.booking.types[data.type].title : null,
@@ -357,36 +414,29 @@ function Summary({ t, data, lang, dressRefs, setDressRefs }) {
 
       <div className="summary-refs-section">
         <div className="summary-refs-label">
-          {lang === "bg" ? "Рокли за пробване" : "Styles to try"}
+          {t.common.dresses_to_try}
         </div>
         {dressRefs.length > 0 && (
           <div className="summary-refs-pills">
-            {dressRefs.map(ref => (
-              <span key={ref} className="summary-ref-pill">
-                Реф. {ref}
-                <button
-                  className="summary-ref-remove"
-                  onClick={() => setDressRefs(dressRefs.filter(r => r !== ref))}
-                  aria-label="Премахни"
-                >×</button>
-              </span>
-            ))}
+            {dressRefs.map(ref => {
+              const d = dressInfo(ref);
+              return (
+                <span key={ref} className="summary-ref-pill has-img">
+                  {d && <img src={d.img} alt="" className="summary-ref-pill-img" />}
+                  <span className="summary-ref-pill-text">
+                    {d ? `${colLabel(d.collection)} ${d.ref}` : `Реф. ${ref}`}
+                  </span>
+                  <button
+                    className="summary-ref-remove"
+                    onClick={() => setDressRefs(dressRefs.filter(r => r !== ref))}
+                    aria-label={t.common.remove}
+                  >×</button>
+                </span>
+              );
+            })}
           </div>
         )}
-        <div className="summary-ref-input-row">
-          <input
-            ref={inputRef}
-            className="summary-ref-input"
-            value={refInput}
-            onChange={e => setRefInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && addRef()}
-            placeholder={lang === "bg" ? "Реф. номер…" : "Ref. number…"}
-            maxLength={10}
-          />
-          <button className="summary-ref-add" onClick={addRef} disabled={!refInput.trim()}>
-            +
-          </button>
-        </div>
+        <DressSearch t={t} dressRefs={dressRefs} setDressRefs={setDressRefs} />
       </div>
 
       <div style={{ marginTop: 20 }}>
@@ -398,7 +448,7 @@ function Summary({ t, data, lang, dressRefs, setDressRefs }) {
         ))}
       </div>
       <div style={{ marginTop: 24, fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 14, color: "var(--ink-mute)", lineHeight: 1.5 }}>
-        Резервацията е безплатна и може да бъде променяна до 24 часа преди срещата.
+        {t.common.free_note}
       </div>
     </aside>
   );
@@ -414,7 +464,7 @@ function Confirmation({ t, data, setRoute }) {
         <div className="s-eyebrow" style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--champagne-deep)", marginBottom: 16 }}>{t.booking.conf_card_title}</div>
         <div className="s-row"><span className="label">{t.booking.summary_rows[0]}</span><span className="val">{t.booking.types[data.type].title}</span></div>
         <div className="s-row"><span className="label">{t.booking.summary_rows[1]}</span><span className="val">{t.booking.locations[data.location].name}</span></div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[2]}</span><span className="val">{data.date && data.date.toLocaleDateString("bg-BG")}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[2]}</span><span className="val">{data.date && data.date.toLocaleDateString(lang === "bg" ? "bg-BG" : "en-US")}</span></div>
         <div className="s-row"><span className="label">{t.booking.summary_rows[3]}</span><span className="val">{data.time}</span></div>
       </div>
       <button className="btn" style={{ marginTop: 36 }} onClick={() => setRoute("home")}>{t.booking.back_home} →</button>
@@ -485,7 +535,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
                   phone: data.phone || "",
                   type: t.booking.types[data.type]?.title || "",
                   location: t.booking.locations[data.location]?.name || "",
-                  date: data.date ? data.date.toLocaleDateString("bg-BG") : "",
+                  date: data.date ? data.date.toLocaleDateString(lang === "bg" ? "bg-BG" : "en-US") : "",
                   time: data.time || "",
                   budget: data.budget || "",
                   notes: data.notes || "",

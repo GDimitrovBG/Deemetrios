@@ -41,7 +41,7 @@ function HomeHeroV1({ t, setRoute }) {
   );
 }
 
-function HomeHeroV2({ t, setRoute }) {
+function HomeHeroV2({ t, lang, setRoute }) {
   return (
     <section className="hero-v2">
       <div className="hero-img" style={{ backgroundImage: `url(${IMG.hero2})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
@@ -64,7 +64,7 @@ function HomeHeroV2({ t, setRoute }) {
           <div className="meta-stack">
             <span className="t-meta">In this issue</span>
             <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>The Romansa Collection</span>
-            <span className="t-meta">12 silhouettes · от 2 800 лв.</span>
+            <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
             {t.home.view_all}
@@ -213,7 +213,7 @@ function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
           <h3>{name}</h3>
           <div className="meta">{sil} · {d.fabric}</div>
         </div>
-        <div className="price">{t.common.from} {d.price.toLocaleString("bg-BG")} лв.</div>
+        <div className="price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>
       </div>
     </article>
   );
@@ -325,7 +325,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
   });
   return (
     <div className="page-enter">
-      <Hero t={t} setRoute={setRoute} />
+      <Hero t={t} lang={lang} setRoute={setRoute} />
       <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />
       <MarqueeStrip />
       <StorySection t={t} setRoute={setRoute} />

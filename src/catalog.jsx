@@ -87,8 +87,8 @@ function PriceRange({ filters, setFilters }) {
         <div className="range-knob" style={{ left: pct(hi) + "%" }} onMouseDown={() => setDrag("hi")}></div>
       </div>
       <div className="range-vals">
-        <span>{lo.toLocaleString("bg-BG")} лв.</span>
-        <span>{hi.toLocaleString("bg-BG")} лв.</span>
+        <span>{lo.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</span>
+        <span>{hi.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</span>
       </div>
     </div>
   );
@@ -529,7 +529,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <div className="designer">{t.product.designer}</div>
             <h1>{name}</h1>
             <div className="ref">{t.product.ref}: {dress.ref}</div>
-            <div className="price">{t.product.price_from} {dress.price.toLocaleString("bg-BG")} лв.</div>
+            <div className="price">{t.product.price_from} {dress.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>
             <div className="price-note">{t.product.price_note}</div>
             <p className="desc">{productDescription}</p>
             <dl>
@@ -662,7 +662,7 @@ function AccessoriesPage({ lang, setRoute }) {
                 <h3>{lang === "bg" ? a.name_bg : a.name_en}</h3>
                 <div className="meta" style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--ink-mute)", marginTop: 4 }}>{lang === "bg" ? a.cat : a.cat_en}</div>
               </div>
-              <span className="price">{a.price.toLocaleString("bg-BG")} лв.</span>
+              <span className="price">{a.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</span>
             </div>
           </article>
         ))}
@@ -672,6 +672,7 @@ function AccessoriesPage({ lang, setRoute }) {
 }
 
 function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking }) {
+  const t = i18n[lang];
   useSeo({
     title: lang === "bg" ? "Любими — моят списък булчински рокли" : "Wishlist — My Saved Wedding Dresses",
     description: lang === "bg" ? "Вашите запазени модели булчински рокли в Арети." : "Your saved wedding dress styles at Areti.",
@@ -743,7 +744,7 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
                     <div>
                       <div className="wishlist-card-name">{name}</div>
                       <div className="wishlist-card-meta">{sil} · {d.fabric}</div>
-                      <div className="wishlist-card-price">от {d.price.toLocaleString("bg-BG")} лв.</div>
+                      <div className="wishlist-card-price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>
                     </div>
                     <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                       <button className="btn btn-solid" style={{ flex: 1, padding: "10px 0", fontSize: 10 }} onClick={() => goBooking ? goBooking(d) : setRoute("booking")}>
@@ -752,7 +753,7 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
                       <button
                         className="wishlist-remove"
                         onClick={() => toggleFavorite && toggleFavorite(d.ref)}
-                        aria-label="Премахни"
+                        aria-label={t.common.remove}
                       >
                         <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="14" height="14">
                           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -776,14 +777,14 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
 
             <div className="wishlist-selected-refs">
               {favDresses.map(d => (
-                <span key={d.ref} className="wishlist-ref-pill">Реф. {d.ref}</span>
+                <span key={d.ref} className="wishlist-ref-pill">{t.common.ref_short} {d.ref}</span>
               ))}
             </div>
 
             <div className="fields-row" style={{ marginTop: 28 }}>
               <div className="field">
-                <label>{lang === "bg" ? "Ime" : "Name"}</label>
-                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Мария Иванова" />
+                <label>{lang === "bg" ? "Име" : "Name"}</label>
+                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t.common.placeholder_name} />
               </div>
               <div className="field">
                 <label>{lang === "bg" ? "Телефон" : "Phone"}</label>

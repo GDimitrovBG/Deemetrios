@@ -21,7 +21,7 @@ function sanitizeHTML(html) {
 }
 
 // Merge static BLOG_POSTS with any admin edits stored in localStorage
-function getActivePosts() {
+function getActivePosts(lang) {
   try {
     const stored = JSON.parse(localStorage.getItem('areti_articles') || 'null');
     if (!stored || !stored.length) return BLOG_POSTS;
@@ -37,7 +37,7 @@ function getActivePosts() {
         return {
           id:      Number(a.id) || a.id,
           title:   a.title_bg || a.title || orig.title || '',
-          date:    a.date ? new Date(a.date).toLocaleDateString('bg-BG', { day:'numeric', month:'long', year:'numeric' }) : (orig.date || ''),
+          date:    a.date ? new Date(a.date).toLocaleDateString(lang === 'bg' ? 'bg-BG' : 'en-US', { day:'numeric', month:'long', year:'numeric' }) : (orig.date || ''),
           isoDate: a.date || orig.isoDate || '',
           category: a.category || orig.category || 'Блог',
           image:   a.img || orig.image || '',
@@ -407,7 +407,7 @@ function ContactPage({ lang, setRoute }) {
 
 function BlogPage({ lang, setRoute, goBlogPost }) {
   const isBg = lang === "bg";
-  const posts = getActivePosts();
+  const posts = getActivePosts(lang);
   const [featured, ...rest] = posts;
   useSeo({
     title: isBg ? "Дневник — статии за булчински рокли и сватбен стил" : "Journal — Wedding Dress & Style Articles",
@@ -474,7 +474,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
 
 function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking }) {
   const isBg = lang === "bg";
-  const posts = getActivePosts();
+  const posts = getActivePosts(lang);
   const post = posts.find(p => p.id === postId || String(p.id) === String(postId)) || posts[0];
   const others = posts.filter(p => p.id !== post.id).slice(0, 3);
   // Resolve related products by ref
