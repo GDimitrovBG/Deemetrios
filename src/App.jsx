@@ -3,7 +3,7 @@ import { Nav, Footer, FloatDial } from './components';
 import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
-import { AboutPage, ContactPage, BlogPage, DemetriosPage } from './info';
+import { AboutPage, ContactPage, BlogPage, BlogPostPage, DemetriosPage } from './info';
 import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
 
 // Heavy pages loaded only when needed
@@ -66,6 +66,7 @@ export default function App() {
 
   const [activeCollection, setActiveCollection] = useState(null);
   const [activeProduct, setActiveProduct] = useState(null);
+  const [activeBlogPost, setActiveBlogPost] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [bookingDress, setBookingDress] = useState(null);
 
@@ -81,6 +82,11 @@ export default function App() {
   const goProduct = (ref) => {
     setActiveProduct(ref);
     setRoute("product");
+  };
+
+  const goBlogPost = (id) => {
+    setActiveBlogPost(id);
+    setRoute("blog-post");
   };
 
   const goBooking = (dress = null) => {
@@ -100,7 +106,8 @@ export default function App() {
     case "about": page = <AboutPage lang={lang} setRoute={setRoute} />; break;
     case "demetrios": page = <DemetriosPage lang={lang} setRoute={setRoute} />; break;
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
-    case "blog": page = <BlogPage lang={lang} setRoute={setRoute} />; break;
+    case "blog": page = <BlogPage lang={lang} setRoute={setRoute} goBlogPost={goBlogPost} />; break;
+    case "blog-post": page = <BlogPostPage lang={lang} setRoute={setRoute} postId={activeBlogPost} goBlogPost={goBlogPost} />; break;
     case "admin": page = null; break;
     default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
   }

@@ -1,6 +1,7 @@
 import i18n from './i18n';
 import { IMG } from './data';
 import { Img } from './components';
+import { BLOG_POSTS } from './blog_data';
 
 // =====================================================
 //  INFO pages — About, Contact, Blog
@@ -325,40 +326,136 @@ function ContactPage({ lang, setRoute }) {
   );
 }
 
-function BlogPage({ lang, setRoute }) {
-  const t = i18n[lang].blog;
+function BlogPage({ lang, setRoute, goBlogPost }) {
+  const isBg = lang === "bg";
+  const [featured, ...rest] = BLOG_POSTS;
+
   return (
     <div className="page-enter">
       <div className="blog">
         <div className="blog-head">
-          <div className="t-eyebrow" style={{ marginBottom: 24 }}>— Истории, ритуали, занаят</div>
-          <h1>{t.title} <em>{t.title_em}</em></h1>
+          <div className="t-eyebrow" style={{ marginBottom: 24 }}>— {isBg ? "Истории, ритуали, занаят" : "Stories, rituals, craft"}</div>
+          <h1>{isBg ? "Нашият" : "Our"} <em>{isBg ? "дневник" : "journal"}</em></h1>
         </div>
-        <div className="blog-feature">
-          <Img src={IMG.blog} label="featured story" className="img" />
-          <div>
-            <div className="meta">{t.feature_meta}</div>
-            <h2>{t.feature_title} <em>{t.feature_title_em}</em></h2>
-            <p>{t.feature_p}</p>
-            <button className="btn">{t.read} →</button>
+
+        {/* Featured post */}
+        {featured && (
+          <div className="blog-feature" style={{ cursor: "pointer" }} onClick={() => goBlogPost(featured.id)}>
+            {featured.image
+              ? <img src={featured.image} alt={featured.title} className="img" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              : <div className="img" style={{ background: "var(--champagne)" }} />
+            }
+            <div>
+              <div className="meta">{featured.category} · {featured.date}</div>
+              <h2>{featured.title}</h2>
+              <p>{featured.excerpt}</p>
+              <button className="btn" onClick={e => { e.stopPropagation(); goBlogPost(featured.id); }}>
+                {isBg ? "Прочети →" : "Read →"}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Grid of remaining posts */}
         <div className="blog-grid">
-          {t.cards.map((card, i) => {
-            const imgs = [IMG.bride2, IMG.bride3, IMG.bride5, IMG.veil, IMG.detail2, IMG.bride7];
-            return (
-              <article key={i} className="blog-card">
-                <Img src={imgs[i % imgs.length]} label={card.title} className="img" />
-                <div className="meta">{card.meta}</div>
-                <h3>{card.title}</h3>
-                <p>{card.p}</p>
-              </article>
-            );
-          })}
+          {rest.map((post) => (
+            <article
+              key={post.id}
+              className="blog-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => goBlogPost(post.id)}
+            >
+              {post.image
+                ? <img src={post.image} alt={post.title} className="img" loading="lazy" decoding="async" />
+                : <div className="img" style={{ background: "var(--champagne)" }} />
+              }
+              <div className="meta">{post.category} · {post.date}</div>
+              <h3>{post.title}</h3>
+              <p>{post.excerpt}</p>
+            </article>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-export { AboutPage, ContactPage, BlogPage, DemetriosPage };
+function BlogPostPage({ lang, setRoute, postId, goBlogPost }) {
+  const isBg = lang === "bg";
+  const post = BLOG_POSTS.find(p => p.id === postId) || BLOG_POSTS[0];
+  const others = BLOG_POSTS.filter(p => p.id !== post.id).slice(0, 3);
+
+  return (
+    <div className="page-enter">
+      {/* Hero */}
+      <div className="blog-post-hero">
+        {post.image && (
+          <img src={post.image} alt={post.title} className="blog-post-hero-img" loading="eager" decoding="sync" />
+        )}
+        <div className="blog-post-hero-overlay" />
+        <div className="blog-post-hero-content">
+          <div className="t-eyebrow" style={{ color: "rgba(255,253,248,0.55)", marginBottom: 16 }}>
+            {post.category} · {post.date}
+          </div>
+          <h1 style={{ color: "var(--bg)", fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: "clamp(32px, 5vw, 72px)", lineHeight: 1.1, margin: 0 }}>
+            {post.title}
+          </h1>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="blog-post-body">
+        <button
+          className="btn-link"
+          style={{ marginBottom: 40, display: "inline-flex", alignItems: "center", gap: 8 }}
+          onClick={() => setRoute("blog")}
+        >
+          ← {isBg ? "Обратно към дневника" : "Back to journal"}
+        </button>
+
+        <div
+          className="blog-post-content"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+
+        <div style={{ marginTop: 64, paddingTop: 40, borderTop: "1px solid var(--champagne)" }}>
+          <button className="btn" onClick={() => setRoute("booking")}>
+            {isBg ? "Запази проба →" : "Book a fitting →"}
+          </button>
+        </div>
+      </div>
+
+      {/* Related posts */}
+      {others.length > 0 && (
+        <div style={{ padding: "var(--s-9) var(--gutter)", maxWidth: "var(--maxw)", margin: "0 auto" }}>
+          <div className="sec-head" style={{ marginBottom: 40 }}>
+            <div className="left">—</div>
+            <h2 style={{ fontSize: "clamp(28px, 3vw, 44px)" }}>
+              {isBg ? "Още" : "More"} <em>{isBg ? "статии" : "articles"}</em>
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}>
+            {others.map(op => (
+              <article
+                key={op.id}
+                style={{ cursor: "pointer" }}
+                onClick={() => goBlogPost(op.id)}
+              >
+                {op.image
+                  ? <img src={op.image} alt={op.title} loading="lazy" decoding="async"
+                      style={{ width: "100%", aspectRatio: "3/2", objectFit: "cover", display: "block", marginBottom: 16 }} />
+                  : <div style={{ width: "100%", aspectRatio: "3/2", background: "var(--champagne)", marginBottom: 16 }} />
+                }
+                <div className="meta" style={{ marginBottom: 8 }}>{op.category} · {op.date}</div>
+                <h3 style={{ fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: "clamp(18px, 2vw, 24px)", lineHeight: 1.2, marginBottom: 8 }}>{op.title}</h3>
+                <p style={{ fontFamily: "var(--f-serif)", fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{op.excerpt.slice(0, 120)}…</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { AboutPage, ContactPage, BlogPage, BlogPostPage, DemetriosPage };
