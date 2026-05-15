@@ -2,6 +2,7 @@ import i18n from './i18n';
 import { IMG } from './data';
 import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
+import { useSeo, orgSchema, articleSchema, breadcrumbSchema } from './seo';
 
 // Merge static BLOG_POSTS with any admin edits stored in localStorage
 function getActivePosts() {
@@ -34,6 +35,16 @@ function getActivePosts() {
 function AboutPage({ lang, setRoute }) {
   const t = i18n[lang].about;
   const isBg = lang === "bg";
+  useSeo({
+    title: isBg ? "За Арети — сватбен салон в София от 1992 г." : "About Areti — Bridal Salon in Sofia since 1992",
+    description: isBg
+      ? "Арети е луксозен булчински салон в София, основан през 1992 г. От 30 години обличаме булки в България — официален представител на Demetrios. Адрес: ул. Крум Попов 63, Лозенец."
+      : "Areti is a luxury bridal salon in Sofia, founded in 1992. For 30 years we have been dressing brides across Bulgaria as the official Demetrios representative. Address: 63 Krum Popov St, Lozenets.",
+    image: IMG.about, url: "/about", lang,
+    keywords: "Арети, сватбен салон София, булчински салон Лозенец, история Demetrios България",
+    jsonLd: orgSchema(),
+    jsonLdId: "about",
+  });
   return (
     <div className="page-enter">
       <div className="about-hero">
@@ -173,6 +184,14 @@ function AboutPage({ lang, setRoute }) {
 function DemetriosPage({ lang, setRoute }) {
   const t = i18n[lang].demetrios;
   const isBg = lang === "bg";
+  useSeo({
+    title: isBg ? "Деметриос Джеймс Елиас — историята на марката Demetrios" : "Demetrios James Elias — The Story of the Demetrios Brand",
+    description: isBg
+      ? "Деметриос Джеймс Елиас — гръцки моден дизайнер, основател на Demetrios Bridal през 1982 г. Колекциите Demetrios, Platinum, Destination и Cosmobella в Арети — официален представител в България."
+      : "Demetrios James Elias — Greek-American designer, founder of Demetrios Bridal in 1982. The Demetrios, Platinum, Destination and Cosmobella collections at Areti — official representative in Bulgaria.",
+    url: "/demetrios", lang,
+    keywords: "Demetrios James Elias, Деметриос дизайнер, Demetrios Bridal, Demetrios колекции, Cosmobella, Platinum",
+  });
   return (
     <div className="page-enter">
       {/* Hero */}
@@ -319,6 +338,17 @@ function DemetriosPage({ lang, setRoute }) {
 
 function ContactPage({ lang, setRoute }) {
   const t = i18n[lang].contact;
+  const isBg = lang === "bg";
+  useSeo({
+    title: isBg ? "Контакти — Арети сватбен салон София" : "Contact — Areti Bridal Salon Sofia",
+    description: isBg
+      ? "Контакти на сватбен салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време: вт-съб 11:00-19:00. Запазете час за безплатна проба."
+      : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours: Tue-Sat 11:00-19:00. Book a free fitting.",
+    url: "/contact", lang,
+    keywords: "Арети контакти, сватбен салон Лозенец, телефон булчински салон София, адрес Арети",
+    jsonLd: orgSchema(),
+    jsonLdId: "contact",
+  });
   return (
     <div className="page-enter">
       <div className="contact">
@@ -354,6 +384,14 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
   const isBg = lang === "bg";
   const posts = getActivePosts();
   const [featured, ...rest] = posts;
+  useSeo({
+    title: isBg ? "Дневник — статии за булчински рокли и сватбен стил" : "Journal — Wedding Dress & Style Articles",
+    description: isBg
+      ? "Дневникът на Арети — съвети за избор на булчинска рокля, силуети, материи, тенденции и истории зад марката Demetrios. Полезни статии за всяка булка."
+      : "The Areti journal — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
+    image: featured?.image, url: "/blog", lang,
+    keywords: "блог булчински рокли, съвети за булки, сватбен стил, тенденции 2026, Demetrios истории",
+  });
 
   return (
     <div className="page-enter">
@@ -410,6 +448,23 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost }) {
   const posts = getActivePosts();
   const post = posts.find(p => p.id === postId || String(p.id) === String(postId)) || posts[0];
   const others = posts.filter(p => p.id !== post.id).slice(0, 3);
+  useSeo({
+    title: post.seo_title || post.title,
+    description: post.seo_description || post.excerpt,
+    image: post.image, url: `/blog/${post.id}`, type: "article", lang,
+    keywords: `${post.title}, ${post.category}, блог Арети, булчински рокли`,
+    jsonLd: {
+      "@graph": [
+        articleSchema(post),
+        breadcrumbSchema([
+          { name: "Арети",     url: "/" },
+          { name: "Дневник",   url: "/blog" },
+          { name: post.title,  url: `/blog/${post.id}` },
+        ]),
+      ],
+    },
+    jsonLdId: `post-${post.id}`,
+  });
 
   return (
     <div className="page-enter">

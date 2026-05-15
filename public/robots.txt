@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Don't index admin or wishlist
+Disallow: /admin
+Disallow: /#admin
+Disallow: /wishlist
+
+# Sitemap
+Sitemap: https://areti.bg/sitemap.xml

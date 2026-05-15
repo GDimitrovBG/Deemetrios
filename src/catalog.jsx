@@ -4,6 +4,7 @@ import i18n from './i18n';
 import { IMG, DRESSES, ACCESSORIES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { DressCard } from './home';
+import { useSeo, productSchema, breadcrumbSchema } from './seo';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -109,6 +110,21 @@ function applyFiltersAndSort(list, filters, sortBy) {
 function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
+  const colData = initCollection ? COLLECTIONS.find(c => c.id === initCollection) : null;
+  useSeo({
+    title: colData
+      ? (isBg ? `Колекция ${colData.label} — Булчински рокли` : `${colData.label} Collection — Wedding Dresses`)
+      : (isBg ? "Колекции булчински рокли — Demetrios, Cosmobella, Platinum" : "Wedding Dress Collections"),
+    description: colData
+      ? (isBg ? colData.desc_bg : colData.desc_en)
+      : (isBg
+          ? "Разгледайте всички колекции булчински рокли в Арети — Demetrios, Cosmobella, Platinum и Destination Romance. Над 100 модела от световния лидер в булчинската мода."
+          : "Browse all wedding dress collections at Areti — Demetrios, Cosmobella, Platinum and Destination Romance."),
+    image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
+    url: initCollection ? `/collection/${initCollection}` : "/collection",
+    lang,
+    keywords: "колекции булчински рокли, Demetrios, Cosmobella, Platinum, Destination Romance, сватбени рокли София",
+  });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const [filters, setFilters] = useState({});
@@ -460,6 +476,30 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   const dress = DRESSES.find(d => d.ref === productRef) || DRESSES[0];
   const isFav = favorites.includes(dress.ref);
   const name = lang === "bg" ? dress.name_bg : dress.name_en;
+  const isBg = lang === "bg";
+  const productDescription = isBg ? (dress.description_bg || t.product.desc) : (dress.description_en || t.product.desc);
+  const colData = COLLECTIONS.find(c => c.id === dress.collection);
+
+  useSeo({
+    title: isBg ? (dress.seo_title_bg || `${name} — Булчинска рокля`) : (dress.seo_title_en || `${name} — Wedding Dress`),
+    description: isBg ? dress.seo_description_bg : dress.seo_description_en,
+    image: dress.imgs?.[0] || dress.img,
+    url: `/product/${dress.ref}`,
+    type: "product",
+    lang,
+    keywords: `булчинска рокля ${dress.ref}, ${dress.silhouette}, ${colData?.label || ''}, Demetrios, Арети София`,
+    jsonLd: {
+      "@graph": [
+        productSchema(dress, lang),
+        breadcrumbSchema([
+          { name: "Арети",                         url: "/" },
+          { name: isBg ? "Колекция" : "Collection", url: "/collection" },
+          { name,                                  url: `/product/${dress.ref}` },
+        ]),
+      ],
+    },
+    jsonLdId: `product-${dress.ref}`,
+  });
 
   const galleryImgs = dress.imgs && dress.imgs.length > 0 ? dress.imgs : [dress.img, IMG.detail1, IMG.detail2, IMG.detail2];
   const sizes = [34, 36, 38, 40, 42, 44, 46, 48];
@@ -491,7 +531,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <div className="ref">{t.product.ref}: {dress.ref}</div>
             <div className="price">{t.product.price_from} {dress.price.toLocaleString("bg-BG")} лв.</div>
             <div className="price-note">{t.product.price_note}</div>
-            <p className="desc">{t.product.desc}</p>
+            <p className="desc">{productDescription}</p>
             <dl>
               <div className="spec-row"><dt>{t.product.specs.fabric}</dt><dd>{t.product.specs.fabric_v}</dd></div>
               <div className="spec-row"><dt>{t.product.specs.silhouette}</dt><dd>{t.product.specs.silhouette_v}</dd></div>
@@ -574,6 +614,15 @@ function Lightbox({ imgs, idx, setIdx, label }) {
 }
 
 function AccessoriesPage({ lang, setRoute }) {
+  useSeo({
+    title: lang === "bg" ? "Аксесоари за булки — воали, диадеми, бижута" : "Bridal Accessories — Veils, Tiaras, Jewellery",
+    description: lang === "bg"
+      ? "Луксозни булчински аксесоари в Арети — воали, диадеми, обици, обувки и бижута. Внимателно подбрана селекция за финалния штрих на сватбената визия."
+      : "Luxury bridal accessories at Areti — veils, tiaras, earrings, shoes and jewellery. A curated selection for the final touch of your bridal look.",
+    url: "/accessories",
+    lang,
+    keywords: "булчински аксесоари, воали, диадеми, бижута за булки, обувки за сватба, Арети София",
+  });
   const t = i18n[lang];
   const [cat, setCat] = useState(t.accessories.categories[0]);
 
@@ -623,6 +672,11 @@ function AccessoriesPage({ lang, setRoute }) {
 }
 
 function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBooking }) {
+  useSeo({
+    title: lang === "bg" ? "Любими — моят списък булчински рокли" : "Wishlist — My Saved Wedding Dresses",
+    description: lang === "bg" ? "Вашите запазени модели булчински рокли в Арети." : "Your saved wedding dress styles at Areti.",
+    url: "/wishlist", lang, noindex: true,
+  });
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
   const favDresses = DRESSES.filter(d => favorites.includes(d.ref));

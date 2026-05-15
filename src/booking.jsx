@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef } from 'react';
 import i18n from './i18n';
 import { Img } from './components';
+import { useSeo } from './seo';
 
 // =====================================================
 //  BOOKING — 4-step reservation flow
@@ -327,6 +328,14 @@ function Confirmation({ t, data, setRoute }) {
 
 function BookingPage({ lang, setRoute, dress = null }) {
   const t = i18n[lang];
+  useSeo({
+    title: lang === "bg" ? "Запази час за проба — безплатна консултация в Арети" : "Book a Fitting — Free Consultation at Areti",
+    description: lang === "bg"
+      ? "Запазете безплатен час за проба на булчински рокли в Арети, София. Лична консултация с експерт, без обвързване. Изберете дата, час и тип консултация."
+      : "Book a free wedding dress fitting at Areti, Sofia. Personal consultation with an expert, no obligation. Choose date, time and consultation type.",
+    url: "/booking", lang,
+    keywords: "запази час булчинска рокля, проба сватбена рокля София, безплатна консултация Арети",
+  });
   const [step, setStep] = useState(0);
   const [data, setData] = useState({});
   const [done, setDone] = useState(false);

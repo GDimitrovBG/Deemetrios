@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import i18n from './i18n';
 import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
+import { useSeo, orgSchema, websiteSchema } from './seo';
 
 // =====================================================
 //  HOME — 3 hero variations + shared sections
@@ -308,6 +309,20 @@ function CtaBand({ t, setRoute }) {
 function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
+  useSeo({
+    title: lang === "bg"
+      ? "Арети — Bridal Couture · Официален представител на Demetrios в София"
+      : "Areti — Bridal Couture · Official Demetrios Representative in Sofia",
+    description: lang === "bg"
+      ? "Луксозни булчински рокли в София. Арети — официален представител на Demetrios от 1992 г. Колекциите Demetrios, Cosmobella, Platinum и Destination Romance. Запазете час за безплатна проба."
+      : "Luxury wedding dresses in Sofia. Areti — official Demetrios representative since 1992. Demetrios, Cosmobella, Platinum and Destination Romance collections. Book a free fitting.",
+    image: IMG.hero1,
+    url: "/",
+    lang,
+    keywords: "булчински рокли, сватбени рокли, Demetrios, София, Арети, bridal Sofia, wedding dresses Bulgaria",
+    jsonLd: { "@graph": [orgSchema(), websiteSchema()] },
+    jsonLdId: "home",
+  });
   return (
     <div className="page-enter">
       <Hero t={t} setRoute={setRoute} />
