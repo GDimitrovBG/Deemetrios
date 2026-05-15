@@ -216,6 +216,128 @@ function RichEditor({ label, value = '', onChange, placeholder = 'Въведи �
   );
 }
 
+// ─── Gallery (multi-image manager) ────────────────────────────────────────────
+function Gallery({ images = [], onChange }) {
+  const inputRef = useRef(null);
+  const [drag, setDrag] = useState(false);
+
+  const addFile = async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const url = await compressImage(file);
+    if (url) onChange([...images, url]);
+  };
+  const addUrl = (url) => { if (url) onChange([...images, url]); };
+  const removeAt = (i) => onChange(images.filter((_, k) => k !== i));
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= images.length) return;
+    const u = [...images]; [u[i], u[j]] = [u[j], u[i]]; onChange(u);
+  };
+
+  return (
+    <div className="adm-img-upload">
+      <div className="adm-label" style={{ marginBottom: 6 }}>
+        Галерия <span style={{ color: '#555' }}>({images.length})</span>
+      </div>
+
+      <div className="adm-gallery-grid">
+        {images.map((src, i) => (
+          <div key={i} className="adm-gallery-item">
+            <img src={src} alt={`#${i+1}`} />
+            <div className="adm-gallery-overlay">
+              <button type="button" className="adm-gallery-btn" onClick={() => move(i, -1)} disabled={i === 0} title="Премести наляво">‹</button>
+              <span className="adm-gallery-num">{i + 1}</span>
+              <button type="button" className="adm-gallery-btn" onClick={() => move(i, +1)} disabled={i === images.length - 1} title="Премести надясно">›</button>
+              <button type="button" className="adm-gallery-btn delete" onClick={() => removeAt(i)} title="Премахни">✕</button>
+            </div>
+            {i === 0 && <span className="adm-gallery-main">Основна</span>}
+          </div>
+        ))}
+
+        <div
+          className={`adm-gallery-item adm-gallery-add${drag ? ' drag' : ''}`}
+          onClick={() => inputRef.current.click()}
+          onDragOver={e => { e.preventDefault(); setDrag(true); }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={e => { e.preventDefault(); setDrag(false); addFile(e.dataTransfer.files[0]); }}
+        >
+          <div style={{ fontSize: 28, color: '#444', marginBottom: 4 }}>+</div>
+          <div style={{ fontSize: 11, color: '#666' }}>Добави снимка</div>
+          <input
+            ref={inputRef} type="file" accept="image/*" multiple
+            style={{ display: 'none' }}
+            onChange={e => { Array.from(e.target.files).forEach(addFile); e.target.value = ''; }}
+          />
+        </div>
+      </div>
+
+      <div className="adm-img-url-row">
+        <span className="adm-img-url-label">или URL:</span>
+        <input
+          className="adm-input" style={{ flex: 1, fontSize: 12, padding: '7px 10px' }}
+          placeholder="https://cdn.example.com/photo.jpg"
+          onKeyDown={e => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+              addUrl(e.target.value.trim()); e.target.value = '';
+            }
+          }}
+        />
+        <span style={{ fontSize: 10, color: '#444' }}>↵ за добавяне</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── ProductSelector (multi-select, used for related products) ────────────────
+function ProductSelector({ products = [], selected = [], onChange, label = "Свързани продукти" }) {
+  const [search, setSearch] = useState("");
+  const filtered = products.filter(p =>
+    !selected.includes(p.ref) &&
+    (p.name_bg.toLowerCase().includes(search.toLowerCase()) ||
+     p.ref.toLowerCase().includes(search.toLowerCase()))
+  ).slice(0, 8);
+  const selectedItems = selected.map(ref => products.find(p => p.ref === ref)).filter(Boolean);
+
+  return (
+    <div className="adm-img-upload">
+      <div className="adm-label" style={{ marginBottom: 6 }}>{label} <span style={{ color: '#555' }}>({selected.length})</span></div>
+
+      {/* Selected chips */}
+      {selectedItems.length > 0 && (
+        <div className="adm-chip-row">
+          {selectedItems.map(p => (
+            <span key={p.ref} className="adm-chip">
+              <img src={p.img} alt="" />
+              <span style={{ flex: 1 }}>{p.name_bg} <code style={{ color: '#888', fontSize: 10 }}>· {p.ref}</code></span>
+              <button type="button" onClick={() => onChange(selected.filter(r => r !== p.ref))}>✕</button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Search + suggestions */}
+      <input
+        className="adm-input" placeholder="Търси по реф. или име…"
+        value={search} onChange={e => setSearch(e.target.value)}
+        style={{ marginTop: selectedItems.length ? 8 : 0 }}
+      />
+      {search && filtered.length > 0 && (
+        <div className="adm-suggest-list">
+          {filtered.map(p => (
+            <div key={p.ref} className="adm-suggest-item" onClick={() => { onChange([...selected, p.ref]); setSearch(""); }}>
+              <img src={p.img} alt="" />
+              <div>
+                <strong style={{ color: '#f0e8d8', fontSize: 13 }}>{p.name_bg}</strong>
+                <div style={{ color: '#888', fontSize: 11 }}>Реф. {p.ref} · {COLLECTIONS.find(c=>c.id===p.collection)?.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Login ────────────────────────────────────────────────────────────────────
 function AdminLogin({ onLogin }) {
   const [pass, setPass] = useState(""); const [err, setErr] = useState(false);
@@ -424,80 +546,171 @@ function InquiriesSection({ inquiries, setInquiries }) {
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
-const EMPTY_PRODUCT = { ref:"", name_bg:"", name_en:"", collection:"cosmobella", silhouette:"А-силует", silhouette_en:"A-line", price:"", img:"", fabric:"", badge:"", description:"" };
+const EMPTY_PRODUCT = { ref:"", name_bg:"", name_en:"", collection:"cosmobella", silhouette:"А-силует", silhouette_en:"A-line", price:"", img:"", imgs:[], fabric:"", badge:"", description_bg:"", description_en:"", seo_title_bg:"", seo_description_bg:"" };
 
-function ProductForm({ product, onSave, onCancel }) {
-  const [form, setForm] = useState(product ? {...product, price: String(product.price)} : EMPTY_PRODUCT);
-  const set = (k,v) => setForm(f=>({...f,[k]:v}));
-  const canSave = form.ref && form.name_bg && form.price;
+// Full-page Product editor — replaces the old modal form
+function ProductEditPage({ product, onSave, onBack, isNew }) {
+  const [form, setForm] = useState(() => {
+    const base = product ? { ...product, price: String(product.price ?? 0) } : EMPTY_PRODUCT;
+    if (!base.imgs || !Array.isArray(base.imgs)) base.imgs = base.img ? [base.img] : [];
+    if (!base.imgs.length && base.img) base.imgs = [base.img];
+    return base;
+  });
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const canSave = form.ref && form.name_bg;
+
+  // Keep main img in sync with first gallery image
+  const setImgs = (imgs) => setForm(f => ({ ...f, imgs, img: imgs[0] || f.img }));
+
+  const handleSave = () => {
+    if (!canSave) return;
+    onSave({
+      ...form,
+      price: Number(form.price) || 0,
+      img: form.imgs?.[0] || form.img,
+    });
+  };
+
   return (
-    <div className="adm-form-overlay">
-      <div className="adm-form-box">
-        <h3 style={{color:"#f0e8d8",marginBottom:24}}>{product?"Редактирай продукт":"Нов продукт"}</h3>
-        <div className="adm-form-grid">
-          <AInput label="Реф. номер *" value={form.ref} onChange={v=>set("ref",v)} placeholder="8246"/>
-          <AInput label="Цена (лв.) *" value={form.price} onChange={v=>set("price",v)} type="number" placeholder="4200"/>
-          <AInput label="Наименование BG *" value={form.name_bg} onChange={v=>set("name_bg",v)} placeholder="Стил 8246"/>
-          <AInput label="Наименование EN" value={form.name_en} onChange={v=>set("name_en",v)} placeholder="Style 8246"/>
+    <div className="adm-section">
+      {/* Edit-page header bar */}
+      <div className="adm-edit-bar">
+        <button className="adm-btn" onClick={onBack}>← Назад</button>
+        <div style={{ flex: 1 }}>
+          <h2 className="adm-section-title" style={{ margin: 0 }}>
+            {isNew ? "Нов продукт" : `Редактиране: ${product?.name_bg || product?.ref}`}
+          </h2>
         </div>
-        <div className="adm-form-grid">
-          <div className="adm-field">
-            <label className="adm-label">Колекция</label>
-            <select className="adm-input" value={form.collection} onChange={e=>set("collection",e.target.value)}>
-              <option value="cosmobella">Cosmobella</option>
-              <option value="demetrios">Demetrios</option>
-              <option value="platinum">Demetrios Platinum</option>
-              <option value="destination">Destination Romance</option>
-            </select>
+        <button className="adm-btn-solid" disabled={!canSave} style={{ opacity: canSave ? 1 : 0.4 }} onClick={handleSave}>
+          {isNew ? "Публикувай" : "Запази промените"} →
+        </button>
+      </div>
+
+      <div className="adm-edit-grid">
+        {/* Left: main fields */}
+        <div className="adm-edit-main">
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Основни</h3>
+            <div className="adm-form-grid">
+              <AInput label="Реф. номер *" value={form.ref} onChange={v=>set("ref",v)} placeholder="8246" />
+              <AInput label="Цена (лв.)"   value={form.price} onChange={v=>set("price",v)} type="number" placeholder="4200" />
+              <AInput label="Наименование BG *" value={form.name_bg} onChange={v=>set("name_bg",v)} placeholder="Style 8246" />
+              <AInput label="Наименование EN"   value={form.name_en} onChange={v=>set("name_en",v)} placeholder="Style 8246" />
+            </div>
+            <div className="adm-form-grid">
+              <div className="adm-field">
+                <label className="adm-label">Колекция</label>
+                <select className="adm-input" value={form.collection} onChange={e=>set("collection",e.target.value)}>
+                  <option value="cosmobella">Cosmobella</option>
+                  <option value="demetrios">Demetrios</option>
+                  <option value="platinum">Demetrios Platinum</option>
+                  <option value="destination">Destination Romance</option>
+                </select>
+              </div>
+              <div className="adm-field">
+                <label className="adm-label">Силует (BG)</label>
+                <select className="adm-input" value={form.silhouette} onChange={e=>set("silhouette",e.target.value)}>
+                  <option>А-силует</option><option>Принцеса</option><option>Бална</option>
+                  <option>Сирена</option><option>Русалка</option><option>Прав</option>
+                </select>
+              </div>
+              <AInput label="Силует (EN)" value={form.silhouette_en} onChange={v=>set("silhouette_en",v)} placeholder="A-line" />
+              <div className="adm-field">
+                <label className="adm-label">Badge</label>
+                <select className="adm-input" value={form.badge||""} onChange={e=>set("badge",e.target.value)}>
+                  <option value="">—</option><option>New</option><option>Platinum</option><option>Couture</option>
+                </select>
+              </div>
+            </div>
+            <AInput label="Плат / Материал" value={form.fabric} onChange={v=>set("fabric",v)} placeholder="Дантела, тюл" />
           </div>
-          <div className="adm-field">
-            <label className="adm-label">Силует (BG)</label>
-            <select className="adm-input" value={form.silhouette} onChange={e=>set("silhouette",e.target.value)}>
-              <option>А-силует</option><option>Бална</option><option>Сирена</option><option>Прав</option>
-            </select>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Галерия</h3>
+            <Gallery images={form.imgs || []} onChange={setImgs} />
           </div>
-          <AInput label="Силует (EN)" value={form.silhouette_en} onChange={v=>set("silhouette_en",v)} placeholder="A-line"/>
-          <div className="adm-field">
-            <label className="adm-label">Badge</label>
-            <select className="adm-input" value={form.badge||""} onChange={e=>set("badge",e.target.value)}>
-              <option value="">—</option><option>New</option><option>Platinum</option><option>Couture</option>
-            </select>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Описание</h3>
+            <RichEditor
+              label="Описание (BG)"
+              value={form.description_bg || form.description || ""}
+              onChange={v=>set("description_bg",v)}
+              placeholder="Подробно описание на роклята…"
+              minH={160}
+            />
+            <RichEditor
+              label="Description (EN)"
+              value={form.description_en || ""}
+              onChange={v=>set("description_en",v)}
+              placeholder="Detailed description in English…"
+              minH={140}
+            />
           </div>
         </div>
-        <AInput label="Плат / Материал" value={form.fabric} onChange={v=>set("fabric",v)} placeholder="Дантела, тюл"/>
-        <ImageUpload label="Снимка на продукта" value={form.img} onChange={v=>set("img",v)} />
-        <RichEditor
-          label="Описание"
-          value={form.description || ""}
-          onChange={v=>set("description",v)}
-          placeholder="Кратко описание на роклята…"
-          minH={140}
-        />
-        <div className="adm-form-actions">
-          <button className="adm-btn" onClick={onCancel}>Отказ</button>
-          <button className="adm-btn-solid" disabled={!canSave} style={{opacity:canSave?1:0.4}}
-            onClick={()=>canSave&&onSave({...form,price:Number(form.price)})}>
-            {product?"Запази промените":"Добави продукт"} →
-          </button>
-        </div>
+
+        {/* Right: SEO sidebar */}
+        <aside className="adm-edit-aside">
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">SEO</h3>
+            <AInput
+              label="SEO заглавие (BG)"
+              value={form.seo_title_bg || ""}
+              onChange={v=>set("seo_title_bg",v)}
+              placeholder={`Булчинска рокля ${form.ref || '8246'} — ${form.silhouette}`}
+            />
+            <ATextarea
+              label="SEO описание (BG · max 160 знака)"
+              value={form.seo_description_bg || ""}
+              onChange={v=>set("seo_description_bg",v.slice(0,160))}
+              rows={3}
+              placeholder="Кратко описание за Google резултати…"
+            />
+            <div style={{ fontSize: 10, color: '#555', textAlign: 'right' }}>
+              {(form.seo_description_bg||"").length}/160
+            </div>
+            <hr style={{ border: 0, borderTop: '1px solid #2a2620', margin: '16px 0' }} />
+            <AInput
+              label="SEO Title (EN)"
+              value={form.seo_title_en || ""}
+              onChange={v=>set("seo_title_en",v)}
+              placeholder={`Wedding Dress ${form.ref || '8246'}`}
+            />
+            <ATextarea
+              label="Meta description (EN · max 160)"
+              value={form.seo_description_en || ""}
+              onChange={v=>set("seo_description_en",v.slice(0,160))}
+              rows={3}
+            />
+          </div>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Преглед в Google</h3>
+            <div className="adm-google-preview">
+              <div className="g-url">areti.bg › product › {form.ref || '—'}</div>
+              <div className="g-title">{form.seo_title_bg || `Булчинска рокля ${form.ref} — ${form.silhouette} | Арети София`}</div>
+              <div className="g-desc">{form.seo_description_bg || `Булчинска рокля Style ${form.ref || '—'} от колекция ${form.collection} — ${form.silhouette?.toLowerCase()} силует. Запазете час за безплатна проба в Арети.`}</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* Sticky bottom save bar */}
+      <div className="adm-edit-footbar">
+        <button className="adm-btn" onClick={onBack}>Отказ</button>
+        <button className="adm-btn-solid" disabled={!canSave} style={{ opacity: canSave ? 1 : 0.4 }} onClick={handleSave}>
+          {isNew ? "Публикувай" : "Запази"} →
+        </button>
       </div>
     </div>
   );
 }
 
-function ProductsSection({ products, setProducts }) {
-  const [editing, setEditing] = useState(null);
+function ProductsSection({ products, setProducts, onEdit, onNew }) {
   const [search, setSearch] = useState("");
   const filtered = products.filter(p =>
     p.name_bg.toLowerCase().includes(search.toLowerCase()) || p.ref.toLowerCase().includes(search.toLowerCase())
   );
-  const saveProduct = (form) => {
-    const isExisting = editing && editing !== "new" && products.some(p=>p.ref===editing.ref);
-    const u = isExisting
-      ? products.map(p=>p.ref===editing.ref?form:p)
-      : (products.some(p=>p.ref===form.ref) ? products.map(p=>p.ref===form.ref?form:p) : [...products, form]);
-    setProducts(u); LS.set("areti_products",u); setEditing(null);
-  };
   const del = (ref) => {
     if (!confirm(`Изтрий Реф. ${ref}?`)) return;
     const u = products.filter(p=>p.ref!==ref); setProducts(u); LS.set("areti_products",u);
@@ -508,13 +721,12 @@ function ProductsSection({ products, setProducts }) {
   };
   return (
     <div className="adm-section">
-      {editing!==null&&<ProductForm product={editing==="new"?null:editing} onSave={saveProduct} onCancel={()=>setEditing(null)}/>}
       <div className="adm-section-header" style={{flexWrap:"wrap",gap:12}}>
         <h2 className="adm-section-title" style={{margin:0}}>Продукти <span className="adm-count">{products.length}</span></h2>
         <input className="adm-input adm-search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Търси реф. или наименование…"/>
         <div style={{display:"flex",gap:8,marginLeft:"auto"}}>
           <button className="adm-btn" onClick={reset} title="Нулирай до оригинала">↺ Нулирай</button>
-          <button className="adm-btn-solid" onClick={()=>setEditing("new")}>+ Нов продукт</button>
+          <button className="adm-btn-solid" onClick={onNew}>+ Нов продукт</button>
         </div>
       </div>
       <div className="adm-table-wrap">
@@ -522,7 +734,7 @@ function ProductsSection({ products, setProducts }) {
           <thead><tr><th>Снимка</th><th>Реф.</th><th>Наименование</th><th>Колекция</th><th>Силует</th><th>Цена</th><th>Badge</th><th></th></tr></thead>
           <tbody>
             {filtered.map(p=>(
-              <tr key={p.ref}>
+              <tr key={p.ref} style={{ cursor:'pointer' }} onClick={()=>onEdit(p)}>
                 <td><img src={p.img} alt={p.name_bg} style={{width:40,height:56,objectFit:"cover",borderRadius:4}}/></td>
                 <td><code style={{color:"#c4a373",fontSize:12}}>{p.ref}</code></td>
                 <td><strong style={{color:"#f0e8d8"}}>{p.name_bg}</strong><br/><small style={{color:"#666"}}>{p.name_en}</small></td>
@@ -530,9 +742,9 @@ function ProductsSection({ products, setProducts }) {
                 <td style={{color:"#aaa",fontSize:13}}>{p.silhouette}</td>
                 <td style={{color:"#c4a373"}}>{Number(p.price).toLocaleString("bg-BG")} лв.</td>
                 <td>{p.badge?<span className="adm-pill" style={{background:"#c4a37322",color:"#c4a373"}}>{p.badge}</span>:<span style={{color:"#444"}}>—</span>}</td>
-                <td>
+                <td onClick={e=>e.stopPropagation()}>
                   <div style={{display:"flex",gap:6}}>
-                    <button className="adm-btn" style={{padding:"4px 10px",fontSize:11}} onClick={()=>setEditing(p)}>Редактирай</button>
+                    <button className="adm-btn" style={{padding:"4px 10px",fontSize:11}} onClick={()=>onEdit(p)}>Редактирай</button>
                     <button className="adm-delete" onClick={()=>del(p.ref)}>✕</button>
                   </div>
                 </td>
@@ -546,53 +758,127 @@ function ProductsSection({ products, setProducts }) {
 }
 
 // ─── Articles ─────────────────────────────────────────────────────────────────
-const EMPTY_ARTICLE = { id:null, title_bg:"", title_en:"", excerpt_bg:"", excerpt_en:"", content:"", img:"", date:new Date().toISOString().slice(0,10), visible:true };
+const EMPTY_ARTICLE = { id:null, title_bg:"", title_en:"", excerpt_bg:"", excerpt_en:"", content:"", img:"", date:new Date().toISOString().slice(0,10), visible:true, category:"Блог", relatedRefs:[], seo_title:"", seo_description:"" };
 
-function ArticleForm({ article, onSave, onCancel }) {
-  const [form, setForm] = useState(article||EMPTY_ARTICLE);
-  const set = (k,v) => setForm(f=>({...f,[k]:v}));
+// Full-page Article editor
+function ArticleEditPage({ article, allProducts, onSave, onBack, isNew }) {
+  const [form, setForm] = useState(() => {
+    const base = article ? { ...article } : { ...EMPTY_ARTICLE };
+    if (!base.relatedRefs) base.relatedRefs = [];
+    return base;
+  });
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const canSave = form.title_bg;
+
+  const handleSave = () => {
+    if (!canSave) return;
+    onSave({ ...form, id: form.id || uid() });
+  };
+
   return (
-    <div className="adm-form-overlay">
-      <div className="adm-form-box">
-        <h3 style={{color:"#f0e8d8",marginBottom:24}}>{article?"Редактирай статия":"Нова статия"}</h3>
-        <div className="adm-form-grid">
-          <AInput label="Заглавие (BG) *" value={form.title_bg} onChange={v=>set("title_bg",v)}/>
-          <AInput label="Заглавие (EN)" value={form.title_en} onChange={v=>set("title_en",v)}/>
+    <div className="adm-section">
+      <div className="adm-edit-bar">
+        <button className="adm-btn" onClick={onBack}>← Назад</button>
+        <div style={{ flex: 1 }}>
+          <h2 className="adm-section-title" style={{ margin: 0 }}>
+            {isNew ? "Нова статия" : `Редактиране: ${article?.title_bg || ''}`}
+          </h2>
         </div>
-        <ATextarea label="Резюме (BG)" value={form.excerpt_bg} onChange={v=>set("excerpt_bg",v)} rows={3}/>
-        <ATextarea label="Резюме (EN)" value={form.excerpt_en} onChange={v=>set("excerpt_en",v)} rows={2}/>
-        <AInput label="Дата" value={form.date} onChange={v=>set("date",v)} type="date"/>
-        <ImageUpload label="Заглавна снимка" value={form.img} onChange={v=>set("img",v)} />
-        <RichEditor
-          label="Съдържание на статията"
-          value={form.content || ""}
-          onChange={v=>set("content",v)}
-          placeholder="Напиши или постави съдържанието на статията…"
-          minH={280}
-        />
-        <label className="adm-toggle-row" style={{marginTop:16}}>
-          <input type="checkbox" checked={form.visible} onChange={e=>set("visible",e.target.checked)}/>
-          <span style={{color:"#ccc",fontSize:14}}>Публикувана</span>
+        <label className="adm-toggle-row" style={{ marginRight: 12 }}>
+          <input type="checkbox" checked={form.visible !== false} onChange={e=>set("visible",e.target.checked)} />
+          <span style={{ color: '#ccc', fontSize: 13 }}>Публикувана</span>
         </label>
-        <div className="adm-form-actions">
-          <button className="adm-btn" onClick={onCancel}>Отказ</button>
-          <button className="adm-btn-solid" disabled={!canSave} style={{opacity:canSave?1:0.4}}
-            onClick={()=>canSave&&onSave({...form,id:form.id||uid()})}>
-            {article?"Запази промените":"Публикувай"} →
-          </button>
+        <button className="adm-btn-solid" disabled={!canSave} style={{ opacity: canSave ? 1 : 0.4 }} onClick={handleSave}>
+          {isNew ? "Публикувай" : "Запази"} →
+        </button>
+      </div>
+
+      <div className="adm-edit-grid">
+        <div className="adm-edit-main">
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Основни</h3>
+            <AInput label="Заглавие (BG) *" value={form.title_bg} onChange={v=>set("title_bg",v)} placeholder="Заглавие на статията…" />
+            <AInput label="Заглавие (EN)"   value={form.title_en} onChange={v=>set("title_en",v)} />
+            <div className="adm-form-grid">
+              <AInput label="Дата" value={form.date} onChange={v=>set("date",v)} type="date" />
+              <AInput label="Категория" value={form.category||""} onChange={v=>set("category",v)} placeholder="Булчински рокли" />
+            </div>
+            <ATextarea label="Резюме (BG)" value={form.excerpt_bg} onChange={v=>set("excerpt_bg",v)} rows={3} placeholder="Кратко резюме…" />
+          </div>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Заглавна снимка</h3>
+            <ImageUpload label="" value={form.img} onChange={v=>set("img",v)} />
+          </div>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Съдържание</h3>
+            <RichEditor
+              label=""
+              value={form.content || ""}
+              onChange={v=>set("content",v)}
+              placeholder="Напиши съдържанието на статията…"
+              minH={400}
+            />
+          </div>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Свързани продукти</h3>
+            <p style={{ color: '#888', fontSize: 12, marginTop: 0, marginBottom: 12 }}>
+              Тези рокли ще се показват в края на статията. Кликни на търсачката и избери модели.
+            </p>
+            <ProductSelector
+              products={allProducts}
+              selected={form.relatedRefs || []}
+              onChange={refs => set("relatedRefs", refs)}
+              label=""
+            />
+          </div>
         </div>
+
+        <aside className="adm-edit-aside">
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">SEO</h3>
+            <AInput
+              label="SEO заглавие"
+              value={form.seo_title || ""}
+              onChange={v=>set("seo_title",v)}
+              placeholder={form.title_bg || "Заглавието по подразбиране"}
+            />
+            <ATextarea
+              label="SEO описание (max 160)"
+              value={form.seo_description || ""}
+              onChange={v=>set("seo_description",v.slice(0,160))}
+              rows={3}
+              placeholder={form.excerpt_bg || "Резюмето по подразбиране"}
+            />
+            <div style={{ fontSize: 10, color: '#555', textAlign: 'right' }}>
+              {(form.seo_description||"").length}/160
+            </div>
+          </div>
+
+          <div className="adm-card-block">
+            <h3 className="adm-subtitle">Преглед в Google</h3>
+            <div className="adm-google-preview">
+              <div className="g-url">areti.bg › blog › {form.id || '—'}</div>
+              <div className="g-title">{form.seo_title || form.title_bg || '—'}</div>
+              <div className="g-desc">{form.seo_description || form.excerpt_bg || '—'}</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div className="adm-edit-footbar">
+        <button className="adm-btn" onClick={onBack}>Отказ</button>
+        <button className="adm-btn-solid" disabled={!canSave} style={{ opacity: canSave ? 1 : 0.4 }} onClick={handleSave}>
+          {isNew ? "Публикувай" : "Запази"} →
+        </button>
       </div>
     </div>
   );
 }
 
-function ArticlesSection({ articles, setArticles }) {
-  const [editing, setEditing] = useState(null);
-  const save = (form) => {
-    const u = articles.some(a=>a.id===form.id) ? articles.map(a=>a.id===form.id?form:a) : [...articles,form];
-    setArticles(u); LS.set("areti_articles",u); setEditing(null);
-  };
+function ArticlesSection({ articles, setArticles, onEdit, onNew }) {
   const del = (id) => {
     if (!confirm("Изтрий статията?")) return;
     const u = articles.filter(a=>a.id!==id); setArticles(u); LS.set("areti_articles",u);
@@ -603,25 +889,25 @@ function ArticlesSection({ articles, setArticles }) {
       id: String(p.id), title_bg: p.title, title_en: "",
       excerpt_bg: p.excerpt, excerpt_en: "", content: p.content,
       img: p.image, date: p.isoDate, category: p.category, visible: true,
+      relatedRefs: [], seo_title: "", seo_description: "",
     }));
     setArticles(seeded); LS.set("areti_articles", seeded);
   };
   const sorted = [...articles].sort((a,b)=>new Date(b.date)-new Date(a.date));
   return (
     <div className="adm-section">
-      {editing!==null&&<ArticleForm article={editing==="new"?null:editing} onSave={save} onCancel={()=>setEditing(null)}/>}
       <div className="adm-section-header">
         <h2 className="adm-section-title" style={{margin:0}}>Статии <span className="adm-count">{articles.length}</span></h2>
         <div style={{display:"flex",gap:8}}>
           <button className="adm-btn" onClick={reset} title="Нулирай до импортираните">↺ Нулирай</button>
-          <button className="adm-btn-solid" onClick={()=>setEditing("new")}>+ Нова статия</button>
+          <button className="adm-btn-solid" onClick={onNew}>+ Нова статия</button>
         </div>
       </div>
       {sorted.length===0
         ? <p className="adm-empty">Все още няма статии.</p>
         : <div className="adm-article-list">
             {sorted.map(a=>(
-              <div key={a.id} className="adm-article-row">
+              <div key={a.id} className="adm-article-row" style={{cursor:'pointer'}} onClick={()=>onEdit(a)}>
                 {a.img&&<img src={a.img} alt={a.title_bg} style={{width:80,height:60,objectFit:"cover",borderRadius:6,flexShrink:0}}/>}
                 <div style={{flex:1,minWidth:0}}>
                   <strong style={{color:a.visible?"#f0e8d8":"#666"}}>{a.title_bg}</strong>
@@ -630,8 +916,8 @@ function ArticlesSection({ articles, setArticles }) {
                   {a.excerpt_bg&&<p style={{fontSize:13,color:"#777",marginTop:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.excerpt_bg}</p>}
                 </div>
                 <div style={{color:"#555",fontSize:12,flexShrink:0}}>{a.date}</div>
-                <div style={{display:"flex",gap:6,flexShrink:0}}>
-                  <button className="adm-btn" style={{padding:"4px 10px",fontSize:11}} onClick={()=>setEditing(a)}>Редактирай</button>
+                <div style={{display:"flex",gap:6,flexShrink:0}} onClick={e=>e.stopPropagation()}>
+                  <button className="adm-btn" style={{padding:"4px 10px",fontSize:11}} onClick={()=>onEdit(a)}>Редактирай</button>
                   <button className="adm-delete" onClick={()=>del(a.id)}>✕</button>
                 </div>
               </div>
@@ -729,9 +1015,37 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
     return seeded;
   });
   const [mobileNav, setMobileNav] = useState(false);
+  // Edit page state — null when listing, an item or "new" when editing
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingArticle, setEditingArticle] = useState(null);
 
   const login  = () => { LS.set("areti_admin_auth",true);  setAuthed(true); };
   const logout = () => { LS.set("areti_admin_auth",false); setAuthed(false); appSetRoute("home"); };
+
+  // ── Product edit handlers ──
+  const goEditProduct = (p) => { setEditingProduct(p); setSection("product-edit"); window.scrollTo(0, 0); };
+  const goNewProduct  = ()  => { setEditingProduct("new"); setSection("product-edit"); window.scrollTo(0, 0); };
+  const saveProduct = (form) => {
+    const editingRef = editingProduct && editingProduct !== "new" ? editingProduct.ref : null;
+    const u = editingRef && products.some(p => p.ref === editingRef)
+      ? products.map(p => p.ref === editingRef ? form : p)
+      : (products.some(p => p.ref === form.ref)
+          ? products.map(p => p.ref === form.ref ? form : p)
+          : [...products, form]);
+    setProducts(u); LS.set("areti_products", u);
+    setEditingProduct(null); setSection("products");
+  };
+
+  // ── Article edit handlers ──
+  const goEditArticle = (a) => { setEditingArticle(a); setSection("article-edit"); window.scrollTo(0, 0); };
+  const goNewArticle  = ()  => { setEditingArticle("new"); setSection("article-edit"); window.scrollTo(0, 0); };
+  const saveArticle = (form) => {
+    const u = articles.some(a => a.id === form.id)
+      ? articles.map(a => a.id === form.id ? form : a)
+      : [...articles, form];
+    setArticles(u); LS.set("areti_articles", u);
+    setEditingArticle(null); setSection("articles");
+  };
 
   useEffect(() => {
     const tick = () => { setBookings(LS.get("areti_bookings",[])); setInquiries(LS.get("areti_inquiries",[])); };
@@ -769,13 +1083,19 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
           </div>
         </div>
         <nav className="adm-nav">
-          {NAV.map(n=>(
-            <button key={n.id} className={`adm-nav-btn ${section===n.id?"active":""}`} onClick={()=>go(n.id)}>
-              <span className="adm-nav-icon">{n.icon}</span>
-              <span>{n.label}</span>
-              {n.badge>0&&<span className="adm-nav-badge">{n.badge}</span>}
-            </button>
-          ))}
+          {NAV.map(n=>{
+            // Highlight parent nav item when on its edit page
+            const isActive = section === n.id ||
+              (n.id === "products" && section === "product-edit") ||
+              (n.id === "articles" && section === "article-edit");
+            return (
+              <button key={n.id} className={`adm-nav-btn ${isActive?"active":""}`} onClick={()=>go(n.id)}>
+                <span className="adm-nav-icon">{n.icon}</span>
+                <span>{n.label}</span>
+                {n.badge>0&&<span className="adm-nav-badge">{n.badge}</span>}
+              </button>
+            );
+          })}
         </nav>
         <button className="adm-back" onClick={()=>appSetRoute("home")}>← Към сайта</button>
       </aside>
@@ -786,8 +1106,25 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
         {section==="dashboard"  && <Dashboard bookings={bookings} inquiries={inquiries} products={products} articles={articles}/>}
         {section==="bookings"   && <BookingsSection bookings={bookings} setBookings={setBookings}/>}
         {section==="inquiries"  && <InquiriesSection inquiries={inquiries} setInquiries={setInquiries}/>}
-        {section==="products"   && <ProductsSection products={products} setProducts={setProducts}/>}
-        {section==="articles"   && <ArticlesSection articles={articles} setArticles={setArticles}/>}
+        {section==="products"   && <ProductsSection products={products} setProducts={setProducts} onEdit={goEditProduct} onNew={goNewProduct}/>}
+        {section==="product-edit" && (
+          <ProductEditPage
+            product={editingProduct === "new" ? null : editingProduct}
+            isNew={editingProduct === "new"}
+            onSave={saveProduct}
+            onBack={() => { setEditingProduct(null); setSection("products"); }}
+          />
+        )}
+        {section==="articles"   && <ArticlesSection articles={articles} setArticles={setArticles} onEdit={goEditArticle} onNew={goNewArticle}/>}
+        {section==="article-edit" && (
+          <ArticleEditPage
+            article={editingArticle === "new" ? null : editingArticle}
+            isNew={editingArticle === "new"}
+            allProducts={products}
+            onSave={saveArticle}
+            onBack={() => { setEditingArticle(null); setSection("articles"); }}
+          />
+        )}
         {section==="settings"   && <SettingsSection onLogout={logout}/>}
       </main>
     </div>

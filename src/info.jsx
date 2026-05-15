@@ -1,5 +1,5 @@
 import i18n from './i18n';
-import { IMG } from './data';
+import { IMG, DRESSES } from './data';
 import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
 import { useSeo, orgSchema, articleSchema, breadcrumbSchema } from './seo';
@@ -22,6 +22,9 @@ function getActivePosts() {
         image:   a.img || '',
         excerpt: a.excerpt_bg || a.excerpt || '',
         content: a.content || '',
+        relatedRefs: a.relatedRefs || [],
+        seo_title: a.seo_title || '',
+        seo_description: a.seo_description || '',
       }));
   } catch {
     return BLOG_POSTS;
@@ -443,11 +446,15 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
   );
 }
 
-function BlogPostPage({ lang, setRoute, postId, goBlogPost }) {
+function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking }) {
   const isBg = lang === "bg";
   const posts = getActivePosts();
   const post = posts.find(p => p.id === postId || String(p.id) === String(postId)) || posts[0];
   const others = posts.filter(p => p.id !== post.id).slice(0, 3);
+  // Resolve related products by ref
+  const relatedProducts = (post.relatedRefs || [])
+    .map(ref => DRESSES.find(d => d.ref === ref))
+    .filter(Boolean);
   useSeo({
     title: post.seo_title || post.title,
     description: post.seo_description || post.excerpt,
@@ -505,6 +512,42 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost }) {
           </button>
         </div>
       </div>
+
+      {/* Related products */}
+      {relatedProducts.length > 0 && (
+        <div style={{ background: "var(--bg-deep)", padding: "var(--s-9) var(--gutter)" }}>
+          <div style={{ maxWidth: "var(--maxw)", margin: "0 auto" }}>
+            <div className="sec-head" style={{ marginBottom: 40 }}>
+              <div className="left">— {isBg ? "Споменати в статията" : "Featured in this article"}</div>
+              <h2 style={{ fontSize: "clamp(28px, 3vw, 44px)" }}>
+                {isBg ? "Свързани" : "Related"} <em>{isBg ? "рокли" : "gowns"}</em>
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 18 }}>
+              {relatedProducts.map(p => (
+                <article
+                  key={p.ref}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => goProduct && goProduct(p.ref)}
+                >
+                  <img src={p.imgs?.[0] || p.img} alt={p.name_bg} loading="lazy" decoding="async"
+                       style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", display: "block", marginBottom: 12 }} />
+                  <div style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--champagne-deep)", marginBottom: 4 }}>
+                    {p.silhouette}
+                  </div>
+                  <h3 style={{ fontFamily: "var(--f-serif)", fontSize: 18, fontWeight: 400, marginBottom: 4 }}>{p.name_bg}</h3>
+                  <div style={{ fontSize: 12, color: "var(--ink-mute)" }}>Реф. {p.ref}</div>
+                </article>
+              ))}
+            </div>
+            <div style={{ textAlign: "center", marginTop: 32 }}>
+              <button className="btn" onClick={() => setRoute("booking")}>
+                {isBg ? "Запази проба →" : "Book a fitting →"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Related posts */}
       {others.length > 0 && (

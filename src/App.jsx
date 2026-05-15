@@ -107,7 +107,7 @@ export default function App() {
     case "demetrios": page = <DemetriosPage lang={lang} setRoute={setRoute} />; break;
     case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
     case "blog": page = <BlogPage lang={lang} setRoute={setRoute} goBlogPost={goBlogPost} />; break;
-    case "blog-post": page = <BlogPostPage lang={lang} setRoute={setRoute} postId={activeBlogPost} goBlogPost={goBlogPost} />; break;
+    case "blog-post": page = <BlogPostPage lang={lang} setRoute={setRoute} postId={activeBlogPost} goBlogPost={goBlogPost} goProduct={goProduct} goBooking={goBooking} />; break;
     case "admin": page = null; break;
     default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
   }
