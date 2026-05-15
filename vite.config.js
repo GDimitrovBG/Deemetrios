@@ -11,6 +11,8 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom'],
           // Admin panel — only loaded when #admin is accessed
           'admin': ['./src/admin.jsx'],
+          // Blog data — shared between main bundle and admin, own chunk
+          'blog-data': ['./src/blog_data.js'],
         },
       },
     },

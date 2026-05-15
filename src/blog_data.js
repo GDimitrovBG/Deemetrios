@@ -4,6 +4,7 @@ export const BLOG_POSTS = [
   {
     id: 25957256,
     title: `Булчинска рокля – момент, не просто покупка`,
+    isoDate: `2026-03-06`,
     date: `6 Март 2026`,
     category: `Булчински рокли`,
     image: `https://demetriosbride-bg.com/wp-content/uploads/2025/11/Магазини-за-бални-и-абитуриентски-рокли-София-DP523_4-2.jpeg`,
@@ -67,6 +68,7 @@ https://demetriosbride-bg.com/blog/
   {
     id: 25957241,
     title: `Булчинска визия: стил, силует и усещане`,
+    isoDate: `2026-03-02`,
     date: `2 Март 2026`,
     category: `Булчински рокли`,
     image: `https://demetriosbride-bg.com/wp-content/uploads/2026/01/1520_4-scaled.jpg`,
@@ -119,6 +121,7 @@ https://demetriosbride-bg.com/blog/
   {
     id: 25957251,
     title: `Сватбеният ден е цялостно преживяване`,
+    isoDate: `2026-02-27`,
     date: `27 Февруари 2026`,
     category: `Булчински рокли`,
     image: `https://demetriosbride-bg.com/wp-content/uploads/2026/01/1521_4-scaled.jpg`,
@@ -194,6 +197,7 @@ https://demetriosbride-bg.com/cosmobella/
   {
     id: 25957246,
     title: `Бална рокля според фигурата`,
+    isoDate: `2026-02-13`,
     date: `13 Февруари 2026`,
     category: `Стил`,
     image: `https://demetriosbride-bg.com/wp-content/uploads/2025/11/Булчински-рокли-Demetrios-DR436-1.jpeg`,
@@ -256,6 +260,7 @@ https://demetriosbride-bg.com/vecherni-rokli/`,
   {
     id: 15393,
     title: `Намери своята рокля в Арети`,
+    isoDate: `2026-01-31`,
     date: `31 Януари 2026`,
     category: `Булчински рокли`,
     image: `https://demetriosbride-bg.com/wp-content/uploads/2026/01/1502_4-scaled.jpg`,
@@ -314,6 +319,7 @@ https://demetriosbride-bg.com/vecherni-rokli/`,
   {
     id: 14561,
     title: `Кой е Demetrios?`,
+    isoDate: `2025-10-03`,
     date: `3 Октомври 2025`,
     category: `Марка`,
     image: `https://demetriosbride-bg.com/wp-content/uploads/2025/10/demetrios-dzhejms-elias-.jpg`,

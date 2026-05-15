@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DRESSES, COLLECTIONS } from './data';
+import { BLOG_POSTS } from './blog_data';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const LS = {
@@ -429,13 +430,25 @@ function ArticlesSection({ articles, setArticles }) {
     if (!confirm("Изтрий статията?")) return;
     const u = articles.filter(a=>a.id!==id); setArticles(u); LS.set("areti_articles",u);
   };
+  const reset = () => {
+    if (!confirm("Нулирай до импортираните статии от WordPress?")) return;
+    const seeded = BLOG_POSTS.map(p => ({
+      id: String(p.id), title_bg: p.title, title_en: "",
+      excerpt_bg: p.excerpt, excerpt_en: "", img: p.image,
+      date: p.isoDate, category: p.category, visible: true,
+    }));
+    setArticles(seeded); LS.set("areti_articles", seeded);
+  };
   const sorted = [...articles].sort((a,b)=>new Date(b.date)-new Date(a.date));
   return (
     <div className="adm-section">
       {editing!==null&&<ArticleForm article={editing==="new"?null:editing} onSave={save} onCancel={()=>setEditing(null)}/>}
       <div className="adm-section-header">
         <h2 className="adm-section-title" style={{margin:0}}>Статии <span className="adm-count">{articles.length}</span></h2>
-        <button className="adm-btn-solid" onClick={()=>setEditing("new")}>+ Нова статия</button>
+        <div style={{display:"flex",gap:8}}>
+          <button className="adm-btn" onClick={reset} title="Нулирай до импортираните">↺ Нулирай</button>
+          <button className="adm-btn-solid" onClick={()=>setEditing("new")}>+ Нова статия</button>
+        </div>
       </div>
       {sorted.length===0
         ? <p className="adm-empty">Все още няма статии.</p>
@@ -529,7 +542,24 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
   const [bookings, setBookings]   = useState(()=>LS.get("areti_bookings",[]));
   const [inquiries, setInquiries] = useState(()=>LS.get("areti_inquiries",[]));
   const [products, setProducts]   = useState(()=>LS.get("areti_products",null)||DRESSES);
-  const [articles, setArticles]   = useState(()=>LS.get("areti_articles",[]));
+  const [articles, setArticles]   = useState(() => {
+    const stored = LS.get("areti_articles", null);
+    if (stored && stored.length > 0) return stored;
+    // Seed from imported WordPress posts on first load
+    const seeded = BLOG_POSTS.map(p => ({
+      id:         String(p.id),
+      title_bg:   p.title,
+      title_en:   "",
+      excerpt_bg: p.excerpt,
+      excerpt_en: "",
+      img:        p.image,
+      date:       p.isoDate,
+      category:   p.category,
+      visible:    true,
+    }));
+    LS.set("areti_articles", seeded);
+    return seeded;
+  });
   const [mobileNav, setMobileNav] = useState(false);
 
   const login  = () => { LS.set("areti_admin_auth",true);  setAuthed(true); };
