@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "seed:full": "node seed-full.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

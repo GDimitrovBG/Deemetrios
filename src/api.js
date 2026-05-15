@@ -17,7 +17,12 @@ async function request(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...opts.headers };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${BASE}${path}`, { ...opts, headers });
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, { ...opts, headers });
+  } catch {
+    throw new Error('Сървърът не е достъпен');
+  }
 
   if (res.status === 401) {
     setToken(null);
@@ -25,7 +30,12 @@ async function request(path, opts = {}) {
     throw new Error('Сесията е изтекла');
   }
 
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`HTTP ${res.status} — невалиден отговор`);
+  }
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
 }

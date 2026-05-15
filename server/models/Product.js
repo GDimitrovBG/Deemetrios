@@ -18,6 +18,6 @@ const productSchema = new mongoose.Schema({
   seo_description_bg: { type: String, default: '' },
   seo_title_en:       { type: String, default: '' },
   seo_description_en: { type: String, default: '' },
-}, { timestamps: true });
+}, { timestamps: true, suppressReservedKeysWarning: true });
 
 export default mongoose.model('Product', productSchema);
