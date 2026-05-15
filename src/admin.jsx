@@ -959,6 +959,61 @@ function SettingsSection({ user, onLogout }) {
 
       {isAdmin && (
         <>
+          {/* ── SEO & Tracking ── */}
+          <div className="adm-settings-block">
+            <h3 className="adm-subtitle">🔍 SEO и проследяване</h3>
+            <p style={{fontSize:12,color:"#888",marginBottom:16}}>Тук се настройват Google Analytics, Search Console, Facebook Pixel и sitemap. Промените влизат в сила веднага.</p>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Google Analytics</h4>
+              <AInput label="Measurement ID" value={s.ga_id||""} onChange={v=>set("ga_id",v)} placeholder="G-XXXXXXXXXX" />
+              <p className="adm-hint">Google Analytics 4 Measurement ID. Намира се в GA → Admin → Data Streams.</p>
+            </div>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Google Search Console</h4>
+              <AInput label="Мета таг за верификация" value={s.gsc_verification||""} onChange={v=>set("gsc_verification",v)} placeholder="google-site-verification=XXXXXXXXXXXX" />
+              <p className="adm-hint">Само стойността от content="…" на verification мета тага.</p>
+            </div>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Google Tag Manager</h4>
+              <AInput label="GTM Container ID" value={s.gtm_id||""} onChange={v=>set("gtm_id",v)} placeholder="GTM-XXXXXXX" />
+              <p className="adm-hint">Ако ползвате GTM, въведете контейнер ID. Не е нужно ако вече имате GA ID горе.</p>
+            </div>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Facebook Pixel</h4>
+              <AInput label="Pixel ID" value={s.fb_pixel||""} onChange={v=>set("fb_pixel",v)} placeholder="123456789012345" />
+            </div>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Sitemap & Robots</h4>
+              <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:8}}>
+                <label className="adm-toggle-row">
+                  <input type="checkbox" checked={s.sitemap_enabled!==false} onChange={e=>set("sitemap_enabled",e.target.checked)} />
+                  <span style={{fontSize:13}}>Автоматичен sitemap.xml</span>
+                </label>
+              </div>
+              <p className="adm-hint">Генерира се автоматично от продуктите и статиите: <code>/api/sitemap.xml</code></p>
+              <ATextarea label="robots.txt (допълнителни правила)" value={s.robots_extra||""} onChange={v=>set("robots_extra",v)} rows={3} placeholder="# Допълнителни правила&#10;Disallow: /admin" />
+              <p className="adm-hint">Основният robots.txt е на: <code>/api/robots.txt</code> — автоматично включва Sitemap линк.</p>
+            </div>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Допълнителни мета тагове</h4>
+              <AInput label="Bing Webmaster" value={s.bing_verification||""} onChange={v=>set("bing_verification",v)} placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
+              <AInput label="Yandex Webmaster" value={s.yandex_verification||""} onChange={v=>set("yandex_verification",v)} placeholder="XXXXXXXXXXXXXXXX" />
+            </div>
+
+            <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Open Graph по подразбиране</h4>
+              <AInput label="OG Image URL" value={s.og_image||""} onChange={v=>set("og_image",v)} placeholder="https://areti.bg/images/og-default.jpg" />
+              <AInput label="SEO заглавие на сайта" value={s.seo_title||""} onChange={v=>set("seo_title",v)} placeholder="Арети — Bridal Couture" />
+              <ATextarea label="SEO описание на сайта" value={s.seo_description||""} onChange={v=>set("seo_description",v)} rows={2} placeholder="Луксозни булчински рокли в София..." />
+            </div>
+          </div>
+
           <div className="adm-settings-block">
             <h3 className="adm-subtitle">Контактна информация</h3>
             <div className="adm-form-grid">

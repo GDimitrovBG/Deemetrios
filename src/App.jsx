@@ -5,6 +5,7 @@ import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './ca
 import { BookingPage } from './booking';
 import { AboutPage, ContactPage, BlogPage, BlogPostPage, DemetriosPage } from './info';
 import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
+import { useSeoInject } from './seo-inject';
 
 // Heavy pages loaded only when needed
 const AdminPanel = lazy(() => import('./admin'));
@@ -26,6 +27,7 @@ export default function App() {
   const [route, setRouteRaw] = useState("home");
   const [tweaks, setTweak] = useTweaks(TWEAKS);
   const [lang, setLang] = useState(tweaks.lang || "bg");
+  useSeoInject();
 
   const setRoute = (r) => {
     setRouteRaw(r);

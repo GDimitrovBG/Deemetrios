@@ -10,6 +10,7 @@ import bookingsRoutes from './routes/bookings.js';
 import productsRoutes from './routes/products.js';
 import articlesRoutes from './routes/articles.js';
 import settingsRoutes from './routes/settings.js';
+import seoRoutes      from './routes/seo.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -33,6 +34,7 @@ app.use('/api/bookings', bookingsRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/articles', articlesRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api',          seoRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
