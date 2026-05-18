@@ -1437,6 +1437,14 @@ a { color: inherit; text-decoration: none; }
   text-align: left;
   background: var(--bg-soft);
 }
+.conf-card .s-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+}
+.conf-card .s-row:last-of-type { border-bottom: 1px solid var(--rule); }
+.conf-card .s-row .label { color: var(--ink-mute); letter-spacing: 0.16em; text-transform: uppercase; font-size: 10px; }
+.conf-card .s-row .val { font-family: var(--f-serif); font-style: italic; font-size: 15px; text-align: right; }
 
 /* ============================================
    ABOUT
