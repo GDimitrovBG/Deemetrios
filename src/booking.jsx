@@ -25,7 +25,7 @@ async function sendBrevoEmail({ to, toName, subject, html }) {
 
 function sendBookingEmails(booking, lang) {
   const isBg = lang === 'bg';
-  const { name, email, phone, type, location, date, time, budget, notes, dressRefs } = booking;
+  const { name, email, phone, type, location, date, time, budget, notes, dressRefs, size } = booking;
   const dressLine = dressRefs?.length ? dressRefs.join(', ') : (isBg ? 'не е избрана' : 'none selected');
 
   // 1. Email to customer
@@ -57,6 +57,7 @@ function sendBookingEmails(booking, lang) {
                 <tr><td style="color:#8a7556;">${isBg ? 'Локация' : 'Location'}</td><td>${location}</td></tr>
                 <tr><td style="color:#8a7556;">${isBg ? 'Дата' : 'Date'}</td><td>${date}</td></tr>
                 <tr><td style="color:#8a7556;">${isBg ? 'Час' : 'Time'}</td><td>${time || (isBg ? 'ще уточним' : 'to be confirmed')}</td></tr>
+                ${size ? `<tr><td style="color:#8a7556;">${isBg ? 'Размер' : 'Size'}</td><td>${size}</td></tr>` : ''}
                 ${dressRefs?.length ? `<tr><td style="color:#8a7556;">${isBg ? 'Рокли' : 'Dresses'}</td><td>${dressLine}</td></tr>` : ''}
               </table>
             </div>
@@ -89,6 +90,7 @@ function sendBookingEmails(booking, lang) {
           <tr><td style="font-weight:600;">Локация</td><td>${location}</td></tr>
           <tr><td style="font-weight:600;">Дата</td><td>${date}</td></tr>
           <tr><td style="font-weight:600;">Час</td><td>${time || 'за уточняване'}</td></tr>
+          <tr><td style="font-weight:600;">Размер</td><td>${size || '—'}</td></tr>
           <tr><td style="font-weight:600;">Бюджет</td><td>${budget || '—'}</td></tr>
           <tr><td style="font-weight:600;">Рокли</td><td>${dressLine}</td></tr>
           ${notes ? `<tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Бележки</td><td>${notes}</td></tr>` : ''}
@@ -310,16 +312,23 @@ function Step4Details({ t, data, setData }) {
       </div>
       <div className="fields-row">
         <div className="field">
+          <label>{lab.size}</label>
+          <select value={data.size || ""} onChange={(e) => setData({ ...data, size: e.target.value })} style={{ borderBottom: "1px solid var(--rule)", background: "transparent" }}>
+            <option value="">{t.booking.size_select}</option>
+            {t.booking.size_options.map(o => <option key={o}>{o}</option>)}
+          </select>
+        </div>
+        <div className="field">
           <label>{lab.wedding}</label>
           <input value={data.wedding || ""} onChange={(e) => setData({ ...data, wedding: e.target.value })} placeholder={c.placeholder_wedding} />
         </div>
-        <div className="field">
-          <label>{lab.budget}</label>
-          <select value={data.budget || ""} onChange={(e) => setData({ ...data, budget: e.target.value })} style={{ borderBottom: "1px solid var(--rule)", background: "transparent" }}>
-            <option value="">{t.booking.budget_select}</option>
-            {t.booking.budget_options.map(o => <option key={o}>{o}</option>)}
-          </select>
-        </div>
+      </div>
+      <div className="field">
+        <label>{lab.budget}</label>
+        <select value={data.budget || ""} onChange={(e) => setData({ ...data, budget: e.target.value })} style={{ borderBottom: "1px solid var(--rule)", background: "transparent" }}>
+          <option value="">{t.booking.budget_select}</option>
+          {t.booking.budget_options.map(o => <option key={o}>{o}</option>)}
+        </select>
       </div>
       <div className="field">
         <label>{lab.notes}</label>
@@ -408,6 +417,7 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
     fmtDate(data.date),
     data.time,
     data.name,
+    data.size,
   ];
   return (
     <aside className="summary">
@@ -555,6 +565,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
                   location: t.booking.locations[data.location]?.name || "",
                   date: data.date ? data.date.toLocaleDateString(lang === "bg" ? "bg-BG" : "en-US") : "",
                   time: data.time || "",
+                  size: data.size || "",
                   budget: data.budget || "",
                   notes: data.notes || "",
                   dressRefs: dressRefs || [],
