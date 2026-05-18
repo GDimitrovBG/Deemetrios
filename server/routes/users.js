@@ -17,19 +17,16 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
-    if (!email || !password || !name) {
-      return res.status(400).json({ error: 'Email, парола и име са задължителни' });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Паролата трябва да е мин. 6 символа' });
+    const { email, name, role } = req.body;
+    if (!email || !name) {
+      return res.status(400).json({ error: 'Email и име са задължителни' });
     }
     const exists = await User.findOne({ email: email.toLowerCase().trim() });
     if (exists) {
       return res.status(409).json({ error: 'Потребител с този email вече съществува' });
     }
     const user = await User.create({
-      email, password, name,
+      email, name,
       role: ['admin', 'editor'].includes(role) ? role : 'editor',
     });
     res.status(201).json(user);
@@ -40,7 +37,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const { name, email, role, active, password } = req.body;
+    const { name, email, role, active } = req.body;
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Потребителят не е намерен' });
 
@@ -48,7 +45,6 @@ router.put('/:id', async (req, res) => {
     if (email !== undefined) user.email = email;
     if (role !== undefined && ['admin', 'editor'].includes(role)) user.role = role;
     if (active !== undefined) user.active = active;
-    if (password && password.length >= 6) user.password = password;
 
     await user.save();
     res.json(user);
