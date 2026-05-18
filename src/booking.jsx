@@ -10,17 +10,25 @@ import { createBooking } from './api';
 // =====================================================
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
-const ARETI_EMAIL = 'info@areti.bg';
-const ARETI_NAME = 'Арети — Bridal Couture';
 
-async function sendBrevoEmail({ to, toName, subject, html }) {
+async function sendCustomerEmail({ to, toName, subject, html }) {
   try {
-    await fetch(`${API_BASE}/api/email/send-booking`, {
+    await fetch(`${API_BASE}/api/email/send-customer`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ to, toName, subject, html }),
     });
   } catch { /* silent — booking still succeeds even if email fails */ }
+}
+
+async function notifyAdmins({ subject, html }) {
+  try {
+    await fetch(`${API_BASE}/api/email/notify-admins`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ subject, html }),
+    });
+  } catch { /* silent */ }
 }
 
 function sendBookingEmails(booking, lang) {
@@ -30,7 +38,7 @@ function sendBookingEmails(booking, lang) {
 
   // 1. Email to customer
   if (email) {
-    sendBrevoEmail({
+    sendCustomerEmail({
       to: email,
       toName: name,
       subject: isBg ? 'Потвърждение за консултация — Арети Bridal' : 'Booking Confirmation — Areti Bridal',
@@ -74,10 +82,8 @@ function sendBookingEmails(booking, lang) {
     });
   }
 
-  // 2. Email to Areti (notification)
-  sendBrevoEmail({
-    to: ARETI_EMAIL,
-    toName: ARETI_NAME,
+  // 2. Email to all admins (notification)
+  notifyAdmins({
     subject: `Нова консултация: ${name || 'Неизвестен'} — ${type} — ${date}`,
     html: `
       <div style="font-family:Arial,sans-serif;max-width:560px;color:#1a1612;">

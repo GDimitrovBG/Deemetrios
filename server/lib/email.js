@@ -4,6 +4,14 @@ const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 const ARETI_EMAIL = process.env.ARETI_EMAIL || 'info@areti.bg';
 const ARETI_NAME = 'Арети — Bridal Couture';
 
+/** Parse ADMIN_EMAILS env var → array of emails. Falls back to ARETI_EMAIL. */
+export function getAdminEmails() {
+  const raw = process.env.ADMIN_EMAILS || '';
+  const list = raw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  if (list.length) return list;
+  return [ARETI_EMAIL.toLowerCase()];
+}
+
 export function emailConfigured() {
   return Boolean(BREVO_API_KEY);
 }
@@ -27,6 +35,16 @@ export async function sendEmail({ to, toName, subject, html }) {
   return { ok: true };
 }
 
+/** Send one email to multiple recipients (BCC style — each gets individual email). */
+export async function sendEmailToMany({ emails, subject, html }) {
+  const results = [];
+  for (const email of emails) {
+    const r = await sendEmail({ to: email, subject, html });
+    results.push({ email, ...r });
+  }
+  return results;
+}
+
 export function twoFactorCodeEmail({ name, code, expiresInMinutes = 10 }) {
   return `
     <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;padding:32px;">
@@ -43,7 +61,7 @@ export function twoFactorCodeEmail({ name, code, expiresInMinutes = 10 }) {
         <div style="font-family:'Courier New',monospace;font-size:36px;letter-spacing:8px;font-weight:700;color:#1a1612;">${code}</div>
       </div>
       <p style="font-size:13px;color:#8a7556;line-height:1.5;margin:0;">
-        Кодът е валиден ${expiresInMinutes} минути. Ако не сте поискали този код, моля игнорирайте този имейл и сменете паролата си.
+        Кодът е валиден ${expiresInMinutes} минути. Ако не сте поискали този код, моля игнорирайте този имейл.
       </p>
       <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
         Арети — Bridal Couture · София

@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
+import { sendErrorAlert } from './lib/errorAlert.js';
 
 import authRoutes     from './routes/auth.js';
 import usersRoutes    from './routes/users.js';
@@ -59,6 +60,30 @@ app.use('/api',          seoRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
+// ─── Global error handler (catches unhandled route/middleware errors) ─────────
+app.use((err, req, res, _next) => {
+  const context = `${req.method} ${req.originalUrl}`;
+  console.error(`[500] ${context}:`, err);
+  sendErrorAlert('Server Error (500)', err, context);
+  if (!res.headersSent) {
+    res.status(500).json({ error: 'Вътрешна грешка на сървъра' });
+  }
+});
+
+// ─── Process-level crash handlers ────────────────────────────────────────────
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught exception:', err);
+  sendErrorAlert('Uncaught Exception (crash)', err, 'process').finally(() => {
+    process.exit(1);
+  });
+});
+
+process.on('unhandledRejection', (reason) => {
+  const err = reason instanceof Error ? reason : new Error(String(reason));
+  console.error('[WARN] Unhandled rejection:', err);
+  sendErrorAlert('Unhandled Promise Rejection', err, 'process');
+});
+
 async function start() {
   await connectDB();
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -66,5 +91,7 @@ async function start() {
 
 start().catch(err => {
   console.error('Failed to start server:', err);
-  process.exit(1);
+  sendErrorAlert('Server Startup Failed', err, 'startup').finally(() => {
+    process.exit(1);
+  });
 });
