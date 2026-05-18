@@ -248,6 +248,9 @@ function Footer({ lang, setRoute }) {
             tabIndex={-1}
           >·</button>
         </div>
+        <div className="footer-credit">
+          Design by <a href="https://wpsupporting.com/" target="_blank" rel="noopener noreferrer">WPSupporting.com</a>
+        </div>
       </div>
     </footer>
   );
