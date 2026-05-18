@@ -122,7 +122,7 @@ const i18n = {
         { tag: "Безплатно", title: "Втора проба", desc: "Връщане на конкретен модел, който вече сте пробвали и обмисляте.", price: "Безплатна" },
       ],
       locations: [
-        { name: "София", addr: "ул. Шипка 18, ет.2 · до НДК", hours: "Вт – Сб · 11:00 – 19:00" },
+        { name: "София", addr: "ул. Крум Попов 63, Лозенец", hours: "Вт – Сб · 11:00 – 19:00" },
       ],
       labels: {
         name: "Име",
@@ -196,8 +196,8 @@ const i18n = {
       directions: "Упътвания",
       book: "Запази час",
       cities: [
-        { name: "София", em: "флагман", addr: "ул. Шипка 18, ет.2\n1504 София, България", hours: "Вт – Сб · 11:00 – 19:00", phone: "+359 2 444 12 12", email: "sofia@areti.bg" },
-        { name: "Онлайн", em: "виртуално", addr: "Виртуални консултации\nZoom · 60 минути", hours: "Гъвкав часови график", phone: "+359 88 700 21 21", email: "hello@areti.bg" },
+        { name: "София", em: "флагман", addr: "ул. Крум Попов 63\nЛозенец, 1164 София", hours: "Вт – Сб · 11:00 – 19:00", phone: "+359 878 521 660", email: "info@areti.bg" },
+        { name: "Онлайн", em: "виртуално", addr: "Виртуални консултации\nZoom · 60 минути", hours: "Гъвкав часови график", phone: "+359 878 521 660", email: "info@areti.bg" },
       ],
     },
     blog: {
@@ -587,7 +587,7 @@ const i18n = {
         { tag: "Complimentary", title: "Second Fitting", desc: "A return visit for a specific dress you've already tried and are considering.", price: "Complimentary" },
       ],
       locations: [
-        { name: "Sofia", addr: "18 Shipka St., fl.2 · near NDK", hours: "Tue – Sat · 11:00 – 19:00" },
+        { name: "Sofia", addr: "63 Krum Popov St., Lozenets", hours: "Tue – Sat · 11:00 – 19:00" },
       ],
       labels: {
         name: "Full name",
@@ -661,8 +661,8 @@ const i18n = {
       directions: "Directions",
       book: "Book a fitting",
       cities: [
-        { name: "Sofia", em: "flagship", addr: "18 Shipka St., fl.2\n1504 Sofia, Bulgaria", hours: "Tue – Sat · 11:00 – 19:00", phone: "+359 2 444 12 12", email: "sofia@areti.bg" },
-        { name: "Online", em: "virtual", addr: "Virtual consultation\nZoom · 60 minutes", hours: "Flexible scheduling", phone: "+359 88 700 21 21", email: "hello@areti.bg" },
+        { name: "Sofia", em: "flagship", addr: "63 Krum Popov St.\nLozenets, 1164 Sofia", hours: "Tue – Sat · 11:00 – 19:00", phone: "+359 878 521 660", email: "info@areti.bg" },
+        { name: "Online", em: "virtual", addr: "Virtual consultation\nZoom · 60 minutes", hours: "Flexible scheduling", phone: "+359 878 521 660", email: "info@areti.bg" },
       ],
     },
     blog: {

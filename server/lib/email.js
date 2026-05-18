@@ -1,7 +1,7 @@
 // Shared transactional email helper (Brevo / Sendinblue)
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
-const ARETI_EMAIL = process.env.ARETI_EMAIL || 'info@demetriosbride-bg.com';
+const ARETI_EMAIL = process.env.ARETI_EMAIL || 'info@areti.bg';
 const ARETI_NAME = 'Арети — Bridal Couture';
 
 export function emailConfigured() {

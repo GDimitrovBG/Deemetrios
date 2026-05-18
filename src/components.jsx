@@ -253,7 +253,7 @@ function Footer({ lang, setRoute }) {
   );
 }
 
-const SALON_ADDRESS = "бул. Витоша 87, София 1000";
+const SALON_ADDRESS = "ул. Крум Попов 63, Лозенец, София";
 const SALON_PHONE   = "+359878521660";
 const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SALON_ADDRESS)}`;
 const NAV_URL  = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(SALON_ADDRESS)}`;

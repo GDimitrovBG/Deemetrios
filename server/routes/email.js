@@ -4,7 +4,7 @@ import { sendEmail, emailConfigured } from '../lib/email.js';
 const router = Router();
 
 const ALLOWED_RECIPIENTS = [
-  process.env.ARETI_EMAIL || 'info@demetriosbride-bg.com',
+  process.env.ARETI_EMAIL || 'info@areti.bg',
 ];
 
 router.post('/send-booking', async (req, res) => {

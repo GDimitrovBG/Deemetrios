@@ -10,7 +10,7 @@ import { createBooking } from './api';
 // =====================================================
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
-const ARETI_EMAIL = 'info@demetriosbride-bg.com';
+const ARETI_EMAIL = 'info@areti.bg';
 const ARETI_NAME = 'Арети — Bridal Couture';
 
 async function sendBrevoEmail({ to, toName, subject, html }) {
