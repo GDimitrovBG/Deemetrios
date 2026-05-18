@@ -752,8 +752,8 @@ a { color: inherit; text-decoration: none; }
   padding-top: 12px;
   font-size: 10px;
   letter-spacing: 0.1em;
-  opacity: 0.45;
-  color: var(--ink-mute);
+  opacity: 0.4;
+  color: var(--bg);
 }
 .footer-credit a {
   color: inherit;
