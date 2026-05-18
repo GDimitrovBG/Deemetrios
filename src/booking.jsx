@@ -471,7 +471,10 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
   );
 }
 
-function Confirmation({ t, data, setRoute, lang }) {
+function Confirmation({ t, data, setRoute, lang, dressRefs = [] }) {
+  const isBg = lang === "bg";
+  const colLabel = (id) => COLLECTIONS.find(c => c.id === id)?.label || '';
+  const dressInfo = (ref) => DRESSES.find(d => d.ref === ref);
   return (
     <div className="confirmation page-enter">
       <div className="check">✓</div>
@@ -479,10 +482,18 @@ function Confirmation({ t, data, setRoute, lang }) {
       <p>{t.booking.confirmation_p}</p>
       <div className="conf-card">
         <div className="s-eyebrow" style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--champagne-deep)", marginBottom: 16 }}>{t.booking.conf_card_title}</div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[0]}</span><span className="val">{t.booking.types[data.type].title}</span></div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[1]}</span><span className="val">{t.booking.locations[data.location].name}</span></div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[2]}</span><span className="val">{data.date && data.date.toLocaleDateString(lang === "bg" ? "bg-BG" : "en-US")}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[4]}</span><span className="val">{data.name}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[0]}</span><span className="val">{t.booking.types[data.type]?.title}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[1]}</span><span className="val">{t.booking.locations[data.location]?.name}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[2]}</span><span className="val">{data.date && data.date.toLocaleDateString(isBg ? "bg-BG" : "en-US")}</span></div>
         <div className="s-row"><span className="label">{t.booking.summary_rows[3]}</span><span className="val">{data.time}</span></div>
+        {data.size && <div className="s-row"><span className="label">{t.booking.summary_rows[5]}</span><span className="val">{data.size}</span></div>}
+        {dressRefs.length > 0 && (
+          <div className="s-row">
+            <span className="label">{isBg ? "Рокли" : "Dresses"}</span>
+            <span className="val">{dressRefs.map(ref => { const d = dressInfo(ref); return d ? `${colLabel(d.collection)} ${d.ref}` : ref; }).join(", ")}</span>
+          </div>
+        )}
       </div>
       <button className="btn" style={{ marginTop: 36 }} onClick={() => setRoute("home")}>{t.booking.back_home} →</button>
     </div>
@@ -534,7 +545,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
     return m;
   }, [data]);
 
-  if (done) return <BookingShell t={t}><Confirmation t={t} data={data} setRoute={setRoute} lang={lang} /></BookingShell>;
+  if (done) return <BookingShell t={t}><Confirmation t={t} data={data} setRoute={setRoute} lang={lang} dressRefs={dressRefs} /></BookingShell>;
 
   return (
     <BookingShell t={t}>
