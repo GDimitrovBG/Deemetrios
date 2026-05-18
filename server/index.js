@@ -18,6 +18,8 @@ import emailRoutes    from './routes/email.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+app.set('trust proxy', 1); // Caddy reverse proxy — needed for correct rate-limiting by real client IP
+
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
