@@ -46,7 +46,7 @@ const i18n = {
       service_2_desc: "До 5 пробни срещи в собствено студио. Размер, дължина, дантела — всичко по мярка.",
       service_3_title: "Услуги в деня",
       service_3_desc: "Стилизация, обличане в студиото, и пакет за пътуване с конусна торба.",
-      cta_band: "Запиши се за безплатна консултация",
+      cta_band: "Запиши се за пробна среща",
       cta_band_btn: "Резервирай час",
     },
     collection: {
@@ -98,7 +98,7 @@ const i18n = {
     booking: {
       title: "Запази",
       title_em: "проба",
-      lede: "Резервирай 90 минутна частна среща в нашето студио. Безплатна, без ангажимент.",
+      lede: "Резервирай 90 минутна частна среща в нашето студио. Без ангажимент.",
       steps: ["Тип", "Локация", "Дата", "Детайли"],
       step1_eye: "Стъпка 01 от 04",
       step1_title: "Тип",
@@ -256,7 +256,7 @@ const i18n = {
       dresses_to_try: "Рокли за пробване",
       placeholder_name: "Мария Иванова",
       placeholder_wedding: "Септември 2026",
-      free_note: "Резервацията е безплатна и може да бъде променяна до 24 часа преди срещата.",
+      free_note: "Резервацията може да бъде променяна до 24 часа преди срещата.",
       ref_short: "Реф.",
     },
     legal: {
@@ -513,7 +513,7 @@ const i18n = {
       service_2_desc: "Up to 5 fittings in our studio. Size, length, lace — all to measure.",
       service_3_title: "Day-of services",
       service_3_desc: "Styling, dressing in studio, and travel garment bag with lining.",
-      cta_band: "Schedule your free consultation",
+      cta_band: "Book your fitting appointment",
       cta_band_btn: "Book a fitting",
     },
     collection: {
@@ -565,7 +565,7 @@ const i18n = {
     booking: {
       title: "Book",
       title_em: "a fitting",
-      lede: "Reserve a 90-minute private session in our studio. Complimentary, no commitment.",
+      lede: "Reserve a 90-minute private session in our studio. No commitment.",
       steps: ["Type", "Studio", "Date", "Details"],
       step1_eye: "Step 01 of 04",
       step1_title: "Choose",
@@ -724,7 +724,7 @@ const i18n = {
       dresses_to_try: "Dresses to try on",
       placeholder_name: "Jane Doe",
       placeholder_wedding: "September 2026",
-      free_note: "Reservation is free and can be changed up to 24 hours before the appointment.",
+      free_note: "Reservation can be changed up to 24 hours before the appointment.",
       ref_short: "Ref.",
     },
     legal: {
