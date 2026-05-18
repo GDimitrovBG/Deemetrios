@@ -208,7 +208,7 @@ function Step3Date({ t, data, setData, lang }) {
   };
 
   const slots = ["11:00", "12:00", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
-  const goneSlots = ["13:30", "16:30"];
+  const goneSlots = []; // TODO: fetch booked slots from API
 
   return (
     <div className="booking-form">
@@ -460,7 +460,7 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
   );
 }
 
-function Confirmation({ t, data, setRoute }) {
+function Confirmation({ t, data, setRoute, lang }) {
   return (
     <div className="confirmation page-enter">
       <div className="check">✓</div>
@@ -523,7 +523,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
     return m;
   }, [data]);
 
-  if (done) return <BookingShell t={t}><Confirmation t={t} data={data} setRoute={setRoute} /></BookingShell>;
+  if (done) return <BookingShell t={t}><Confirmation t={t} data={data} setRoute={setRoute} lang={lang} /></BookingShell>;
 
   return (
     <BookingShell t={t}>

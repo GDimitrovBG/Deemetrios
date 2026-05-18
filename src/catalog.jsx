@@ -46,14 +46,14 @@ function FilterPanel({ t, lang, filters, setFilters, onClose }) {
         </div>
         <div>
           <h5>{tg.price}</h5>
-          <PriceRange filters={filters} setFilters={setFilters} />
+          <PriceRange filters={filters} setFilters={setFilters} lang={lang} t={t} />
         </div>
       </div>
     </div>
   );
 }
 
-function PriceRange({ filters, setFilters }) {
+function PriceRange({ filters, setFilters, lang, t }) {
   const min = 1500, max = 8000;
   const lo = filters.priceLo ?? 2500;
   const hi = filters.priceHi ?? 6500;
@@ -396,7 +396,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
 
               <div className="msheet-section">
                 <div className="msheet-label">{isBg ? "Цена" : "Price"}</div>
-                <PriceRange filters={filters} setFilters={setFilters} />
+                <PriceRange filters={filters} setFilters={setFilters} lang={lang} t={t} />
               </div>
             </div>
 

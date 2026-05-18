@@ -39,7 +39,14 @@ const bookingLimiter = rateLimit({
   max: 10,
   message: { error: 'Твърде много резервации. Опитайте пак след 1 час.' },
 });
-app.use('/api/bookings', bookingLimiter);
+app.post('/api/bookings', bookingLimiter);
+
+const emailLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: { error: 'Твърде много заявки. Опитайте пак след 1 час.' },
+});
+app.use('/api/email', emailLimiter);
 
 app.use('/api/auth',     authRoutes);
 app.use('/api/users',    usersRoutes);
