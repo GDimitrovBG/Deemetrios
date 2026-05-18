@@ -8,3 +8,4 @@ dist/
 server/node_modules/
 server/.env
 server/areti-dump-*
+public/wp-content/uploads/
