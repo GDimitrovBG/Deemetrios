@@ -441,6 +441,7 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
                   {d && <img src={d.img} alt="" className="summary-ref-pill-img" />}
                   <span className="summary-ref-pill-text">
                     {d ? `${colLabel(d.collection)} ${d.ref}` : `Реф. ${ref}`}
+                    {data.size && <span className="summary-ref-pill-size"> · {data.size}</span>}
                   </span>
                   <button
                     className="summary-ref-remove"

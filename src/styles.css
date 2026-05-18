@@ -2961,6 +2961,10 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.12em;
   white-space: nowrap;
 }
+.summary-ref-pill-size {
+  color: var(--champagne-deep, #8a7556);
+  font-style: italic;
+}
 
 /* Dress search autocomplete */
 .dress-search {
