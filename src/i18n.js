@@ -118,9 +118,12 @@ const i18n = {
       step4_title_em: "детайли",
       step4_help: "Малко информация, за да се подготвим за теб.",
       types: [
-        { tag: "Първо посещение", title: "Първа консултация", desc: "90 мин. с консултант, чай, шампанско, достъп до цялата колекция без ограничение в броя рокли.", price: "30 €" },
-        { tag: "Безплатно", title: "Втора проба", desc: "Връщане на конкретен модел, който вече сте пробвали и обмисляте.", price: "Безплатна" },
+        { tag: "Препоръчано", title: "Първа консултация", desc: "90 мин. с консултант, чай, шампанско, достъп до цялата колекция без ограничение в броя рокли.", price: "30 €", note: "✓ Не е нужно да избирате рокля предварително", recommended: true },
+        { tag: "Само за връщащи се клиенти", title: "Втора проба", desc: "Връщане на конкретен модел, който вече сте пробвали и обмисляте.", price: "Безплатна", note: "👗 Изисква да изберете рокля, която вече сте пробвали при нас" },
       ],
+      step1_pick_dress_title: "Изберете роклята",
+      step1_pick_dress_help: "За да продължите към втората проба, моля изберете роклята, която вече сте пробвали при нас.",
+      step1_first_time_hint: "Ако не сте били при нас, изберете „Първа консултация“ горе.",
       locations: [
         { name: "София", addr: "ул. Крум Попов 63, Лозенец", hours: "Вт – Сб · 11:00 – 19:00" },
       ],
@@ -586,9 +589,12 @@ const i18n = {
       step4_title_em: "details",
       step4_help: "A little information so we can prepare for you.",
       types: [
-        { tag: "First visit", title: "First Consultation", desc: "90 min with a stylist, tea, champagne, full collection — no limit on number of dresses.", price: "30 EUR" },
-        { tag: "Complimentary", title: "Second Fitting", desc: "A return visit for a specific dress you've already tried and are considering.", price: "Complimentary" },
+        { tag: "Recommended", title: "First Consultation", desc: "90 min with a stylist, tea, champagne, full collection — no limit on number of dresses.", price: "30 EUR", note: "✓ No dress selection required", recommended: true },
+        { tag: "Returning clients only", title: "Second Fitting", desc: "A return visit for a specific dress you've already tried and are considering.", price: "Complimentary", note: "👗 Requires selecting a dress you've already tried with us" },
       ],
+      step1_pick_dress_title: "Select your dress",
+      step1_pick_dress_help: "To proceed with a second fitting, please select the dress you've previously tried with us.",
+      step1_first_time_hint: "If you haven't visited us yet, please select \"First Consultation\" above.",
       locations: [
         { name: "Sofia", addr: "63 Krum Popov St., Lozenets", hours: "Tue – Sat · 11:00 – 19:00" },
       ],

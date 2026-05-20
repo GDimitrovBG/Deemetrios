@@ -1253,6 +1253,108 @@ a { color: inherit; text-decoration: none; }
 .option-card .oc-desc { font-size: 13px; opacity: 0.7; line-height: 1.4; }
 .option-card .oc-price { font-family: var(--f-serif); font-style: italic; font-size: 16px; margin-top: 12px; }
 
+/* Recommended badge on type card */
+.option-card.is-recommended {
+  position: relative;
+  border-color: var(--champagne-deep, #c4a373);
+}
+.option-card .oc-badge {
+  display: inline-block;
+  background: var(--champagne-deep, #c4a373);
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.option-card.on .oc-badge {
+  background: #fff;
+  color: var(--ink);
+}
+
+/* Type card sub-note (✓ no dress needed / 👗 requires dress) */
+.option-card .oc-note {
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.option-card .oc-note.is-positive {
+  background: rgba(90, 158, 111, 0.1);
+  color: #4a8559;
+}
+.option-card .oc-note.is-requirement {
+  background: rgba(196, 163, 115, 0.15);
+  color: #8a6a3d;
+}
+.option-card.on .oc-note.is-positive {
+  background: rgba(255, 255, 255, 0.15);
+  color: #c8e9d2;
+}
+.option-card.on .oc-note.is-requirement {
+  background: rgba(255, 255, 255, 0.15);
+  color: #f0d9b3;
+}
+
+/* Inline dress picker for Step 1 (Second Fitting) */
+.inline-dress-picker {
+  margin-top: 24px;
+  padding: 24px;
+  border: 2px dashed var(--champagne-deep, #c4a373);
+  background: rgba(196, 163, 115, 0.06);
+  border-radius: 4px;
+  transition: all 200ms;
+}
+.inline-dress-picker.is-filled {
+  border-style: solid;
+  background: rgba(90, 158, 111, 0.06);
+  border-color: #5a9e6f;
+}
+.inline-dress-picker .idp-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.inline-dress-picker .idp-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.inline-dress-picker.is-filled .idp-icon {
+  color: #5a9e6f;
+  font-weight: 700;
+}
+.inline-dress-picker .idp-title {
+  font-family: var(--f-serif);
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.inline-dress-picker .idp-help {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+}
+.inline-dress-picker .idp-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.inline-dress-picker .idp-hint {
+  margin-top: 14px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--ink-mute);
+  padding-top: 14px;
+  border-top: 1px solid rgba(196, 163, 115, 0.25);
+}
+
 /* date picker */
 .date-picker {
   border: 1px solid var(--rule);

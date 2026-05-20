@@ -123,7 +123,10 @@ function StepsBar({ steps, current, setCurrent, maxReached }) {
   );
 }
 
-function Step1Type({ t, data, setData }) {
+function Step1Type({ t, data, setData, dressRefs, setDressRefs }) {
+  const needsDress = data.type === 1;
+  const dressMissing = needsDress && dressRefs.length === 0;
+
   return (
     <div className="booking-form">
       <div className="step-tag">{t.booking.step1_eye}</div>
@@ -141,16 +144,63 @@ function Step1Type({ t, data, setData }) {
         {t.booking.types.map((typ, i) => (
           <div
             key={i}
-            className={`option-card ${data.type === i ? "on" : ""}`}
+            className={`option-card ${data.type === i ? "on" : ""} ${typ.recommended ? "is-recommended" : ""}`}
             onClick={() => setData({ ...data, type: i })}
           >
-            <div className="oc-eyebrow">{typ.tag}</div>
+            {typ.recommended && <div className="oc-badge">★ {typ.tag}</div>}
+            {!typ.recommended && <div className="oc-eyebrow">{typ.tag}</div>}
             <h4>{typ.title}</h4>
             <p className="oc-desc">{typ.desc}</p>
+            {typ.note && (
+              <div className={`oc-note ${typ.recommended ? "is-positive" : "is-requirement"}`}>
+                {typ.note}
+              </div>
+            )}
             <div className="oc-price">{typ.price}</div>
           </div>
         ))}
       </div>
+
+      {/* Inline dress picker when Second Fitting is selected */}
+      {needsDress && (
+        <div className={`inline-dress-picker ${dressMissing ? "is-missing" : "is-filled"}`}>
+          <div className="idp-header">
+            <div className="idp-icon">{dressMissing ? "👗" : "✓"}</div>
+            <div className="idp-titles">
+              <div className="idp-title">{t.booking.step1_pick_dress_title}</div>
+              <div className="idp-help">{t.booking.step1_pick_dress_help}</div>
+            </div>
+          </div>
+
+          {dressRefs.length > 0 && (
+            <div className="idp-pills">
+              {dressRefs.map(ref => {
+                const d = DRESSES.find(x => x.ref === ref);
+                const cLabel = COLLECTIONS.find(c => c.id === d?.collection)?.label || '';
+                return (
+                  <span key={ref} className="summary-ref-pill has-img">
+                    {d && <img src={d.img} alt="" className="summary-ref-pill-img" />}
+                    <span className="summary-ref-pill-text">
+                      {d ? `${cLabel} ${d.ref}` : `Реф. ${ref}`}
+                    </span>
+                    <button
+                      className="summary-ref-remove"
+                      onClick={() => setDressRefs(dressRefs.filter(r => r !== ref))}
+                      aria-label={t.common.remove}
+                    >×</button>
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          <DressSearch t={t} dressRefs={dressRefs} setDressRefs={setDressRefs} />
+
+          {dressMissing && (
+            <div className="idp-hint">{t.booking.step1_first_time_hint}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -536,7 +586,12 @@ function BookingPage({ lang, setRoute, dress = null }) {
   const dressMissing  = dressRequired && dressRefs.length === 0;
 
   const canNext = () => {
-    if (step === 0) return data.type != null;
+    if (step === 0) {
+      if (data.type == null) return false;
+      // Type 1 (Second Fitting) requires a dress to be selected before proceeding
+      if (data.type === 1 && dressRefs.length === 0) return false;
+      return true;
+    }
     if (step === 1) return data.location != null;
     if (step === 2) return data.date && data.time && data.timeConfirmed;
     if (step === 3) return data.name && data.email && isValidEmail(data.email) && data.phone && !dressMissing;
@@ -558,7 +613,7 @@ function BookingPage({ lang, setRoute, dress = null }) {
       <StepsBar steps={t.booking.steps} current={step} setCurrent={setStep} maxReached={maxReached} />
       <div className="booking-body">
         <div>
-          {step === 0 && <Step1Type t={t} data={data} setData={setData} />}
+          {step === 0 && <Step1Type t={t} data={data} setData={setData} dressRefs={dressRefs} setDressRefs={setDressRefs} />}
           {step === 1 && <Step2Location t={t} data={data} setData={setData} />}
           {step === 2 && <Step3Date t={t} data={data} setData={setData} lang={lang} />}
           {step === 3 && <Step4Details t={t} data={data} setData={setData} />}
