@@ -120,20 +120,6 @@ export function enhancedProductSchema(p, lang = 'bg') {
       "@type": "ProductCollection",
       "name": collLabel,
     },
-    "offers": {
-      "@type": "Offer",
-      "url": `${SITE_URL}/product/${p.ref}`,
-      "priceCurrency": "BGN",
-      "price": p.price || 0,
-      "priceValidUntil": new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString().split('T')[0],
-      "availability": "https://schema.org/InStock",
-      "itemCondition": "https://schema.org/NewCondition",
-      "seller": {
-        "@type": "Organization",
-        "name": SITE_NAME,
-        "url": SITE_URL,
-      },
-    },
   };
 }
 

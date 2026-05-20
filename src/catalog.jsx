@@ -44,10 +44,6 @@ function FilterPanel({ t, lang, filters, setFilters, onClose }) {
             ))}
           </div>
         </div>
-        <div>
-          <h5>{tg.price}</h5>
-          <PriceRange filters={filters} setFilters={setFilters} lang={lang} t={t} />
-        </div>
       </div>
     </div>
   );
@@ -101,10 +97,6 @@ function applyFiltersAndSort(list, filters, sortBy) {
   let result = [...list];
   const sf = filters.silhouette || [];
   if (sf.length) result = result.filter(d => sf.includes(d.silhouette));
-  if (filters.priceLo != null) result = result.filter(d => d.price >= filters.priceLo);
-  if (filters.priceHi != null) result = result.filter(d => d.price <= filters.priceHi);
-  if (sortBy === "price-asc") result.sort((a, b) => a.price - b.price);
-  else if (sortBy === "price-desc") result.sort((a, b) => b.price - a.price);
   return result;
 }
 
@@ -242,8 +234,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
             </button>
           )}
           <span className="results">{t.collection.results(displayList.length)}</span>
-          <span className="sort" onClick={() => setSortBy(sortBy === "new" ? "price-asc" : sortBy === "price-asc" ? "price-desc" : "new")}>
-            {t.collection.sort}: {sortBy === "new" ? t.collection.sort_new : sortBy === "price-asc" ? (isBg ? "↑ Цена" : "↑ Price") : (isBg ? "↓ Цена" : "↓ Price")}
+          <span className="sort">
+            {t.collection.sort}: {t.collection.sort_new}
           </span>
         </div>
       </div>
@@ -388,15 +380,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
               <div className="msheet-section">
                 <div className="msheet-label">{isBg ? "Подреди" : "Sort by"}</div>
                 <div className="msheet-pills">
-                  {[["new", isBg ? "Най-нови" : "Newest"], ["price-asc", isBg ? "↑ Цена" : "↑ Price"], ["price-desc", isBg ? "↓ Цена" : "↓ Price"]].map(([val, label]) => (
+                  {[["new", isBg ? "Най-нови" : "Newest"]].map(([val, label]) => (
                     <span key={val} className={`filter-pill ${sortBy === val ? "on" : ""}`} onClick={() => setSortBy(val)}>{label}</span>
                   ))}
                 </div>
-              </div>
-
-              <div className="msheet-section">
-                <div className="msheet-label">{isBg ? "Цена" : "Price"}</div>
-                <PriceRange filters={filters} setFilters={setFilters} lang={lang} t={t} />
               </div>
             </div>
 
@@ -543,8 +530,6 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <div className="designer">{t.product.designer}</div>
             <h1>{heading}</h1>
             <div className="ref">{t.product.ref}: {dress.ref}</div>
-            <div className="price">{t.product.price_from} {dress.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>
-            <div className="price-note">{t.product.price_note}</div>
             <p className="desc">{productDescription}</p>
             <dl>
               <div className="spec-row"><dt>{t.product.specs.fabric}</dt><dd>{t.product.specs.fabric_v}</dd></div>

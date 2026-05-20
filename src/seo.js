@@ -187,14 +187,6 @@ export function productSchema(p, lang = 'bg') {
     "description": (lang === 'bg' ? p.seo_description_bg : p.seo_description_en) || p.description_bg || DEFAULT_DESC,
     "brand": { "@type": "Brand", "name": "Demetrios" },
     "category": "Булчинска рокля",
-    "offers": {
-      "@type": "Offer",
-      "url": `${SITE_URL}/product/${p.ref}`,
-      "priceCurrency": "BGN",
-      "price": p.price || 0,
-      "availability": "https://schema.org/InStock",
-      "seller": { "@type": "Organization", "name": "Арети — Bridal Couture" },
-    },
   };
 }
 
