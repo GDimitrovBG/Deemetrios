@@ -26,7 +26,7 @@ export async function sendEmail({ to, toName, subject, html }) {
     headers: { 'accept': 'application/json', 'content-type': 'application/json', 'api-key': BREVO_API_KEY },
     body: JSON.stringify({
       sender: { name: ARETI_NAME, email: ARETI_EMAIL },
-      to: [{ email: to, name: toName || '' }],
+      to: [toName ? { email: to, name: toName } : { email: to }],
       subject,
       htmlContent: html,
     }),
