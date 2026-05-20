@@ -203,7 +203,6 @@ const i18n = {
       book: "Запази час",
       cities: [
         { name: "София", em: "флагман", addr: "ул. Крум Попов 63\nЛозенец, 1164 София", hours: "Вт – Сб · 11:00 – 19:00", phone: "+359 878 521 660", email: "info@areti.bg" },
-        { name: "Онлайн", em: "виртуално", addr: "Виртуални консултации\nZoom · 60 минути", hours: "Гъвкав часови график", phone: "+359 878 521 660", email: "info@areti.bg" },
       ],
     },
     blog: {
@@ -674,7 +673,6 @@ const i18n = {
       book: "Book a fitting",
       cities: [
         { name: "Sofia", em: "flagship", addr: "63 Krum Popov St.\nLozenets, 1164 Sofia", hours: "Tue – Sat · 11:00 – 19:00", phone: "+359 878 521 660", email: "info@areti.bg" },
-        { name: "Online", em: "virtual", addr: "Virtual consultation\nZoom · 60 minutes", hours: "Flexible scheduling", phone: "+359 878 521 660", email: "info@areti.bg" },
       ],
     },
     blog: {
