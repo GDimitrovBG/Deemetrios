@@ -141,8 +141,8 @@ export function useSeo({
 
 // ── Google Reviews — update these when the numbers change ─────────────────
 // Set REVIEW_COUNT=0 to omit AggregateRating from schema entirely.
-const REVIEW_RATING = 4.9;
-const REVIEW_COUNT  = 0;   // ← FILL IN: total number of Google reviews
+export const REVIEW_RATING = 4.9;
+export const REVIEW_COUNT  = 0;   // ← FILL IN: total number of Google reviews
 
 /** Organization / LocalBusiness schema for the boutique */
 export function orgSchema() {
@@ -197,7 +197,7 @@ export function orgSchema() {
 /** Product schema (used on product page) */
 export function productSchema(p, lang = 'bg') {
   const name = lang === 'bg' ? (p.name_bg || p.name_en) : (p.name_en || p.name_bg);
-  return {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": name,
@@ -207,6 +207,16 @@ export function productSchema(p, lang = 'bg') {
     "brand": { "@type": "Brand", "name": "Demetrios" },
     "category": "Булчинска рокля",
   };
+  if (REVIEW_COUNT > 0) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": REVIEW_RATING,
+      "reviewCount": REVIEW_COUNT,
+      "bestRating": "5",
+      "worstRating": "1",
+    };
+  }
+  return schema;
 }
 
 /** Article schema (used on blog post page) */

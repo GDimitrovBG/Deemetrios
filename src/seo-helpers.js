@@ -5,7 +5,7 @@
 //  bridal SEO performers.
 // =====================================================
 import { COLLECTIONS, DRESSES } from './data';
-import { SITE_URL, SITE_NAME, DEFAULT_IMG, DEFAULT_DESC } from './seo';
+import { SITE_URL, SITE_NAME, DEFAULT_IMG, DEFAULT_DESC, REVIEW_RATING, REVIEW_COUNT } from './seo';
 
 const COLLECTION_LABEL = Object.fromEntries(COLLECTIONS.map(c => [c.id, c.label]));
 
@@ -101,7 +101,7 @@ export function enhancedProductSchema(p, lang = 'bg') {
                (lang === 'bg' ? p.description_bg : p.description_en) || DEFAULT_DESC;
   const images = (p.imgs && p.imgs.length ? p.imgs : [p.img]).filter(Boolean);
 
-  return {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": heading,
@@ -121,6 +121,18 @@ export function enhancedProductSchema(p, lang = 'bg') {
       "name": collLabel,
     },
   };
+  // Google Product rich results require offers, review, OR aggregateRating.
+  // We don't show prices, so we use the salon's aggregateRating from Google reviews.
+  if (REVIEW_COUNT > 0) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": REVIEW_RATING,
+      "reviewCount": REVIEW_COUNT,
+      "bestRating": "5",
+      "worstRating": "1",
+    };
+  }
+  return schema;
 }
 
 /**
