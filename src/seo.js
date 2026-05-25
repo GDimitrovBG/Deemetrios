@@ -129,6 +129,9 @@ export function useSeo({
 
     // JSON-LD
     setJsonLd(jsonLdId, jsonLd);
+
+    // Prerender signal — tells the build-time crawler the head is fully set.
+    document.documentElement.setAttribute('data-seo-ready', '1');
   }, [title, description, image, url, type, lang, JSON.stringify(jsonLd), jsonLdId, keywords, noindex]);
 }
 
