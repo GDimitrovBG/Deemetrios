@@ -139,9 +139,14 @@ export function useSeo({
 //  JSON-LD schema builders
 // =====================================================
 
+// ── Google Reviews — update these when the numbers change ─────────────────
+// Set REVIEW_COUNT=0 to omit AggregateRating from schema entirely.
+const REVIEW_RATING = 4.9;
+const REVIEW_COUNT  = 0;   // ← FILL IN: total number of Google reviews
+
 /** Organization / LocalBusiness schema for the boutique */
 export function orgSchema() {
-  return {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
     "name": "Арети — Bridal Couture",
@@ -156,13 +161,13 @@ export function orgSchema() {
       "streetAddress": "ул. Крум Попов 63",
       "addressLocality": "София",
       "addressRegion": "София-град",
-      "postalCode": "1000",
+      "postalCode": "1421",
       "addressCountry": "BG",
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude":  42.6700,
-      "longitude": 23.3200,
+      "latitude":  42.6819,
+      "longitude": 23.3192,
     },
     "openingHoursSpecification": [
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday"], "opens": "11:00", "closes": "19:00" },
@@ -170,12 +175,23 @@ export function orgSchema() {
     "description": DEFAULT_DESC,
     "founder": "Арети",
     "foundingDate": "1992",
-    "brand": {
-      "@type": "Brand",
-      "name": "Demetrios",
-    },
+    "brand": { "@type": "Brand", "name": "Demetrios" },
     "areaServed": { "@type": "Country", "name": "Bulgaria" },
+    "sameAs": [
+      "https://www.facebook.com/AretiBridalSofia",
+      "https://www.instagram.com/areti_bridal",
+    ],
   };
+  if (REVIEW_COUNT > 0) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": REVIEW_RATING,
+      "reviewCount": REVIEW_COUNT,
+      "bestRating": "5",
+      "worstRating": "1",
+    };
+  }
+  return schema;
 }
 
 /** Product schema (used on product page) */
@@ -197,20 +213,31 @@ export function productSchema(p, lang = 'bg') {
 export function articleSchema(post, lang = 'bg') {
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     "headline": post.title,
     "image": post.image ? [post.image] : [DEFAULT_IMG],
     "datePublished": post.isoDate || post.date,
     "dateModified":  post.isoDate || post.date,
-    "author":  { "@type": "Organization", "name": SITE_NAME },
+    "author": {
+      "@type": "Organization",
+      "name": SITE_NAME,
+      "url": SITE_URL,
+      "logo": { "@type": "ImageObject", "url": DEFAULT_IMG },
+    },
     "publisher": {
       "@type": "Organization",
       "name": SITE_NAME,
-      "logo": { "@type": "ImageObject", "url": DEFAULT_IMG },
+      "url": SITE_URL,
+      "logo": { "@type": "ImageObject", "url": DEFAULT_IMG, "width": 1200, "height": 630 },
     },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": `${SITE_URL}/blog/${post.id}` },
     "description": post.excerpt || DEFAULT_DESC,
     "articleSection": post.category || "Блог",
     "inLanguage": lang,
+    "url": `${SITE_URL}/blog/${post.id}`,
+    "keywords": lang === 'bg'
+      ? "булчински рокли, сватбени рокли, Demetrios, Арети София"
+      : "wedding dresses, bridal gowns, Demetrios, Areti Sofia",
   };
 }
 

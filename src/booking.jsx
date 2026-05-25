@@ -3,6 +3,7 @@ import i18n from './i18n';
 import { Img } from './components';
 import { DRESSES, COLLECTIONS } from './data';
 import { useSeo, orgSchema, breadcrumbSchema } from './seo';
+import { faqSchema } from './seo-helpers';
 import { createBooking } from './api';
 
 // =====================================================
@@ -571,6 +572,23 @@ function BookingPage({ lang, setRoute, dress = null }) {
         { name: lang === "bg" ? "Начало" : "Home", url: "/" },
         { name: lang === "bg" ? "Запази час" : "Book a Fitting", url: "/booking" },
       ]),
+      lang === "bg"
+        ? faqSchema([
+            { q: "Безплатна ли е пробата?", a: "Да, първата консултация е безплатна. Включва 90 минути с личен консултант, чай и шампанско, и достъп до цялата колекция." },
+            { q: "Трябва ли да избера рокля предварително?", a: "За първа консултация — не е нужно. Ние ще ви помогнем да намерите рокля от колекцията. За втора проба е нужно да сте пробвали рокля при нас преди." },
+            { q: "Колко напред трябва да запазя час?", a: "Препоръчваме минимум 2-3 седмици предварително, особено за събота. Можем да намерим час и по-скоро ако имате спешна нужда — обадете се на +359 878 521 660." },
+            { q: "Мога ли да доведа приятелки или семейство?", a: "Разбира се! Препоръчваме максимум 2-3 придружаващи за по-спокойна атмосфера и по-лесно вземане на решение." },
+            { q: "Колко струват роклите?", a: "Нашите колекции са в ценови диапазон от 1500 до над 4000 евро. По-точна информация ще получите по време на консултацията." },
+            { q: "Правите ли промени и нагласяне?", a: "Да, работим с опитни шивачи за точно нагласяне на всяка рокля според вашата фигура." },
+          ])
+        : faqSchema([
+            { q: "Is the fitting free?", a: "Yes, the first consultation is completely free. It includes 90 minutes with a personal consultant, tea and champagne, and unlimited access to our full collection." },
+            { q: "Do I need to choose a dress beforehand?", a: "For a first consultation — no. We'll help you find the right dress from our collection. For a second fitting, you need to have tried a dress with us previously." },
+            { q: "How far in advance should I book?", a: "We recommend booking at least 2-3 weeks in advance, especially for Saturday appointments. We can sometimes accommodate sooner — call us at +359 878 521 660." },
+            { q: "Can I bring friends or family?", a: "Absolutely! We recommend a maximum of 2-3 guests for a relaxed atmosphere and easier decision-making." },
+            { q: "What is the price range?", a: "Our collections range from €1,500 to over €4,000. More specific pricing will be discussed during your consultation." },
+            { q: "Do you offer alterations?", a: "Yes, we work with experienced seamstresses to ensure a perfect fit for every gown." },
+          ]),
     ]},
   });
   const [step, setStep] = useState(0);
