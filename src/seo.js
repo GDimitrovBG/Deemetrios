@@ -141,8 +141,8 @@ export function useSeo({
 
 // ── Google Reviews — update these when the numbers change ─────────────────
 // Set REVIEW_COUNT=0 to omit AggregateRating from schema entirely.
-export const REVIEW_RATING = 4.9;
-export const REVIEW_COUNT  = 0;   // ← FILL IN: total number of Google reviews
+export const REVIEW_RATING = 4.8;
+export const REVIEW_COUNT  = 266; // Google reviews — update when count changes
 
 /** Organization / LocalBusiness schema for the boutique */
 export function orgSchema() {
