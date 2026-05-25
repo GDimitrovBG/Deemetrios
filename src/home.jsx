@@ -29,7 +29,7 @@ function HomeHeroV1({ t, setRoute }) {
             {t.home.view_all} <span style={{ fontFamily: "var(--f-serif)", fontSize: 18 }}>→</span>
           </button>
           <div style={{ textAlign: "right", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.85 }}>
-            <div>Romansa</div>
+            <div>Demetrios</div>
             <div style={{ fontFamily: "var(--f-serif)", fontSize: 13, fontStyle: "italic", letterSpacing: "0.05em", textTransform: "none", marginTop: 4 }}>spring · 2026</div>
           </div>
         </div>
@@ -64,7 +64,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
         <div className="meta-row fade-up delay-3">
           <div className="meta-stack">
             <span className="t-meta">In this issue</span>
-            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>The Romansa Collection</span>
+            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>Demetrios Bridal MMXXVI</span>
             <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
@@ -93,7 +93,7 @@ function HomeHeroV3({ t, setRoute }) {
           <p>{t.home.lede}</p>
           <div>
             <div className="v3-num">12</div>
-            <span>silhouettes · romansa</span>
+            <span>silhouettes · demetrios</span>
           </div>
           <div style={{ textAlign: "right" }}>
             <button className="btn btn-light" onClick={() => setRoute("collection")}>
@@ -274,7 +274,7 @@ function ServicesSection({ t }) {
 }
 
 function MarqueeStrip() {
-  const items = ["Bridal Couture", "MMXXVI Romansa", "Hand-Stitched", "Sofia", "Bridal Couture", "MMXXVI Romansa", "Hand-Stitched", "Sofia"];
+  const items = ["Bridal Couture", "MMXXVI Demetrios", "Hand-Stitched", "Sofia", "Bridal Couture", "MMXXVI Demetrios", "Hand-Stitched", "Sofia"];
   return (
     <div className="marquee-strip">
       <div className="marquee-track">

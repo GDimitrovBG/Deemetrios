@@ -570,7 +570,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         <section style={{ padding: "var(--s-9) var(--gutter)", borderTop: "1px solid var(--rule)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: 48 }}>
             <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(40px, 5vw, 72px)", lineHeight: 1 }}>{t.product.similar}</h2>
-            <span className="t-meta">— Romansa MMXXVI</span>
+            <span className="t-meta">— Demetrios MMXXVI</span>
           </div>
           <div className="dress-grid dress-grid--4">
             {DRESSES.filter(d => d.ref !== dress.ref).slice(0, 4).map((d) => (
