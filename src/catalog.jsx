@@ -554,7 +554,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <p style={{ fontSize: 11, fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--ink-mute)", marginTop: 8 }}>{t.product.size_warn}</p>
             <div className="cta-stack">
               <button className="btn btn-solid" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_book}</button>
-              <button className="btn">{t.product.cta_inquire}</button>
+              <button className="btn" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_inquire}</button>
               <button
                 className={`fav-btn-product ${isFav ? "on" : ""}`}
                 onClick={() => toggleFavorite && toggleFavorite(dress.ref)}
