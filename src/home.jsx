@@ -50,7 +50,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
         <div className="issue fade-in">
           <span>VOL. XII</span>
           <span className="dot"></span>
-          <span>SPRING MMXXVI</span>
+          <span>SPRING 2026</span>
           <span className="dot"></span>
           <span>SOFIA</span>
         </div>
@@ -64,7 +64,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
         <div className="meta-row fade-up delay-3">
           <div className="meta-stack">
             <span className="t-meta">In this issue</span>
-            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>Demetrios Bridal MMXXVI</span>
+            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>Demetrios Bridal 2026</span>
             <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
@@ -83,7 +83,7 @@ function HomeHeroV3({ t, setRoute }) {
       <div className="hero-content">
         <div className="top-strip fade-in" style={{ display: "flex", justifyContent: "space-between", width: "100%", fontSize: 10, letterSpacing: "0.32em", textTransform: "uppercase", opacity: 0.85 }}>
           <span>—— Atelier Areti</span>
-          <span>The Bridal Edit · MMXXVI</span>
+          <span>The Bridal Edit · 2026</span>
         </div>
         <div style={{ flex: 1 }}></div>
         <h1 className="marquee fade-up">
@@ -274,7 +274,7 @@ function ServicesSection({ t }) {
 }
 
 function MarqueeStrip() {
-  const items = ["Bridal Couture", "MMXXVI Demetrios", "Hand-Stitched", "Sofia", "Bridal Couture", "MMXXVI Demetrios", "Hand-Stitched", "Sofia"];
+  const items = ["Bridal Couture", "2026 Demetrios", "Hand-Stitched", "Sofia", "Bridal Couture", "2026 Demetrios", "Hand-Stitched", "Sofia"];
   return (
     <div className="marquee-strip">
       <div className="marquee-track">

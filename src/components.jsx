@@ -185,7 +185,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
         <div className="m-foot">
           <button className="m-cta" onClick={() => goTo("booking")}>{t.nav.bookings} →</button>
           <div className="m-foot-row">
-            <span className="m-meta">АРЕТИ · BRIDAL · SOFIA · EST MMXIV</span>
+            <span className="m-meta">АРЕТИ · BRIDAL · SOFIA · EST 1992</span>
             <div className="m-lang">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}>BG</button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}>EN</button>

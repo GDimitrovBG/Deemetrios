@@ -146,7 +146,7 @@ function AboutPage({ lang, setRoute }) {
         <div className="sec-head" style={{ marginBottom: 32 }}>
           <div className="left">— {isBg ? "Хроника" : "Timeline"}</div>
           <h2 style={{ fontSize: "clamp(40px, 5vw, 72px)" }}>{isBg ? "Тридесет" : "Thirty"} <em>{isBg ? "години" : "years"}</em></h2>
-          <div className="right">1992 → MMXXVI</div>
+          <div className="right">1992 → 2026</div>
         </div>
         {t.timeline.map((row, i) => (
           <div key={i} className="timeline-row">
