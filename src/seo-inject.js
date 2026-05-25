@@ -2,6 +2,22 @@ import { useEffect } from 'react';
 import { getSettings } from './api';
 
 let injected = false;
+const CACHE_KEY = 'areti_settings_cache';
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+function getCachedSettings() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts < CACHE_TTL) return data;
+  } catch {}
+  return null;
+}
+
+function cacheSettings(data) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+}
 
 const VALID_GA  = /^G-[A-Z0-9]{4,12}$/;
 const VALID_GTM = /^GTM-[A-Z0-9]{4,12}$/;
@@ -37,15 +53,10 @@ function injectMeta(name, content) {
   el.setAttribute('content', content);
 }
 
-export function useSeoInject() {
-  useEffect(() => {
-    if (injected) return;
-    injected = true;
+function applySettings(s) {
+  if (!s) return;
 
-    getSettings().then(s => {
-      if (!s) return;
-
-      let prefs = { analytics: false, marketing: false };
+  let prefs = { analytics: false, marketing: false };
       try {
         const raw = localStorage.getItem('areti_cookies');
         if (raw === 'all') prefs = { analytics: true, marketing: true };
@@ -95,6 +106,31 @@ export function useSeoInject() {
       if (s.yandex_verification && VALID_META.test(s.yandex_verification)) {
         injectMeta('yandex-verification', s.yandex_verification);
       }
-    }).catch(() => {});
+}
+
+export function useSeoInject() {
+  useEffect(() => {
+    if (injected) return;
+    injected = true;
+
+    // Apply cached settings immediately (zero latency on repeat visits)
+    const cached = getCachedSettings();
+    if (cached) applySettings(cached);
+
+    // Defer the network fetch so it never blocks the critical render path.
+    // requestIdleCallback fires when the browser is idle; fallback setTimeout.
+    const run = () => {
+      getSettings().then(s => {
+        if (!s) return;
+        cacheSettings(s);
+        if (!cached) applySettings(s); // first visit — apply after idle
+      }).catch(() => {});
+    };
+
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(run, { timeout: 4000 });
+    } else {
+      setTimeout(run, 1500);
+    }
   }, []);
 }
