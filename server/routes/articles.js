@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import Article from '../models/Article.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, optionalAuth } from '../middleware/auth.js';
 
 const router = Router();
 
-// Public: list visible articles
-router.get('/', async (req, res) => {
+// Public: list visible articles (authenticated users can pass ?all=1 to see drafts)
+router.get('/', optionalAuth, async (req, res) => {
   try {
-    const filter = req.query.all === '1' ? {} : { visible: true };
+    const showAll = req.query.all === '1' && req.user; // req.user set by optional auth below
+    const filter = showAll ? {} : { visible: true };
     const articles = await Article.find(filter)
       .sort({ date: -1 })
       .populate('author', 'name');

@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { sendEmail, sendEmailToMany, getAdminEmails, emailConfigured } from '../lib/email.js';
+import { requireAuth } from '../middleware/auth.js';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const router = Router();
 
@@ -24,11 +27,13 @@ router.post('/send-booking', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Send booking confirmation to customer + notification to ALL admin emails
+// Send booking confirmation to customer (called from public booking form)
 router.post('/send-customer', async (req, res) => {
   if (!emailConfigured()) return res.status(503).json({ error: 'Email not configured' });
   const { to, toName, subject, html } = req.body;
   if (!to || !subject) return res.status(400).json({ error: 'Missing to or subject' });
+  // Validate recipient email format — prevents header injection / abuse
+  if (!EMAIL_RE.test(String(to))) return res.status(400).json({ error: 'Invalid recipient email' });
 
   if (subject.length > 200) return res.status(400).json({ error: 'Subject too long' });
   if (html && html.length > 50000) return res.status(400).json({ error: 'Body too long' });
@@ -38,8 +43,8 @@ router.post('/send-customer', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Send notification to ALL admin emails (booking alerts, etc.)
-router.post('/notify-admins', async (req, res) => {
+// Send notification to ALL admin emails — requires auth (prevents spam/phishing abuse)
+router.post('/notify-admins', requireAuth, async (req, res) => {
   if (!emailConfigured()) return res.status(503).json({ error: 'Email not configured' });
   const { subject, html } = req.body;
   if (!subject) return res.status(400).json({ error: 'Missing subject' });

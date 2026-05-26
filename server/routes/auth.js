@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { randomInt } from 'crypto';
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import { signToken, signChallenge, verifyChallenge, requireAuth } from '../middleware/auth.js';
@@ -9,8 +10,9 @@ const router = Router();
 const CODE_TTL_MIN = 10;
 const MAX_ATTEMPTS = 5;
 
+// crypto.randomInt is cryptographically secure — unlike Math.random()
 function generateCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(randomInt(100000, 1000000));
 }
 
 async function issueCode(user) {

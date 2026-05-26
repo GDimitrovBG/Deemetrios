@@ -7,5 +7,7 @@ dist/
 .env.*.local
 server/node_modules/
 server/.env
+server/.env.production
+server/.env.staging
 server/areti-dump-*
 public/wp-content/uploads/

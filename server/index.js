@@ -35,7 +35,16 @@ const authLimiter = rateLimit({
   max: 20,
   message: { error: 'Твърде много опити. Опитайте пак след 15 минути.' },
 });
-app.use('/api/auth/login', authLimiter);
+// Apply to ALL auth routes — prevents OTP brute-force on /verify-code and /resend-code
+app.use('/api/auth', authLimiter);
+
+// Stricter limit specifically for resend — max 3 resends per 15 min per IP
+const resendLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  message: { error: 'Твърде много заявки за нов код. Опитайте пак след 15 минути.' },
+});
+app.use('/api/auth/resend-code', resendLimiter);
 
 const bookingLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,

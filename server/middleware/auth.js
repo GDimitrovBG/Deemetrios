@@ -22,6 +22,18 @@ export function verifyChallenge(token) {
   }
 }
 
+// Optional auth — populates req.user if a valid token is present, never rejects
+export async function optionalAuth(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Bearer ')) return next();
+  try {
+    const decoded = jwt.verify(header.split(' ')[1], SECRET());
+    const user = await User.findById(decoded.id).select('-password');
+    if (user?.active) req.user = user;
+  } catch { /* invalid token — silently ignore */ }
+  next();
+}
+
 export async function requireAuth(req, res, next) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
