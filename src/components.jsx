@@ -205,22 +205,24 @@ function Footer({ lang, setRoute }) {
       <div className="inner">
         <div className="top">
           <div>
-            <div className="brand-big">{t.brand}<em>{t.brand_em}</em></div>
-            <p className="brand-tag">{t.tagline}</p>
-            <div style={{ marginTop: 32, maxWidth: 320 }}>
-              <h4>{t.newsletter}</h4>
-              <p style={{ fontFamily: "var(--f-serif)", fontSize: 14, opacity: 0.7, marginBottom: 16 }}>{t.newsletter_p}</p>
-              <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,253,248,0.3)", paddingBottom: 8 }}>
-                <input
-                  type="email"
-                  placeholder={t.newsletter_ph}
-                  style={{ background: "transparent", border: 0, color: "var(--bg)", fontFamily: "var(--f-serif)", fontSize: 16, fontStyle: "italic", flex: 1, outline: "none" }}
-                />
-                <button style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--champagne)", padding: "4px 0", fontWeight: 500 }}>
-                  {t.newsletter_btn} →
-                </button>
+            <div className="brand-big">{t.brand}{t.brand_em ? <em>{t.brand_em}</em> : null}</div>
+            {t.tagline ? <p className="brand-tag">{t.tagline}</p> : null}
+            {t.newsletter ? (
+              <div style={{ marginTop: 32, maxWidth: 320 }}>
+                <h4>{t.newsletter}</h4>
+                <p style={{ fontFamily: "var(--f-serif)", fontSize: 14, opacity: 0.7, marginBottom: 16 }}>{t.newsletter_p}</p>
+                <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,253,248,0.3)", paddingBottom: 8 }}>
+                  <input
+                    type="email"
+                    placeholder={t.newsletter_ph}
+                    style={{ background: "transparent", border: 0, color: "var(--bg)", fontFamily: "var(--f-serif)", fontSize: 16, fontStyle: "italic", flex: 1, outline: "none" }}
+                  />
+                  <button style={{ fontSize: 10, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--champagne)", padding: "4px 0", fontWeight: 500 }}>
+                    {t.newsletter_btn} →
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
           <div>
             <h4>{t.shop}</h4>

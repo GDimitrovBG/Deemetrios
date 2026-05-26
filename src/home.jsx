@@ -30,7 +30,7 @@ function HomeHeroV1({ t, setRoute }) {
           </button>
           <div style={{ textAlign: "right", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.85 }}>
             <div>Demetrios</div>
-            <div style={{ fontFamily: "var(--f-serif)", fontSize: 13, fontStyle: "italic", letterSpacing: "0.05em", textTransform: "none", marginTop: 4 }}>spring · 2026</div>
+            <div style={{ fontFamily: "var(--f-serif)", fontSize: 13, fontStyle: "italic", letterSpacing: "0.05em", textTransform: "none", marginTop: 4 }}>Арети · колекция 2026 · София</div>
           </div>
         </div>
       </div>
@@ -57,14 +57,13 @@ function HomeHeroV2({ t, lang, setRoute }) {
         <div className="fade-up delay-1" style={{ marginTop: 60 }}>
           <h1 className="t-display">
             АРЕТИ
-            <em>с любов.</em>
+            <em>София.</em>
           </h1>
           <p className="lede">{t.home.lede}</p>
         </div>
         <div className="meta-row fade-up delay-3">
           <div className="meta-stack">
-            <span className="t-meta">In this issue</span>
-            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>Demetrios Bridal 2026</span>
+            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>Колекция Demetrios 2026</span>
             <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
@@ -274,7 +273,7 @@ function ServicesSection({ t }) {
 }
 
 function MarqueeStrip() {
-  const items = ["Bridal Couture", "2026 Demetrios", "Hand-Stitched", "Sofia", "Bridal Couture", "2026 Demetrios", "Hand-Stitched", "Sofia"];
+  const items = ["Булчински рокли", "2026 Demetrios", "Ръчна изработка", "София", "Булчински рокли", "2026 Demetrios", "Ръчна изработка", "София"];
   return (
     <div className="marquee-strip">
       <div className="marquee-track">
@@ -286,6 +285,70 @@ function MarqueeStrip() {
         ))}
       </div>
     </div>
+  );
+}
+
+function PriceRangesSection({ t, lang, setRoute }) {
+  const ranges = [
+    {
+      name: "Cosmobella",
+      range: "1 000 – 1 700 €",
+      desc: lang === "bg" ? "Модерна и смела — за булката с индивидуален стил." : "Modern and bold — for the bride with individual style.",
+      id: "cosmobella",
+    },
+    {
+      name: "Demetrios",
+      range: "1 300 – 2 500 €",
+      desc: lang === "bg" ? "Класическа и елегантна булчинска линия." : "Classic and elegant bridal line.",
+      id: "demetrios",
+    },
+    {
+      name: "Destination",
+      range: "1 000 – 1 400 €",
+      desc: lang === "bg" ? "Романтични рокли за сватба навсякъде по света." : "Romantic gowns for a wedding anywhere in the world.",
+      id: "destination",
+    },
+    {
+      name: "Platinum",
+      range: "2 500 – 4 000 €",
+      desc: lang === "bg" ? "Луксозна серия с богата бродерия и кристали." : "Luxury series with rich embroidery and crystals.",
+      id: "platinum",
+    },
+  ];
+  return (
+    <section className="section section-tight" style={{ background: "var(--ink)", color: "var(--bg)", maxWidth: "100%" }}>
+      <div style={{ maxWidth: "var(--maxw)", margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 16 }}>— {lang === "bg" ? "Ценови диапазон" : "Price ranges"} —</div>
+          <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(32px, 4vw, 56px)", color: "var(--bg)", fontWeight: 400 }}>
+            {lang === "bg" ? "Колекции" : "Collections"}{" "}
+            <em style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--champagne)" }}>
+              {lang === "bg" ? "и цени" : "& prices"}
+            </em>
+          </h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1, background: "rgba(255,255,255,0.08)" }}>
+          {ranges.map((r) => (
+            <div
+              key={r.id}
+              style={{ padding: "40px 32px", background: "var(--ink)", cursor: "pointer", transition: "background 0.2s" }}
+              onClick={() => setRoute("collection")}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+              onMouseLeave={e => e.currentTarget.style.background = "var(--ink)"}
+            >
+              <div style={{ fontFamily: "var(--f-serif)", fontSize: 11, letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--champagne)", marginBottom: 14 }}>{r.name}</div>
+              <div style={{ fontFamily: "var(--f-display)", fontSize: "clamp(26px, 3vw, 42px)", color: "var(--bg)", lineHeight: 1, marginBottom: 14 }}>{r.range}</div>
+              <div style={{ fontFamily: "var(--f-serif)", fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}>{r.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: 44 }}>
+          <button className="btn btn-light" onClick={() => setRoute("collection")}>
+            {t.home.view_all} →
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -331,6 +394,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />
       <MarqueeStrip />
       <StorySection t={t} setRoute={setRoute} />
+      <PriceRangesSection t={t} lang={lang} setRoute={setRoute} />
       <ServicesSection t={t} />
       <CtaBand t={t} setRoute={setRoute} />
     </div>
