@@ -181,6 +181,14 @@ export function orgSchema() {
       "https://www.facebook.com/AretiBridalSofia",
       "https://www.instagram.com/areti_bridal",
     ],
+    // speakable tells AI/voice assistants which sections to read aloud / cite
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": ["h1", ".lede", ".org-desc"],
+    },
+    "hasMap": "https://maps.google.com/?q=ул.+Крум+Попов+63,+Лозенец,+София",
+    "knowsAbout": ["Булчински рокли", "Demetrios", "Сватбени рокли", "Вечерни рокли", "Bridal couture"],
+    "slogan": "Официален представител на Demetrios в България от 1992 г.",
   };
   if (REVIEW_COUNT > 0) {
     schema.aggregateRating = {

@@ -160,6 +160,31 @@ router.get('/robots.txt', async (req, res) => {
     let txt = `User-agent: *
 Allow: /
 
+# AI crawlers — explicitly allowed so ChatGPT, Perplexity, Gemini, Claude can cite us
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Context file for AI systems
+LLMs: ${SITE_URL}/llms.txt
+
 Sitemap: ${SITE_URL}/api/sitemap-index.xml
 Sitemap: ${SITE_URL}/api/sitemap.xml
 Sitemap: ${SITE_URL}/api/sitemap-images.xml
