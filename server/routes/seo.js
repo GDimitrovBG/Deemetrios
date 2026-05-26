@@ -190,7 +190,11 @@ Sitemap: ${SITE_URL}/api/sitemap.xml
 Sitemap: ${SITE_URL}/api/sitemap-images.xml
 `;
     if (settings.robots_extra) {
-      txt += '\n' + settings.robots_extra + '\n';
+      // Strip anything that isn't valid robots.txt content (printable ASCII + newlines)
+      const safe = String(settings.robots_extra)
+        .slice(0, 2000)
+        .replace(/[^\x20-\x7E\n\r]/g, '');
+      txt += '\n' + safe + '\n';
     }
 
     res.set('Content-Type', 'text/plain');

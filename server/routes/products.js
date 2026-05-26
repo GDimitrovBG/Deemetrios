@@ -1,8 +1,19 @@
 import { Router } from 'express';
 import Product from '../models/Product.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
 
 const router = Router();
+
+// Whitelist of fields editors are allowed to set — prevents mass assignment
+const ALLOWED = [
+  'ref', 'name_bg', 'name_en', 'collection', 'silhouette', 'silhouette_en',
+  'price', 'img', 'imgs', 'fabric', 'badge',
+  'description_bg', 'description_en',
+  'seo_title_bg', 'seo_description_bg', 'seo_title_en', 'seo_description_en',
+];
+function pick(body) {
+  return Object.fromEntries(ALLOWED.filter(k => k in body).map(k => [k, body[k]]));
+}
 
 // Public: list all products
 router.get('/', async (req, res) => {
@@ -28,7 +39,7 @@ router.get('/:ref', async (req, res) => {
 // Protected: create
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const product = await Product.create(pick(req.body));
     res.status(201).json(product);
   } catch (err) {
     if (err.code === 11000) {
@@ -43,7 +54,7 @@ router.put('/:ref', requireAuth, async (req, res) => {
   try {
     const product = await Product.findOneAndUpdate(
       { ref: req.params.ref },
-      req.body,
+      pick(req.body),
       { new: true, runValidators: true }
     );
     if (!product) return res.status(404).json({ error: 'Продуктът не е намерен' });
@@ -53,8 +64,8 @@ router.put('/:ref', requireAuth, async (req, res) => {
   }
 });
 
-// Protected: delete
-router.delete('/:ref', requireAuth, async (req, res) => {
+// Protected: delete — admin only
+router.delete('/:ref', requireAuth, requireRole('admin'), async (req, res) => {
   try {
     await Product.findOneAndDelete({ ref: req.params.ref });
     res.json({ message: 'Изтрито' });

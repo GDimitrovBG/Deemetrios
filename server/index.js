@@ -21,7 +21,11 @@ const PORT = process.env.PORT || 4000;
 app.set('trust proxy', 1); // Caddy reverse proxy — needed for correct rate-limiting by real client IP
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  // API server — responses are JSON, not HTML. Use a restrictive deny-all CSP
+  // so any accidental HTML error pages can't load external resources.
+  contentSecurityPolicy: {
+    directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] },
+  },
   crossOriginEmbedderPolicy: false,
 }));
 app.use(cors({

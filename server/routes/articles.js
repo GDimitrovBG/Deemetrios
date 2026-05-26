@@ -1,8 +1,17 @@
 import { Router } from 'express';
 import Article from '../models/Article.js';
-import { requireAuth, optionalAuth } from '../middleware/auth.js';
+import { requireAuth, requireRole, optionalAuth } from '../middleware/auth.js';
 
 const router = Router();
+
+const ALLOWED = [
+  'title_bg', 'title_en', 'excerpt_bg', 'excerpt_en',
+  'content', 'img', 'date', 'category', 'visible',
+  'relatedRefs', 'seo_title', 'seo_description',
+];
+function pick(body) {
+  return Object.fromEntries(ALLOWED.filter(k => k in body).map(k => [k, body[k]]));
+}
 
 // Public: list visible articles (authenticated users can pass ?all=1 to see drafts)
 router.get('/', optionalAuth, async (req, res) => {
@@ -32,7 +41,7 @@ router.get('/:id', async (req, res) => {
 // Protected: create
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const article = await Article.create({ ...req.body, author: req.user._id });
+    const article = await Article.create({ ...pick(req.body), author: req.user._id });
     res.status(201).json(article);
   } catch (err) {
     res.status(500).json({ error: 'Грешка при създаване' });
@@ -44,7 +53,7 @@ router.put('/:id', requireAuth, async (req, res) => {
   try {
     const article = await Article.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      pick(req.body),
       { new: true, runValidators: true }
     );
     if (!article) return res.status(404).json({ error: 'Статията не е намерена' });
@@ -54,8 +63,8 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
-// Protected: delete
-router.delete('/:id', requireAuth, async (req, res) => {
+// Protected: delete — admin only
+router.delete('/:id', requireAuth, requireRole('admin'), async (req, res) => {
   try {
     await Article.findByIdAndDelete(req.params.id);
     res.json({ message: 'Изтрито' });
