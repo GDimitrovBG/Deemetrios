@@ -19,7 +19,7 @@ function sanitizeHTML(html) {
 function getActivePosts(lang) {
   try {
     const stored = JSON.parse(localStorage.getItem('areti_articles') || 'null');
-    if (!stored || !stored.length) return BLOG_POSTS;
+    if (!stored || !stored.length) return [...BLOG_POSTS].sort((a, b) => new Date(b.isoDate) - new Date(a.isoDate));
     // Build a lookup from the original static posts for fallback data
     const staticById = {};
     BLOG_POSTS.forEach(p => { staticById[String(p.id)] = p; });
