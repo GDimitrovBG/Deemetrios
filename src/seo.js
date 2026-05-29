@@ -30,21 +30,11 @@ function setLink(rel, href) {
   }
   el.setAttribute('href', href);
 }
-function setHreflangs(path) {
-  // Remove existing hreflang entries
+function clearHreflangs() {
+  // The site is bilingual at a single URL (client-side language toggle), so there
+  // are no distinct language URLs to declare. Self-referential hreflang adds no
+  // value and Search Console flags it — a self-referencing canonical is enough.
   document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
-  const variants = [
-    { lang: 'bg',      url: `${SITE_URL}${path}` },
-    { lang: 'en',      url: `${SITE_URL}${path}` },
-    { lang: 'x-default', url: `${SITE_URL}${path}` },
-  ];
-  for (const v of variants) {
-    const el = document.createElement('link');
-    el.setAttribute('rel', 'alternate');
-    el.setAttribute('hreflang', v.lang);
-    el.setAttribute('href', v.url);
-    document.head.appendChild(el);
-  }
 }
 function setJsonLd(id, data) {
   // remove existing
@@ -123,9 +113,8 @@ export function useSeo({
     // Canonical
     setLink('canonical', finalUrl);
 
-    // hreflang alternates (bg + en + x-default)
-    const path = url ? (url.startsWith('http') ? new URL(url).pathname : (url.startsWith('/') ? url : '/' + url)) : '/';
-    setHreflangs(path);
+    // Remove any stale hreflang tags (single-URL bilingual site — none needed)
+    clearHreflangs();
 
     // JSON-LD
     setJsonLd(jsonLdId, jsonLd);
