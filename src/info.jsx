@@ -3,7 +3,8 @@ import i18n from './i18n';
 import { IMG, DRESSES } from './data';
 import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
-import { useSeo, orgSchema, articleSchema, breadcrumbSchema } from './seo';
+import { useSeo, orgSchema, articleSchema, breadcrumbSchema, blogPostPath } from './seo';
+import { faqSchema } from './seo-helpers';
 
 function sanitizeHTML(html) {
   if (!html) return '';
@@ -423,15 +424,15 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
   const posts = getActivePosts(lang);
   const [featured, ...rest] = posts;
   useSeo({
-    title: isBg ? "Дневник — статии за булчински рокли и сватбен стил" : "Journal — Wedding Dress & Style Articles",
+    title: isBg ? "Блог — статии за булчински рокли и сватбен стил" : "Blog — Wedding Dress & Style Articles",
     description: isBg
-      ? "Дневникът на Арети — съвети за избор на булчинска рокля, силуети, материи, тенденции и истории зад марката Demetrios. Полезни статии за всяка булка."
-      : "The Areti journal — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
+      ? "Блогът на Арети — съвети за избор на булчинска рокля, силуети, материи, тенденции и истории зад марката Demetrios. Полезни статии за всяка булка."
+      : "The Areti blog — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
     image: featured?.image, url: "/blog", lang,
     keywords: "блог булчински рокли, съвети за булки, сватбен стил, тенденции 2026, Demetrios истории",
     jsonLd: breadcrumbSchema([
       { name: isBg ? "Начало" : "Home", url: "/" },
-      { name: isBg ? "Дневник" : "Journal", url: "/blog" },
+      { name: isBg ? "Блог" : "Blog", url: "/blog" },
     ]),
   });
 
@@ -504,19 +505,21 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
     const col = { demetrios: 'Demetrios', cosmobella: 'Cosmobella', platinum: 'Platinum', destination: 'Destination' }[p.collection] || '';
     return `${col} ${p.ref}`.trim();
   };
+  const postPath = blogPostPath(post);
   useSeo({
     title: post.seo_title || post.title,
     description: post.seo_description || post.excerpt,
-    image: post.image, url: `/blog/${post.id}`, type: "article", lang,
+    image: post.image, url: postPath, type: "article", lang,
     keywords: `${post.title}, ${post.category}, блог Арети, булчински рокли`,
     jsonLd: {
       "@graph": [
         articleSchema(post),
         breadcrumbSchema([
           { name: "Арети",     url: "/" },
-          { name: "Дневник",   url: "/blog" },
-          { name: post.title,  url: `/blog/${post.id}` },
+          { name: "Блог",      url: "/blog" },
+          { name: post.title,  url: postPath },
         ]),
+        ...(post.faq?.length ? [faqSchema(post.faq)] : []),
       ],
     },
     jsonLdId: `post-${post.id}`,

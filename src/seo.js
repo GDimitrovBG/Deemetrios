@@ -227,8 +227,14 @@ export function productSchema(p, lang = 'bg') {
   return schema;
 }
 
+/** Canonical path for a blog post — prefers SEO slug, falls back to numeric id */
+export function blogPostPath(post) {
+  return post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`;
+}
+
 /** Article schema (used on blog post page) */
 export function articleSchema(post, lang = 'bg') {
+  const url = `${SITE_URL}${blogPostPath(post)}`;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -248,11 +254,11 @@ export function articleSchema(post, lang = 'bg') {
       "url": SITE_URL,
       "logo": { "@type": "ImageObject", "url": DEFAULT_IMG, "width": 1200, "height": 630 },
     },
-    "mainEntityOfPage": { "@type": "WebPage", "@id": `${SITE_URL}/blog/${post.id}` },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": url },
     "description": post.excerpt || DEFAULT_DESC,
     "articleSection": post.category || "Блог",
     "inLanguage": lang,
-    "url": `${SITE_URL}/blog/${post.id}`,
+    "url": url,
     "keywords": lang === 'bg'
       ? "булчински рокли, сватбени рокли, Demetrios, Арети София"
       : "wedding dresses, bridal gowns, Demetrios, Areti Sofia",
@@ -273,19 +279,16 @@ export function breadcrumbSchema(items) {
   };
 }
 
-/** WebSite schema for home page (enables sitelinks search box) */
+/** WebSite schema for home page */
 export function websiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": SITE_NAME,
+    "alternateName": "Areti Wedding Salon",
     "url":  SITE_URL,
     "inLanguage": "bg",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": `${SITE_URL}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+    "publisher": { "@type": "Organization", "name": SITE_NAME, "url": SITE_URL },
   };
 }
 

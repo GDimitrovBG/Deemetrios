@@ -206,7 +206,7 @@ const i18n = {
       ],
     },
     blog: {
-      title: "Дневник",
+      title: "Блог",
       title_em: "Аре­ти",
       feature_meta: "Истории · Февруари 2026 · 8 мин",
       feature_title: "Какво да попиташ на",
@@ -677,7 +677,7 @@ const i18n = {
     },
     blog: {
       title: "The Areti",
-      title_em: "Journal",
+      title_em: "Blog",
       feature_meta: "Stories · February 2026 · 8 min",
       feature_title: "What to ask at",
       feature_title_em: "your first fitting",
