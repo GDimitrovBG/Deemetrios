@@ -50,7 +50,7 @@ async function loadRoutes() {
   ];
 
   const productRoutes = data.DRESSES.map(d => `/product/${d.ref}`);
-  const blogRoutes = blog.BLOG_POSTS.map(b => `/blog/${b.id}`);
+  const blogRoutes = blog.BLOG_POSTS.map(b => b.slug ? `/blog/${b.slug}` : `/blog/${b.id}`);
 
   return [...staticRoutes, ...productRoutes, ...blogRoutes];
 }

@@ -69,8 +69,9 @@ router.get('/sitemap.xml', async (req, res) => {
 
     for (const a of articles) {
       const mod = (a.updatedAt || a.date) ? new Date(a.updatedAt || a.date).toISOString().split('T')[0] : now;
+      const blogPath = a.slug ? `/blog/${a.slug}` : `/blog/${a._id}`;
       xml += `  <url>
-    <loc>${SITE_URL}/blog/${a._id}</loc>
+    <loc>${SITE_URL}${blogPath}</loc>
     <lastmod>${mod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

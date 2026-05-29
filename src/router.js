@@ -102,11 +102,23 @@ export function pathToState(pathname) {
   if (p === '/contact')     return { route: 'contact' };
   if (p === '/blog')        return { route: 'blog' };
 
-  const blogMatch = p.match(/^\/blog\/(\d+)$/);
-  if (blogMatch) {
-    const id = Number(blogMatch[1]);
-    if (BLOG_POSTS.some(b => b.id === id)) {
-      return { route: 'blog-post', blogPostId: id };
+  // Slug-based blog URLs: /blog/bulchinska-roklia-moment-ne-prosto-pokupka
+  const blogSlugMatch = p.match(/^\/blog\/([a-z][a-z0-9-]+)$/);
+  if (blogSlugMatch) {
+    const slug = blogSlugMatch[1];
+    const post = BLOG_POSTS.find(b => b.slug === slug);
+    if (post) return { route: 'blog-post', blogPostId: post.id };
+    return { redirect: '/blog' };
+  }
+
+  // Legacy numeric blog URLs: /blog/25957256 → redirect to slug
+  const blogNumMatch = p.match(/^\/blog\/(\d+)$/);
+  if (blogNumMatch) {
+    const id = Number(blogNumMatch[1]);
+    const post = BLOG_POSTS.find(b => b.id === id);
+    if (post) {
+      const target = post.slug ? `/blog/${post.slug}` : null;
+      return target ? { redirect: target } : { route: 'blog-post', blogPostId: id };
     }
     return { redirect: '/blog' };
   }
@@ -130,7 +142,11 @@ export function stateToPath({ route, collectionId, productRef, blogPostId }) {
     case 'demetrios':   return '/demetrios';
     case 'contact':     return '/contact';
     case 'blog':        return '/blog';
-    case 'blog-post':   return blogPostId ? `/blog/${blogPostId}` : '/blog';
+    case 'blog-post': {
+      if (!blogPostId) return '/blog';
+      const post = BLOG_POSTS.find(b => b.id === blogPostId);
+      return post?.slug ? `/blog/${post.slug}` : `/blog/${blogPostId}`;
+    }
     case 'privacy':     return '/privacy';
     case 'terms':       return '/terms';
     case 'cookies':     return '/cookies';
