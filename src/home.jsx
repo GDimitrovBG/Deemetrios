@@ -25,9 +25,14 @@ function HomeHeroV1({ t, setRoute }) {
         </h1>
         <div className="bottom-strip fade-up delay-2">
           <p className="tag">{t.home.lede}</p>
-          <button className="btn btn-light" onClick={() => setRoute("collection")}>
-            {t.home.view_all} <span style={{ fontFamily: "var(--f-serif)", fontSize: 18 }}>→</span>
-          </button>
+          <div className="hero-v1-ctas">
+            <button className="btn btn-light" onClick={() => setRoute("collection")}>
+              {t.home.view_all} <span style={{ fontFamily: "var(--f-serif)", fontSize: 18 }}>→</span>
+            </button>
+            <button className="btn btn-outline hero-v1-book" onClick={() => setRoute("booking")}>
+              {t.home.cta_band_btn} →
+            </button>
+          </div>
           <div style={{ textAlign: "right", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.85 }}>
             <div>Demetrios</div>
             <div style={{ fontFamily: "var(--f-serif)", fontSize: 13, fontStyle: "italic", letterSpacing: "0.05em", textTransform: "none", marginTop: 4 }}>Арети · колекция 2026 · София</div>
