@@ -138,6 +138,8 @@ a { color: inherit; text-decoration: none; }
   transition: all 240ms cubic-bezier(.2,.7,.2,1);
   cursor: pointer;
   white-space: nowrap;
+  touch-action: manipulation;       /* eliminates 300ms iOS tap delay */
+  -webkit-tap-highlight-color: rgba(0,0,0,0.08); /* visible tap feedback on iOS */
 }
 .btn:hover {
   background: var(--ink);
@@ -1246,6 +1248,8 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--rule);
   padding: 24px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.05);
   transition: all 200ms;
   background: var(--bg-soft);
 }
@@ -2036,6 +2040,8 @@ a { color: inherit; text-decoration: none; }
   padding: 16px var(--gutter);
   border-bottom: 1px solid rgba(255,253,248,0.07);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255,253,248,0.1);
   display: flex; justify-content: space-between; align-items: center;
   color: rgba(255,253,248,0.9);
   transition: color 160ms;
@@ -2336,8 +2342,14 @@ a { color: inherit; text-decoration: none; }
   .times-grid { grid-template-columns: repeat(3, 1fr); }
   .summary { position: static; padding: 24px; }
   .summary h4 { font-size: 26px; }
-  .step-nav { margin-top: 32px; gap: 12px; padding-right: 88px; /* avoid float-dial overlap on mobile */ }
-  .step-nav .btn { padding: 12px 18px; font-size: 10px; letter-spacing: 0.22em; }
+  .step-nav {
+    margin-top: 32px; gap: 10px;
+    flex-direction: column-reverse; /* Напред first, Назад below */
+  }
+  .step-nav .btn {
+    width: 100%; justify-content: center;
+    padding: 16px 18px; font-size: 11px; letter-spacing: 0.22em;
+  }
   .confirmation { padding: 40px 20px; }
   .conf-card { padding: 24px; }
 
