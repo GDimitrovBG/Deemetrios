@@ -16,7 +16,6 @@ function HomeHeroV1({ t, setRoute }) {
       <div className="hero-content">
         <div className="top-strip fade-in">
           <span>{t.home.tagline_top_left}</span>
-          <span>N°  XXVI</span>
           <span>{t.home.tagline_top_right}</span>
         </div>
         <h1 className="t-display fade-up">

@@ -207,7 +207,6 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           )}
         </div>
         <div className="meta-stack">
-          <div className="crumb">N° XXVI</div>
           <div className="count">{visibleItems.length} / {displayList.length} {isBg ? 'модела' : 'styles'}</div>
         </div>
       </div>
@@ -643,7 +642,6 @@ function AccessoriesPage({ lang, setRoute }) {
           <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 19, color: "var(--ink-soft)", marginTop: 24, maxWidth: 480 }}>{t.accessories.lede}</p>
         </div>
         <div className="meta-stack">
-          <div className="crumb">N° XXVI</div>
           <div className="count">{items.length} продукта</div>
         </div>
       </div>
