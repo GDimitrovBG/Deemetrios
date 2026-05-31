@@ -219,7 +219,7 @@ function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
           <h3>{name}</h3>
           <div className="meta">{sil} · {d.fabric}</div>
         </div>
-        <div className="price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>
+        {d.price > 0 && <div className="price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>}
       </div>
     </article>
   );

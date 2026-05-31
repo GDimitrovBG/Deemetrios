@@ -2474,7 +2474,12 @@ a { color: inherit; text-decoration: none; }
      pointer events — otherwise the transparent column swallows taps on
      buttons behind it (e.g. the booking "Напред →"). */
   pointer-events: none;
+  transition: opacity 200ms;
 }
+/* Hide the floating dial while the mobile menu is open (it sits above the
+   drawer otherwise and pokes through at the bottom-right). */
+body.drawer-open .float-dial { opacity: 0; pointer-events: none; }
+body.drawer-open .float-dial .fd-main { pointer-events: none; }
 
 .fd-main {
   width: 52px; height: 52px; border-radius: 50%;

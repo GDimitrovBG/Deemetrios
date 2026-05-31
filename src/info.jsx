@@ -441,7 +441,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
       <div className="blog">
         <div className="blog-head">
           <div className="t-eyebrow" style={{ marginBottom: 24 }}>— {isBg ? "Истории, ритуали, занаят" : "Stories, rituals, craft"}</div>
-          <h1>{isBg ? "Нашият" : "Our"} <em>{isBg ? "дневник" : "journal"}</em></h1>
+          <h1>{isBg ? "Нашият" : "Our"} <em>{isBg ? "блог" : "blog"}</em></h1>
         </div>
 
         {/* Featured post */}

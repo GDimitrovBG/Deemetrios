@@ -63,7 +63,8 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    document.body.classList.toggle("drawer-open", drawerOpen);
+    return () => { document.body.style.overflow = ""; document.body.classList.remove("drawer-open"); };
   }, [drawerOpen]);
 
   const links = [
