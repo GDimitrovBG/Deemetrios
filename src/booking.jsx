@@ -34,7 +34,7 @@ async function notifyAdmins({ subject, html }) {
 
 function sendBookingEmails(booking, lang) {
   const isBg = lang === 'bg';
-  const { name, email, phone, type, location, date, time, budget, notes, dressRefs, size } = booking;
+  const { name, email, phone, type, date, time, budget, notes, dressRefs } = booking;
   const dressLine = dressRefs?.length ? dressRefs.join(', ') : (isBg ? 'не е избрана' : 'none selected');
 
   // 1. Email to customer
@@ -63,10 +63,8 @@ function sendBookingEmails(booking, lang) {
               </div>
               <table style="width:100%;font-size:14px;line-height:1.8;color:#4a4540;">
                 <tr><td style="width:140px;color:#8a7556;">${isBg ? 'Тип' : 'Type'}</td><td>${type}</td></tr>
-                <tr><td style="color:#8a7556;">${isBg ? 'Локация' : 'Location'}</td><td>${location}</td></tr>
                 <tr><td style="color:#8a7556;">${isBg ? 'Дата' : 'Date'}</td><td>${date}</td></tr>
                 <tr><td style="color:#8a7556;">${isBg ? 'Час' : 'Time'}</td><td>${time || (isBg ? 'ще уточним' : 'to be confirmed')}</td></tr>
-                ${size ? `<tr><td style="color:#8a7556;">${isBg ? 'Размер' : 'Size'}</td><td>${size}</td></tr>` : ''}
                 ${dressRefs?.length ? `<tr><td style="color:#8a7556;">${isBg ? 'Рокли' : 'Dresses'}</td><td>${dressLine}</td></tr>` : ''}
               </table>
             </div>
@@ -94,10 +92,8 @@ function sendBookingEmails(booking, lang) {
           <tr><td style="font-weight:600;">Имейл</td><td><a href="mailto:${email}">${email || '—'}</a></td></tr>
           <tr><td style="font-weight:600;">Телефон</td><td><a href="tel:${phone}">${phone || '—'}</a></td></tr>
           <tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Тип</td><td>${type}</td></tr>
-          <tr><td style="font-weight:600;">Локация</td><td>${location}</td></tr>
           <tr><td style="font-weight:600;">Дата</td><td>${date}</td></tr>
           <tr><td style="font-weight:600;">Час</td><td>${time || 'за уточняване'}</td></tr>
-          <tr><td style="font-weight:600;">Размер</td><td>${size || '—'}</td></tr>
           <tr><td style="font-weight:600;">Бюджет</td><td>${budget || '—'}</td></tr>
           <tr><td style="font-weight:600;">Рокли</td><td>${dressLine}</td></tr>
           ${notes ? `<tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Бележки</td><td>${notes}</td></tr>` : ''}
@@ -202,33 +198,6 @@ function Step1Type({ t, data, setData, dressRefs, setDressRefs }) {
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function Step2Location({ t, data, setData }) {
-  return (
-    <div className="booking-form">
-      <div className="step-tag">{t.booking.step2_eye}</div>
-      <h3>{t.booking.step2_title} <em>{t.booking.step2_title_em || ""}</em></h3>
-      <p className="help">{t.booking.step2_help}</p>
-      <div className="option-cards">
-        {t.booking.locations.map((loc, i) => (
-          <div
-            key={i}
-            className={`option-card ${data.location === i ? "on" : ""}`}
-            onClick={() => setData({ ...data, location: i })}
-            style={{ minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between" }}
-          >
-            <div>
-              <div className="oc-eyebrow">— Студио</div>
-              <h4 style={{ fontFamily: "var(--f-display)", fontSize: 48, lineHeight: 0.95, marginBottom: 12 }}>{loc.name}</h4>
-              <p className="oc-desc" style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 16 }}>{loc.addr}</p>
-            </div>
-            <div className="oc-price">{loc.hours}</div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -367,18 +336,9 @@ function Step4Details({ t, data, setData }) {
         <label>{lab.email}</label>
         <input type="email" value={data.email || ""} onChange={(e) => setData({ ...data, email: e.target.value })} placeholder="maria@example.com" />
       </div>
-      <div className="fields-row">
-        <div className="field">
-          <label>{lab.size}</label>
-          <select value={data.size || ""} onChange={(e) => setData({ ...data, size: e.target.value })} style={{ borderBottom: "1px solid var(--rule)", background: "transparent" }}>
-            <option value="">{t.booking.size_select}</option>
-            {t.booking.size_options.map(o => <option key={o}>{o}</option>)}
-          </select>
-        </div>
-        <div className="field">
-          <label>{lab.wedding}</label>
-          <input value={data.wedding || ""} onChange={(e) => setData({ ...data, wedding: e.target.value })} placeholder={c.placeholder_wedding} />
-        </div>
+      <div className="field">
+        <label>{lab.wedding}</label>
+        <input value={data.wedding || ""} onChange={(e) => setData({ ...data, wedding: e.target.value })} placeholder={c.placeholder_wedding} />
       </div>
       <div className="field">
         <label>{lab.budget}</label>
@@ -470,11 +430,9 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
 
   const rows = [
     data.type != null ? t.booking.types[data.type].title : null,
-    data.location != null ? t.booking.locations[data.location].name : null,
     fmtDate(data.date),
     data.time,
     data.name,
-    data.size,
   ];
   return (
     <aside className="summary">
@@ -498,7 +456,6 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
                   {d && <img src={d.img} alt="" className="summary-ref-pill-img" />}
                   <span className="summary-ref-pill-text">
                     {d ? `${colLabel(d.collection)} ${d.ref}` : `Реф. ${ref}`}
-                    {data.size && <span className="summary-ref-pill-size"> · {data.size}</span>}
                   </span>
                   <button
                     className="summary-ref-remove"
@@ -539,12 +496,10 @@ function Confirmation({ t, data, setRoute, lang, dressRefs = [] }) {
       <p>{t.booking.confirmation_p}</p>
       <div className="conf-card">
         <div className="s-eyebrow" style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--champagne-deep)", marginBottom: 16 }}>{t.booking.conf_card_title}</div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[4]}</span><span className="val">{data.name}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[3]}</span><span className="val">{data.name}</span></div>
         <div className="s-row"><span className="label">{t.booking.summary_rows[0]}</span><span className="val">{t.booking.types[data.type]?.title}</span></div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[1]}</span><span className="val">{t.booking.locations[data.location]?.name}</span></div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[2]}</span><span className="val">{data.date && data.date.toLocaleDateString(isBg ? "bg-BG" : "en-US")}</span></div>
-        <div className="s-row"><span className="label">{t.booking.summary_rows[3]}</span><span className="val">{data.time}</span></div>
-        {data.size && <div className="s-row"><span className="label">{t.booking.summary_rows[5]}</span><span className="val">{data.size}</span></div>}
+        <div className="s-row"><span className="label">{t.booking.summary_rows[1]}</span><span className="val">{data.date && data.date.toLocaleDateString(isBg ? "bg-BG" : "en-US")}</span></div>
+        <div className="s-row"><span className="label">{t.booking.summary_rows[2]}</span><span className="val">{data.time}</span></div>
         {dressRefs.length > 0 && (
           <div className="s-row">
             <span className="label">{isBg ? "Рокли" : "Dresses"}</span>
@@ -610,17 +565,15 @@ function BookingPage({ lang, setRoute, dress = null }) {
       if (data.type === 1 && dressRefs.length === 0) return false;
       return true;
     }
-    if (step === 1) return data.location != null;
-    if (step === 2) return data.date && data.time && data.timeConfirmed;
-    if (step === 3) return data.name && data.email && isValidEmail(data.email) && data.phone && !dressMissing;
+    if (step === 1) return data.date && data.time && data.timeConfirmed;
+    if (step === 2) return data.name && data.email && isValidEmail(data.email) && data.phone && !dressMissing;
     return false;
   };
 
   const maxReached = useMemo(() => {
     let m = 0;
     if (data.type != null) m = 1;
-    if (data.location != null) m = 2;
-    if (data.date && data.time) m = 3;
+    if (data.date && data.time) m = 2;
     return m;
   }, [data]);
 
@@ -632,14 +585,13 @@ function BookingPage({ lang, setRoute, dress = null }) {
       <div className="booking-body">
         <div>
           {step === 0 && <Step1Type t={t} data={data} setData={setData} dressRefs={dressRefs} setDressRefs={setDressRefs} />}
-          {step === 1 && <Step2Location t={t} data={data} setData={setData} />}
-          {step === 2 && <Step3Date t={t} data={data} setData={setData} lang={lang} />}
-          {step === 3 && <Step4Details t={t} data={data} setData={setData} />}
+          {step === 1 && <Step3Date t={t} data={data} setData={setData} lang={lang} />}
+          {step === 2 && <Step4Details t={t} data={data} setData={setData} />}
           <div className="step-nav">
             <button className="btn" onClick={() => step > 0 && setStep(step - 1)} disabled={step === 0} style={{ opacity: step === 0 ? 0.3 : 1 }}>
               ← {t.booking.back}
             </button>
-            {step < 3 ? (
+            {step < 2 ? (
               <button className="btn btn-solid" onClick={() => canNext() && setStep(step + 1)} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
                 {t.booking.next} →
               </button>
@@ -653,10 +605,8 @@ function BookingPage({ lang, setRoute, dress = null }) {
                   email: data.email || "",
                   phone: data.phone || "",
                   type: t.booking.types[data.type]?.title || "",
-                  location: t.booking.locations[data.location]?.name || "",
                   date: data.date ? data.date.toLocaleDateString(lang === "bg" ? "bg-BG" : "en-US") : "",
                   time: data.time || "",
-                  size: data.size || "",
                   budget: data.budget || "",
                   notes: data.notes || "",
                   dressRefs: dressRefs || [],
