@@ -800,6 +800,14 @@ a { color: inherit; text-decoration: none; }
   line-height: 0.9;
 }
 .collection-head h1 em { font-family: var(--f-serif); font-style: italic; }
+.collection-head .collection-intro {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 760px;
+  margin-top: 20px;
+}
 .collection-head .meta-stack { text-align: right; }
 .collection-head .crumb { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px;}
 .collection-head .count { font-family: var(--f-serif); font-size: 16px; font-style: italic; color: var(--ink-soft); }

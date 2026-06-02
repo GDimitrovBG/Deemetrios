@@ -106,8 +106,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
   const colData = initCollection ? COLLECTIONS.find(c => c.id === initCollection) : null;
   useSeo({
     title: colData
-      ? (isBg ? `Колекция ${colData.label} — Булчински рокли` : `${colData.label} Collection — Wedding Dresses`)
-      : (isBg ? "Колекции булчински рокли — Demetrios, Cosmobella, Platinum" : "Wedding Dress Collections"),
+      ? (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`)
+      : (isBg ? "Луксозни булчински рокли в София | Арети — Demetrios" : "Luxury Wedding Dresses in Sofia | Areti — Demetrios"),
     description: colData
       ? (isBg ? colData.desc_bg : colData.desc_en)
       : (isBg
@@ -200,9 +200,22 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           <h1>
             {activeColData ? activeColData.label : <>{t.collection.title} <em>{t.collection.title_em}</em></>}
           </h1>
-          {activeColData && (
-            <p style={{ fontFamily: 'var(--f-serif)', fontSize: 16, fontStyle: 'italic', opacity: 0.7, marginTop: 12, maxWidth: 480 }}>
-              {lang === 'bg' ? activeColData.desc_bg : activeColData.desc_en}
+          {activeColData ? (
+            <>
+              <p style={{ fontFamily: 'var(--f-serif)', fontSize: 16, fontStyle: 'italic', opacity: 0.7, marginTop: 12, maxWidth: 480 }}>
+                {lang === 'bg' ? activeColData.desc_bg : activeColData.desc_en}
+              </p>
+              <p className="collection-intro">
+                {isBg
+                  ? `Луксозни булчински рокли от колекция ${activeColData.label} — част от каталога на Demetrios в булчински салон Арети, София. Всяка рокля пристига директно от Demetrios, с безплатни корекции до деня на сватбата. Записване за проба по предварителен час.`
+                  : `Luxury ${activeColData.label} wedding dresses — part of the Demetrios catalogue at Areti bridal salon, Sofia. Every gown arrives directly from Demetrios, with free alterations until your wedding day. Fittings by appointment.`}
+              </p>
+            </>
+          ) : (
+            <p className="collection-intro">
+              {isBg
+                ? "Над 110 луксозни булчински рокли в София от четирите колекции на Demetrios — Cosmobella, Demetrios, Platinum и Destination Romance. Арети е официален представител на Demetrios в България от 1992 г. Цените са от 1 000 до 4 000 € според колекцията, с безплатни корекции и записване за проба по предварителен час."
+                : "Over 110 luxury wedding dresses in Sofia from the four Demetrios collections — Cosmobella, Demetrios, Platinum and Destination Romance. Areti is the official Demetrios representative in Bulgaria since 1992. Prices from €1,000 to €4,000 depending on collection, with free alterations and fittings by appointment."}
             </p>
           )}
         </div>

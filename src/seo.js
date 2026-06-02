@@ -76,8 +76,13 @@ export function useSeo({
   noindex = false,
 } = {}) {
   useEffect(() => {
+    // Only append the site name when the title doesn't already carry the brand.
+    // Product/category titles end in "Арети София" / "Areti Sofia" — appending the
+    // full SITE_NAME there produced a double-"Арети" 90+ char title. Detect the
+    // brand token (any case/locale) and skip the suffix in that case.
+    const hasBrand = title && /Арети|Areti/i.test(title);
     const finalTitle = title
-      ? (title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`)
+      ? (hasBrand ? title : `${title} | ${SITE_NAME}`)
       : SITE_NAME;
     const finalDesc  = description || DEFAULT_DESC;
     const finalImg   = image || DEFAULT_IMG;

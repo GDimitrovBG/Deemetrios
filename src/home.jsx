@@ -381,8 +381,8 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   useSeo({
     title: lang === "bg"
-      ? "Арети — Bridal Couture · Официален представител на Demetrios в София"
-      : "Areti — Bridal Couture · Official Demetrios Representative in Sofia",
+      ? "Луксозни булчински рокли в София | Арети — Demetrios"
+      : "Luxury Wedding Dresses in Sofia | Areti — Demetrios",
     description: lang === "bg"
       ? "Луксозни булчински рокли в София. Арети — официален представител на Demetrios от 1992 г. Колекциите Demetrios, Cosmobella, Platinum и Destination Romance. Запазете час за безплатна проба."
       : "Luxury wedding dresses in Sofia. Areti — official Demetrios representative since 1992. Demetrios, Cosmobella, Platinum and Destination Romance collections. Book a free fitting.",
