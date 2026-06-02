@@ -63,6 +63,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
             АРЕТИ
             <em>София.</em>
           </h1>
+          <h2 className="hero-kw">{t.home.hero_kw}</h2>
           <p className="lede">{t.home.lede}</p>
         </div>
         <div className="meta-row fade-up delay-3">

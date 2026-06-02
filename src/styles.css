@@ -465,6 +465,17 @@ a { color: inherit; text-decoration: none; }
   font-style: italic;
   display: block;
 }
+/* SEO-bearing subtitle — carries the primary keyword in an <h2>, styled as a
+   refined eyebrow so it reinforces the brand H1 without competing visually. */
+.hero-v2 .hero-kw {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--champagne-deep);
+  margin-top: 20px;
+}
 .hero-v2 .lede {
   font-family: var(--f-serif);
   font-size: 22px;
@@ -472,7 +483,7 @@ a { color: inherit; text-decoration: none; }
   font-style: italic;
   max-width: 420px;
   color: var(--ink-soft);
-  margin-top: 24px;
+  margin-top: 16px;
 }
 .hero-v2 .meta-row {
   display: flex; justify-content: space-between; align-items: end; gap: 20px;
@@ -2176,7 +2187,8 @@ a { color: inherit; text-decoration: none; }
     gap: 32px;
   }
   .hero-v2 h1 { font-size: clamp(52px, 14vw, 84px); }
-  .hero-v2 .lede { font-size: 17px; margin-top: 16px; }
+  .hero-v2 .hero-kw { font-size: 10px; letter-spacing: 0.2em; margin-top: 16px; }
+  .hero-v2 .lede { font-size: 17px; margin-top: 12px; }
   .hero-v2 .meta-row { flex-direction: column; align-items: stretch; gap: 20px; }
   .hero-v2 .issue { font-size: 9px; letter-spacing: 0.22em; gap: 10px; flex-wrap: wrap; }
 
