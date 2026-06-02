@@ -21,6 +21,12 @@
   RewriteRule ^bulchenski-rokli-sofia/?$ /collection               [R=301,L]
   RewriteRule ^vecherni-rokli/?$      /collection/evening          [R=301,L]
 
+  # Old Cyrillic WP blog/content slugs → matching new pages
+  RewriteRule ^булчински-рокли-и-сватбени-рокли-в-соф/?$ /collection                        [R=301,L]
+  RewriteRule ^бална-рокля-според-фигурата-как-да-изб/?$ /blog/balna-roklia-spored-figurata [R=301,L]
+  RewriteRule ^кой-е-demetrios/?$                        /blog/koi-e-demetrios              [R=301,L]
+  RewriteRule ^сватбен-магазин-в-софия-сватбени-ро/?$    /collection                        [R=301,L]
+
   RewriteRule ^bulchinski-rokli/page/[0-9]+/?$ /collection/demetrios [R=301,L]
   RewriteRule ^vecherni-rokli/page/[0-9]+/?$   /collection/evening   [R=301,L]
   RewriteRule ^blog/page/[0-9]+/?$             /blog                 [R=301,L]

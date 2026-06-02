@@ -24,8 +24,8 @@ const WP_REDIRECTS = {
   '/bulchenski-rokli-sofia': '/collection',
   '/vecherni-rokli':      '/collection/evening',
   '/булчински-рокли-и-сватбени-рокли-в-соф': '/collection',
-  '/бална-рокля-според-фигурата-как-да-изб': '/blog',
-  '/кой-е-demetrios':     '/demetrios',
+  '/бална-рокля-според-фигурата-как-да-изб': '/blog/balna-roklia-spored-figurata',
+  '/кой-е-demetrios':     '/blog/koi-e-demetrios',
   '/сватбен-магазин-в-софия-сватбени-ро': '/collection',
 };
 

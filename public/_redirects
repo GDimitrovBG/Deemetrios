@@ -32,6 +32,16 @@
 /vecherni-rokli       /collection/evening          301
 /vecherni-rokli/      /collection/evening          301
 
+# Old Cyrillic WP blog/content slugs → matching new pages
+/булчински-рокли-и-сватбени-рокли-в-соф   /collection                       301
+/булчински-рокли-и-сватбени-рокли-в-соф/  /collection                       301
+/бална-рокля-според-фигурата-как-да-изб   /blog/balna-roklia-spored-figurata 301
+/бална-рокля-според-фигурата-как-да-изб/  /blog/balna-roklia-spored-figurata 301
+/кой-е-demetrios                          /blog/koi-e-demetrios             301
+/кой-е-demetrios/                         /blog/koi-e-demetrios             301
+/сватбен-магазин-в-софия-сватбени-ро      /collection                       301
+/сватбен-магазин-в-софия-сватбени-ро/     /collection                       301
+
 # Paginated and category WP routes
 /bulchinski-rokli/page/*  /collection/demetrios    301
 /vecherni-rokli/page/*    /collection/evening      301
