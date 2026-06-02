@@ -104,15 +104,22 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
   const t = i18n[lang];
   const isBg = lang === "bg";
   const colData = initCollection ? COLLECTIONS.find(c => c.id === initCollection) : null;
+  const isEvening = initCollection === "evening";
   useSeo({
-    title: colData
-      ? (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`)
-      : (isBg ? "Луксозни булчински рокли в София | Арети — Demetrios" : "Luxury Wedding Dresses in Sofia | Areti — Demetrios"),
-    description: colData
-      ? (isBg ? colData.desc_bg : colData.desc_en)
-      : (isBg
-          ? "Разгледайте всички колекции булчински рокли в Арети — Demetrios, Cosmobella, Platinum и Destination Romance. Над 100 модела от световния лидер в булчинската мода."
-          : "Browse all wedding dress collections at Areti — Demetrios, Cosmobella, Platinum and Destination Romance."),
+    title: isEvening
+      ? (isBg ? "Официални, бални и абитуриентски рокли в София | Арети" : "Evening, Prom & Formal Dresses in Sofia | Areti")
+      : colData
+        ? (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`)
+        : (isBg ? "Луксозни булчински и сватбени рокли в София | Арети" : "Luxury Wedding & Bridal Dresses in Sofia | Areti"),
+    description: isEvening
+      ? (isBg
+          ? "Официални, бални и абитуриентски рокли в София от Арети. Елегантни вечерни рокли за абитуриентски бал, сватба, кръщене или коктейл — записване за проба по предварителен час."
+          : "Evening, prom and formal dresses in Sofia by Areti. Elegant gowns for proms, weddings, christenings and cocktail events — fittings by appointment.")
+      : colData
+        ? (isBg ? colData.desc_bg : colData.desc_en)
+        : (isBg
+            ? "Разгледайте всички колекции булчински и сватбени рокли в Арети — булчински салон в София. Demetrios, Cosmobella, Platinum и Destination Romance. Над 100 модела."
+            : "Browse all wedding dress collections at Areti — bridal salon in Sofia. Demetrios, Cosmobella, Platinum and Destination Romance."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
@@ -206,16 +213,20 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
                 {lang === 'bg' ? activeColData.desc_bg : activeColData.desc_en}
               </p>
               <p className="collection-intro">
-                {isBg
-                  ? `Луксозни булчински рокли от колекция ${activeColData.label} — част от каталога на Demetrios в булчински салон Арети, София. Всяка рокля пристига директно от Demetrios, с безплатни корекции до деня на сватбата. Записване за проба по предварителен час.`
-                  : `Luxury ${activeColData.label} wedding dresses — part of the Demetrios catalogue at Areti bridal salon, Sofia. Every gown arrives directly from Demetrios, with free alterations until your wedding day. Fittings by appointment.`}
+                {activeCol === "evening"
+                  ? (isBg
+                      ? `Официални, бални и абитуриентски рокли в София — елегантни вечерни рокли за абитуриентски бал, сватба, кръщене или коктейлно парти. Подбрани от Арети, булчински и сватбен салон в Лозенец. Записване за проба по предварителен час.`
+                      : `Evening, prom and formal dresses in Sofia — elegant gowns for proms, weddings, christenings and cocktail events. Curated by Areti bridal salon in Lozenets. Fittings by appointment.`)
+                  : (isBg
+                      ? `Луксозни булчински и сватбени рокли от колекция ${activeColData.label} — част от каталога на Demetrios в булчински салон Арети, София. Всяка рокля пристига директно от Demetrios, с безплатни корекции до деня на сватбата. Записване за проба по предварителен час.`
+                      : `Luxury ${activeColData.label} wedding dresses — part of the Demetrios catalogue at Areti bridal salon, Sofia. Every gown arrives directly from Demetrios, with free alterations until your wedding day. Fittings by appointment.`)}
               </p>
             </>
           ) : (
             <p className="collection-intro">
               {isBg
-                ? "Над 110 луксозни булчински рокли в София от четирите колекции на Demetrios — Cosmobella, Demetrios, Platinum и Destination Romance. Арети е официален представител на Demetrios в България от 1992 г. Цените са от 1 000 до 4 000 € според колекцията, с безплатни корекции и записване за проба по предварителен час."
-                : "Over 110 luxury wedding dresses in Sofia from the four Demetrios collections — Cosmobella, Demetrios, Platinum and Destination Romance. Areti is the official Demetrios representative in Bulgaria since 1992. Prices from €1,000 to €4,000 depending on collection, with free alterations and fittings by appointment."}
+                ? "Над 110 луксозни булчински и сватбени рокли в София от четирите колекции на Demetrios — Cosmobella, Demetrios, Platinum и Destination Romance. Арети е булчински салон и официален представител на Demetrios в България от 1992 г. Цените са от 1 000 до 4 000 € според колекцията, с безплатни корекции и записване за проба по предварителен час."
+                : "Over 110 luxury wedding dresses in Sofia from the four Demetrios collections — Cosmobella, Demetrios, Platinum and Destination Romance. Areti is a bridal salon and the official Demetrios representative in Bulgaria since 1992. Prices from €1,000 to €4,000 depending on collection, with free alterations and fittings by appointment."}
             </p>
           )}
         </div>

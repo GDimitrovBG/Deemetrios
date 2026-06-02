@@ -13,7 +13,7 @@ const COLLECTION_LABEL = Object.fromEntries(COLLECTIONS.map(c => [c.id, c.label]
 const T = {
   bg: {
     bridal:    'Булчинска рокля',
-    evening:   'Вечерна рокля',
+    evening:   'Официална рокля',
     detail:    'детайл',
     collection:'колекция',
     salon:     'Арети София',
@@ -21,7 +21,7 @@ const T = {
   },
   en: {
     bridal:    'Wedding Dress',
-    evening:   'Evening Dress',
+    evening:   'Formal Dress',
     detail:    'detail',
     collection:'collection',
     salon:     'Areti Sofia',
