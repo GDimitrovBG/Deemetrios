@@ -2,6 +2,32 @@
    АРЕТИ — Bridal Editorial Design System
    ============================================ */
 
+/* Metric-adjusted fallback fonts — CLS fix.
+   The web fonts (Italiana/Cormorant/Jost) load over the network and "swap" in
+   after first paint; if the fallback box differs in size the text reflows
+   (Cumulative Layout Shift). These size-adjusted fallbacks make the system
+   font occupy the same horizontal space as the web font, so the swap is
+   visually seamless and produces ~0 layout shift. Explicit line-heights on the
+   headings already pin the vertical box. */
+@font-face {
+  font-family: "Italiana-fallback";
+  src: local("Georgia"), local("Times New Roman"), local("Times");
+  size-adjust: 92%;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant-fallback";
+  src: local("Georgia"), local("Times New Roman"), local("Times");
+  size-adjust: 88%;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Jost-fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 105%;
+  font-display: swap;
+}
+
 :root {
   /* Color tokens — warm ivory + champagne */
   --bg: #f6f1e8;
@@ -23,9 +49,9 @@
   --gold: #b8965a;
 
   /* Type */
-  --f-display: "Italiana", "Cormorant Garamond", serif;
-  --f-serif: "Cormorant Garamond", "Times New Roman", serif;
-  --f-sans: "Jost", "Helvetica Neue", system-ui, sans-serif;
+  --f-display: "Italiana", "Italiana-fallback", "Cormorant Garamond", serif;
+  --f-serif: "Cormorant Garamond", "Cormorant-fallback", "Times New Roman", serif;
+  --f-sans: "Jost", "Jost-fallback", "Helvetica Neue", system-ui, sans-serif;
   --f-mono: ui-monospace, "SF Mono", "Cascadia Code", monospace;
 
   /* Spacing scale */
