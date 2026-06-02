@@ -482,7 +482,6 @@ function CollectionGrid({ items, lang, gridCols, goProduct, favorites, toggleFav
 
 function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct }) {
   const t = i18n[lang];
-  const [activeSize, setActiveSize] = useState(38);
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const dress = DRESSES.find(d => d.ref === productRef) || DRESSES[0];
   const isFav = favorites.includes(dress.ref);
@@ -515,8 +514,6 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   });
 
   const galleryImgs = dress.imgs && dress.imgs.length > 0 ? dress.imgs : [dress.img, IMG.detail1, IMG.detail2, IMG.detail2];
-  const sizes = [34, 36, 38, 40, 42, 44, 46, 48];
-  const outOfStock = [46, 48];
 
   return (
     <div className="page-enter">
@@ -550,21 +547,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
               <div className="spec-row"><dt>{t.product.specs.train}</dt><dd>{t.product.specs.train_v}</dd></div>
               <div className="spec-row"><dt>{t.product.specs.details}</dt><dd>{t.product.specs.details_v}</dd></div>
             </dl>
-            <div style={{ marginTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <span style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--ink-mute)" }}>{t.product.size}</span>
-              <span style={{ fontSize: 11, fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--ink-soft)", borderBottom: "1px solid var(--ink-soft)", cursor: "pointer" }}>{t.product.size_guide}</span>
-            </div>
-            <div className="size-grid">
-              {sizes.map(s => (
-                <button
-                  key={s}
-                  className={`size-pick ${activeSize === s ? "on" : ""} ${outOfStock.includes(s) ? "out" : ""}`}
-                  onClick={() => !outOfStock.includes(s) && setActiveSize(s)}
-                >{s}</button>
-              ))}
-            </div>
-            <p style={{ fontSize: 11, fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--ink-mute)", marginTop: 8 }}>{t.product.size_warn}</p>
-            <div className="cta-stack">
+            <div className="cta-stack" style={{ marginTop: 32 }}>
               <button className="btn btn-solid" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_book}</button>
               <a className="btn" href="tel:+359878521660">{t.product.cta_inquire}</a>
               <button
