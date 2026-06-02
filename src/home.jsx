@@ -51,13 +51,6 @@ function HomeHeroV2({ t, lang, setRoute }) {
     <section className="hero-v2">
       <div className="hero-img" style={{ backgroundImage: `url(${IMG.hero2})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
       <div className="hero-text">
-        <div className="issue fade-in">
-          <span>VOL. XII</span>
-          <span className="dot"></span>
-          <span>SPRING 2026</span>
-          <span className="dot"></span>
-          <span>SOFIA</span>
-        </div>
         <div className="fade-up delay-1" style={{ marginTop: 60 }}>
           <h1 className="t-display">
             АРЕТИ
