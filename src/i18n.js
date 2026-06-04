@@ -234,7 +234,7 @@ const i18n = {
       atelier_links: ["За нас", "За Деметриос", "Блог", "Контакти"],
       help: "Помощ",
       help_links: ["Резервирай час", "Контакти", "Общи условия", "Поверителност", "Бисквитки"],
-      copyright: "© 2026 Арети-Томос ЕООД · Всички права запазени",
+      copyright: "© 2026 Булчински салон Арети · Всички права запазени",
       lang_marker: "Езици · BG / EN",
     },
     common: {
@@ -695,7 +695,7 @@ const i18n = {
       atelier_links: ["About us", "Demetrios", "Blog", "Contact"],
       help: "Help",
       help_links: ["Book a fitting", "Contact", "Terms & Conditions", "Privacy Policy", "Cookies"],
-      copyright: "© 2026 Areti-Tomos Ltd · All rights reserved",
+      copyright: "© 2026 Areti Bridal Salon · All rights reserved",
       lang_marker: "Languages · BG / EN",
     },
     common: {
