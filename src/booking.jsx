@@ -235,7 +235,13 @@ function Step3Date({ t, data, setData, lang }) {
     setData({ ...data, date: new Date(focusDate.getFullYear(), focusDate.getMonth(), d), time: null });
   };
 
-  const slots = ["11:00", "12:00", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
+  // Slot times depend on the day of week:
+  //   Mon–Fri: 10:00, 11:30, 13:00, 14:30, 16:00, 17:30
+  //   Saturday: 10:30, 12:00, 13:30, 15:00, 16:30
+  //   Sunday is closed (calendar already disables it)
+  const WEEKDAY_SLOTS = ["10:00", "11:30", "13:00", "14:30", "16:00", "17:30"];
+  const SATURDAY_SLOTS = ["10:30", "12:00", "13:30", "15:00", "16:30"];
+  const slots = data.date && data.date.getDay() === 6 ? SATURDAY_SLOTS : WEEKDAY_SLOTS;
   const goneSlots = []; // TODO: fetch booked slots from API
 
   return (
