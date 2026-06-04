@@ -3799,4 +3799,11 @@ body.drawer-open .float-dial .fd-main { pointer-events: none; }
 
 @media (max-width: 480px) {
   .cookie-banner { bottom: 16px; left: 16px; right: 16px; max-width: none; }
+  /* Stack the actions full-width — side by side they overflow the narrow banner
+     and cramp the text. Primary ("Приемам всички") on top. */
+  .cookie-actions { flex-direction: column-reverse; gap: 10px; }
+  .cookie-actions .btn-small { width: 100%; padding: 14px 16px; font-size: 11px; }
+  /* But keep the expanded "← Назад / Запази" row side by side (short labels). */
+  .cookie-expanded .cookie-actions { flex-direction: row; }
+  .cookie-expanded .cookie-actions .btn-small { width: auto; }
 }
