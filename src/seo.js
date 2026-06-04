@@ -173,8 +173,9 @@ export function orgSchema() {
     "brand": { "@type": "Brand", "name": "Demetrios" },
     "areaServed": { "@type": "Country", "name": "Bulgaria" },
     "sameAs": [
-      "https://www.facebook.com/AretiBridalSofia",
-      "https://www.instagram.com/areti_bridal",
+      "https://www.facebook.com/areti.bg/",
+      "https://www.instagram.com/aretiweddingsalon/",
+      "https://www.tiktok.com/@aretiwedding",
     ],
     // speakable tells AI/voice assistants which sections to read aloud / cite
     "speakable": {

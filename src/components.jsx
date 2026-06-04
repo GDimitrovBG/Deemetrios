@@ -208,6 +208,25 @@ function Footer({ lang, setRoute }) {
           <div>
             <div className="brand-big">{t.brand}{t.brand_em ? <em>{t.brand_em}</em> : null}</div>
             {t.tagline ? <p className="brand-tag">{t.tagline}</p> : null}
+            <div className="footer-social">
+              <a href="https://www.facebook.com/areti.bg/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07c0 6.02 4.39 11.01 10.12 11.93v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8v8.44C19.61 23.08 24 18.09 24 12.07z"/>
+                </svg>
+              </a>
+              <a href="https://www.instagram.com/aretiweddingsalon/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+              </a>
+              <a href="https://www.tiktok.com/@aretiwedding" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                  <path d="M16.6 5.82a4.28 4.28 0 0 1-1-2.79h-3.4v13.67a2.46 2.46 0 0 1-2.45 2.34 2.48 2.48 0 0 1-2.46-2.47 2.47 2.47 0 0 1 3.2-2.36V8.78a5.88 5.88 0 0 0-.74-.05A5.86 5.86 0 0 0 4 14.6a5.86 5.86 0 0 0 11.72 0V8.42a7.6 7.6 0 0 0 4.45 1.42V6.44a4.29 4.29 0 0 1-3.57-.62z"/>
+                </svg>
+              </a>
+            </div>
             {t.newsletter ? (
               <div style={{ marginTop: 32, maxWidth: 320 }}>
                 <h4>{t.newsletter}</h4>
