@@ -183,7 +183,8 @@ function AboutPage({ lang, setRoute }) {
           <div>
             <div className="t-eyebrow" style={{ marginBottom: 12 }}>{isBg ? "Работно време" : "Hours"}</div>
             <p style={{ fontFamily: "var(--f-serif)", fontSize: 18, lineHeight: 1.7 }}>
-              {isBg ? "Вт – Сб · 11:00 – 19:00" : "Tue – Sat · 11:00 – 19:00"}<br />
+              {isBg ? "Пн – Пт · 10:00 – 19:00" : "Mon – Fri · 10:00 – 19:00"}<br />
+              {isBg ? "Сб · 10:30 – 18:00" : "Sat · 10:30 – 18:00"}<br />
               {isBg ? "По уговорка" : "By appointment"}
             </p>
           </div>
@@ -381,8 +382,8 @@ function ContactPage({ lang, setRoute }) {
   useSeo({
     title: isBg ? "Контакти — Арети сватбен салон София" : "Contact — Areti Bridal Salon Sofia",
     description: isBg
-      ? "Контакти на сватбен салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време: вт-съб 11:00-19:00. Запазете час за безплатна проба."
-      : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours: Tue-Sat 11:00-19:00. Book a free fitting.",
+      ? "Контакти на сватбен салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време: пн-пт 10:00-19:00, сб 10:30-18:00. Запазете час за безплатна проба."
+      : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours: Mon-Fri 10:00-19:00, Sat 10:30-18:00. Book a free fitting.",
     url: "/contact", lang,
     keywords: "Арети контакти, сватбен салон Лозенец, телефон булчински салон София, адрес Арети",
     jsonLd: orgSchema(),
@@ -401,14 +402,14 @@ function ContactPage({ lang, setRoute }) {
         <div className="locations">
           {t.cities.map((c, i) => (
             <div key={i} className="location-card">
-              <div className="t-eyebrow" style={{ marginBottom: 12 }}>{c.em}</div>
+              {c.em ? <div className="t-eyebrow" style={{ marginBottom: 12 }}>{c.em}</div> : null}
               <div className="city">{c.name}</div>
               <p className="addr">{c.addr.split("\n").map((l, j) => <span key={j}>{l}<br /></span>)}</p>
-              <div className="meta-line">{c.hours}</div>
+              <div className="meta-line">{c.hours.split("\n").map((l, j) => <span key={j}>{l}<br /></span>)}</div>
               <div className="meta-line">{c.phone}</div>
               <div className="meta-line">{c.email}</div>
               <div className="actions">
-                <button className="btn-link">{t.directions}</button>
+                <a className="btn-link" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.addr.replace(/\n/g, ", "))}`} target="_blank" rel="noopener noreferrer">{t.directions}</a>
                 <button className="btn-link" onClick={() => setRoute("booking")}>{t.book}</button>
               </div>
             </div>

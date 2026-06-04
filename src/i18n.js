@@ -190,11 +190,11 @@ const i18n = {
     contact: {
       title: "Контакти",
       title_em: "и студия",
-      lede: "Намери ни в София. Записването е по уговорка.",
+      lede: "Намери ни в София. За ваше удобство работим с предварително записан час.",
       directions: "Упътвания",
       book: "Запази час",
       cities: [
-        { name: "София", em: "флагман", addr: "ул. Крум Попов 63\nЛозенец, 1164 София", hours: "Вт – Сб · 11:00 – 19:00", phone: "+359 878 521 660", email: "info@areti.bg" },
+        { name: "София", em: "", addr: "ул. Крум Попов 63\nЛозенец, 1421 София", hours: "Пн – Пт · 10:00 – 19:00\nСб · 10:30 – 18:00", phone: "+359 878 521 660", email: "info@areti.bg" },
       ],
     },
     blog: {
@@ -651,11 +651,11 @@ const i18n = {
     contact: {
       title: "Visit",
       title_em: "our studios",
-      lede: "Find us in Sofia. Visits by appointment only.",
+      lede: "Find us in Sofia. For your convenience we work by appointment.",
       directions: "Directions",
       book: "Book a fitting",
       cities: [
-        { name: "Sofia", em: "flagship", addr: "63 Krum Popov St.\nLozenets, 1164 Sofia", hours: "Tue – Sat · 11:00 – 19:00", phone: "+359 878 521 660", email: "info@areti.bg" },
+        { name: "Sofia", em: "", addr: "63 Krum Popov St.\nLozenets, 1421 Sofia", hours: "Mon – Fri · 10:00 – 19:00\nSat · 10:30 – 18:00", phone: "+359 878 521 660", email: "info@areti.bg" },
       ],
     },
     blog: {
