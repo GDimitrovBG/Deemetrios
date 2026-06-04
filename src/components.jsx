@@ -119,7 +119,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
           </div>
           <div className="brand-mark" onClick={() => { setDrawerOpen(false); setRoute("home"); }}>
             АРЕТИ
-            <span className="sub">— BRIDAL · SOFIA —</span>
+            <span className="sub">— {lang === "bg" ? "БУЛЧИНСКИ САЛОН · СОФИЯ" : "WEDDING SALON · SOFIA"} —</span>
           </div>
           <div className="nav-right">
             <span className={`nav-link ${route === "blog" ? "active" : ""}`} onClick={() => setRoute("blog")}>{t.nav.blog}</span>
@@ -186,7 +186,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
         <div className="m-foot">
           <button className="m-cta" onClick={() => goTo("booking")}>{t.nav.bookings} →</button>
           <div className="m-foot-row">
-            <span className="m-meta">АРЕТИ · BRIDAL · SOFIA · EST 1992</span>
+            <span className="m-meta">{lang === "bg" ? "АРЕТИ · БУЛЧИНСКИ САЛОН · СОФИЯ · EST 1992" : "АРЕТИ · WEDDING SALON · SOFIA · EST 1992"}</span>
             <div className="m-lang">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}>BG</button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}>EN</button>
