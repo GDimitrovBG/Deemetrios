@@ -45,6 +45,41 @@ export async function sendEmailToMany({ emails, subject, html }) {
   return results;
 }
 
+/** Escape user-supplied text before interpolating into email HTML. */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/** Admin notification email for a newly created booking. */
+export function bookingAdminEmail(b) {
+  const row = (label, value) =>
+    `<tr><td style="width:130px;font-weight:600;padding:2px 0;">${label}</td><td>${value}</td></tr>`;
+  const dresses = Array.isArray(b.dressRefs) && b.dressRefs.length
+    ? esc(b.dressRefs.join(', ')) : '—';
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:560px;color:#1a1612;">
+      <h2 style="margin:0 0 16px;font-size:20px;">🗓 Нова заявка за консултация</h2>
+      <table style="width:100%;font-size:14px;line-height:1.9;border-collapse:collapse;">
+        ${row('Име', esc(b.name) || '—')}
+        ${row('Имейл', b.email ? `<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>` : '—')}
+        ${row('Телефон', b.phone ? `<a href="tel:${esc(b.phone)}">${esc(b.phone)}</a>` : '—')}
+        <tr><td colspan="2" style="border-top:1px solid #e8dfc9;height:8px;"></td></tr>
+        ${row('Тип', esc(b.type) || '—')}
+        ${row('Дата', esc(b.date) || '—')}
+        ${row('Час', esc(b.time) || 'за уточняване')}
+        ${row('Бюджет', esc(b.budget) || '—')}
+        ${row('Рокли', dresses)}
+        ${b.notes ? `<tr><td colspan="2" style="border-top:1px solid #e8dfc9;height:8px;"></td></tr>${row('Бележки', esc(b.notes))}` : ''}
+      </table>
+      <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
+        Арети — Bridal Couture · автоматично известие при нова резервация
+      </div>
+    </div>
+  `;
+}
+
 export function twoFactorCodeEmail({ name, code, expiresInMinutes = 10 }) {
   return `
     <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;padding:32px;">

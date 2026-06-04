@@ -22,16 +22,6 @@ async function sendCustomerEmail({ to, toName, subject, html }) {
   } catch { /* silent — booking still succeeds even if email fails */ }
 }
 
-async function notifyAdmins({ subject, html }) {
-  try {
-    await fetch(`${API_BASE}/api/email/notify-admins`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ subject, html }),
-    });
-  } catch { /* silent */ }
-}
-
 function sendBookingEmails(booking, lang) {
   const isBg = lang === 'bg';
   const { name, email, phone, type, date, time, budget, notes, dressRefs } = booking;
@@ -81,26 +71,8 @@ function sendBookingEmails(booking, lang) {
     });
   }
 
-  // 2. Email to all admins (notification)
-  notifyAdmins({
-    subject: `Нова консултация: ${name || 'Неизвестен'} — ${type} — ${date}`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:560px;color:#1a1612;">
-        <h2 style="margin:0 0 16px;font-size:20px;">🗓 Нова заявка за консултация</h2>
-        <table style="width:100%;font-size:14px;line-height:2;border-collapse:collapse;">
-          <tr><td style="width:130px;font-weight:600;">Име</td><td>${name || '—'}</td></tr>
-          <tr><td style="font-weight:600;">Имейл</td><td><a href="mailto:${email}">${email || '—'}</a></td></tr>
-          <tr><td style="font-weight:600;">Телефон</td><td><a href="tel:${phone}">${phone || '—'}</a></td></tr>
-          <tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Тип</td><td>${type}</td></tr>
-          <tr><td style="font-weight:600;">Дата</td><td>${date}</td></tr>
-          <tr><td style="font-weight:600;">Час</td><td>${time || 'за уточняване'}</td></tr>
-          <tr><td style="font-weight:600;">Бюджет</td><td>${budget || '—'}</td></tr>
-          <tr><td style="font-weight:600;">Рокли</td><td>${dressLine}</td></tr>
-          ${notes ? `<tr style="border-top:1px solid #e8dfc9;"><td style="font-weight:600;">Бележки</td><td>${notes}</td></tr>` : ''}
-        </table>
-      </div>
-    `,
-  });
+  // Admin notification is sent SERVER-SIDE by POST /api/bookings — the public
+  // form is anonymous and can't call the auth-protected /notify-admins endpoint.
 }
 
 function StepsBar({ steps, current, setCurrent, maxReached }) {
