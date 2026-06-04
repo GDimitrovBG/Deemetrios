@@ -189,7 +189,7 @@ const i18n = {
     },
     contact: {
       title: "Контакти",
-      title_em: "и студия",
+      title_em: "и студио",
       lede: "Намери ни в София. За ваше удобство работим с предварително записан час.",
       directions: "Упътвания",
       book: "Запази час",
@@ -650,7 +650,7 @@ const i18n = {
     },
     contact: {
       title: "Visit",
-      title_em: "our studios",
+      title_em: "our studio",
       lede: "Find us in Sofia. For your convenience we work by appointment.",
       directions: "Directions",
       book: "Book a fitting",
