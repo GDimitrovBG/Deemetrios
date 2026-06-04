@@ -32,11 +32,11 @@ function sendBookingEmails(booking, lang) {
     sendCustomerEmail({
       to: email,
       toName: name,
-      subject: isBg ? 'Потвърждение за консултация — Арети Bridal' : 'Booking Confirmation — Areti Bridal',
+      subject: isBg ? 'Потвърждение за консултация — Булчински салон Арети' : 'Booking Confirmation — Areti Bridal Salon',
       html: `
         <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;">
           <div style="padding:32px 0;border-bottom:1px solid #e8dfc9;">
-            <h1 style="font-size:28px;font-weight:400;margin:0;">Арети <em>Bridal</em></h1>
+            <h1 style="font-size:28px;font-weight:400;margin:0;">Булчински салон <em>Арети</em></h1>
           </div>
           <div style="padding:32px 0;">
             <p style="font-size:18px;line-height:1.5;margin:0 0 24px;">
@@ -63,7 +63,7 @@ function sendBookingEmails(booking, lang) {
             </p>
           </div>
           <div style="padding:20px 0;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
-            Арети — Bridal Couture · София<br>
+            Булчински салон Арети · София<br>
             <a href="https://demetriosbride-bg.com" style="color:#8a7556;">demetriosbride-bg.com</a>
           </div>
         </div>

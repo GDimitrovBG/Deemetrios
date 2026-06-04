@@ -2,7 +2,7 @@
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 const ARETI_EMAIL = process.env.ARETI_EMAIL || 'info@areti.bg';
-const ARETI_NAME = 'Арети — Bridal Couture';
+const ARETI_NAME = 'Булчински салон Арети';
 
 /** Parse ADMIN_EMAILS env var → array of emails. Falls back to ARETI_EMAIL. */
 export function getAdminEmails() {
@@ -74,7 +74,7 @@ export function bookingAdminEmail(b) {
         ${b.notes ? `<tr><td colspan="2" style="border-top:1px solid #e8dfc9;height:8px;"></td></tr>${row('Бележки', esc(b.notes))}` : ''}
       </table>
       <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
-        Арети — Bridal Couture · автоматично известие при нова резервация
+        Булчински салон Арети · автоматично известие при нова резервация
       </div>
     </div>
   `;
@@ -84,7 +84,7 @@ export function twoFactorCodeEmail({ name, code, expiresInMinutes = 10 }) {
   return `
     <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;padding:32px;">
       <div style="border-bottom:1px solid #e8dfc9;padding-bottom:24px;margin-bottom:32px;">
-        <h1 style="font-size:24px;font-weight:400;margin:0;letter-spacing:0.5px;">Арети <em>Bridal</em></h1>
+        <h1 style="font-size:24px;font-weight:400;margin:0;letter-spacing:0.5px;">Булчински салон <em>Арети</em></h1>
       </div>
       <p style="font-size:16px;line-height:1.6;margin:0 0 24px;">
         Здравейте${name ? ', ' + name : ''},
@@ -99,7 +99,7 @@ export function twoFactorCodeEmail({ name, code, expiresInMinutes = 10 }) {
         Кодът е валиден ${expiresInMinutes} минути. Ако не сте поискали този код, моля игнорирайте този имейл.
       </p>
       <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
-        Арети — Bridal Couture · София
+        Булчински салон Арети · София
       </div>
     </div>
   `;

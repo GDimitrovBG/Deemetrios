@@ -69,7 +69,7 @@ router.post('/login', async (req, res) => {
     await sendEmail({
       to: user.email,
       toName: user.name,
-      subject: 'Код за вход — Арети Bridal',
+      subject: 'Код за вход — Булчински салон Арети',
       html: twoFactorCodeEmail({ name: user.name, code, expiresInMinutes: CODE_TTL_MIN }),
     });
 
@@ -120,7 +120,7 @@ router.post('/resend-code', async (req, res) => {
     await sendEmail({
       to: user.email,
       toName: user.name,
-      subject: 'Код за вход — Арети Bridal',
+      subject: 'Код за вход — Булчински салон Арети',
       html: twoFactorCodeEmail({ name: user.name, code, expiresInMinutes: CODE_TTL_MIN }),
     });
     res.json({ ok: true });
