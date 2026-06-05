@@ -8,6 +8,10 @@ import { faqSchema } from './seo-helpers';
 
 function sanitizeHTML(html) {
   if (!html) return '';
+  // The blog post page already renders the post title as the page <h1>. Article
+  // bodies (from blog_data / admin) often open with their own <h1>, which gives
+  // the page two H1s — an SEO anti-pattern. Demote any in-content <h1> to <h2>.
+  html = html.replace(/<(\/?)h1(\s[^>]*)?>/gi, '<$1h2$2>');
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['p','br','b','strong','i','em','u','a','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','span','div','figure','figcaption'],
     ALLOWED_ATTR: ['href','src','alt','title','class','style','target','rel','width','height'],
