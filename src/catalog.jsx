@@ -49,48 +49,6 @@ function FilterPanel({ t, lang, filters, setFilters, onClose }) {
   );
 }
 
-function PriceRange({ filters, setFilters, lang, t }) {
-  const min = 1500, max = 8000;
-  const lo = filters.priceLo ?? 2500;
-  const hi = filters.priceHi ?? 6500;
-  const trackRef = useRef(null);
-  const [drag, setDrag] = useState(null);
-  const pct = (v) => ((v - min) / (max - min)) * 100;
-
-  useEffect(() => {
-    if (!drag) return;
-    const onMove = (e) => {
-      if (!trackRef.current) return;
-      const rect = trackRef.current.getBoundingClientRect();
-      const x = (e.clientX || (e.touches && e.touches[0].clientX) || 0) - rect.left;
-      const v = Math.round(min + (Math.max(0, Math.min(1, x / rect.width))) * (max - min));
-      if (drag === "lo") setFilters({ ...filters, priceLo: Math.min(v, hi - 100) });
-      else setFilters({ ...filters, priceHi: Math.max(v, lo + 100) });
-    };
-    const onUp = () => setDrag(null);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-    };
-  }, [drag, filters, hi, lo]);
-
-  return (
-    <div>
-      <div className="range-track" ref={trackRef}>
-        <div className="range-fill" style={{ left: pct(lo) + "%", width: (pct(hi) - pct(lo)) + "%" }}></div>
-        <div className="range-knob" style={{ left: pct(lo) + "%" }} onMouseDown={() => setDrag("lo")}></div>
-        <div className="range-knob" style={{ left: pct(hi) + "%" }} onMouseDown={() => setDrag("hi")}></div>
-      </div>
-      <div className="range-vals">
-        <span>{lo.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</span>
-        <span>{hi.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</span>
-      </div>
-    </div>
-  );
-}
-
 const PAGE_SIZE = 20;
 
 function applyFiltersAndSort(list, filters, sortBy) {
