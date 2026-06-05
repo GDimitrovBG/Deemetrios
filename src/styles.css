@@ -3782,6 +3782,15 @@ body.drawer-open .float-dial .fd-main { pointer-events: none; }
 .cookie-bottom-links { display: flex; gap: 16px; margin-top: -6px; }
 .cookie-bottom-links .cookie-link { font-size: 12px; opacity: 0.5; }
 .cookie-bottom-links .cookie-link:hover { opacity: 0.8; }
+.cookie-credit {
+  font-family: var(--f-sans);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  opacity: 0.35;
+  margin-top: 6px;
+}
+.cookie-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.cookie-credit:hover { opacity: 0.55; }
 
 /* Expanded toggles */
 .cookie-expanded { max-width: 400px; }

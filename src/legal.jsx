@@ -164,6 +164,10 @@ function CookieConsent({ lang, setRoute }) {
           {!expanded && <a onClick={() => setExpanded(true)} className="cookie-link">{t.manage}</a>}
           <a onClick={() => setRoute("cookies")} className="cookie-link">{t.link}</a>
         </div>
+        <div className="cookie-credit">
+          {lang === "bg" ? "направено от" : "made by"}{" "}
+          <a href="https://cookiekita.com/" target="_blank" rel="noopener noreferrer">cookiekita.com</a>
+        </div>
       </div>
     </div>
   );
