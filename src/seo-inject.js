@@ -67,30 +67,34 @@ function applySettings(s) {
       const allowAnalytics = prefs.analytics;
       const allowMarketing = prefs.marketing;
 
-      // gtag.js powers BOTH GA4 (analytics consent) and Google Ads conversions
-      // (marketing consent). Load the library once if either is configured, then
-      // run config() for whichever ID(s) the user has consented to.
-      const hasGA  = allowAnalytics && s.ga_id  && VALID_GA.test(s.ga_id);
-      const hasAds = allowMarketing && s.aw_id  && VALID_AW.test(s.aw_id);
-      if (hasGA || hasAds) {
-        // Use the GA id when present (it lights up GA4 + tag library),
-        // otherwise the Ads id alone loads gtag.js correctly.
-        const libId = hasGA ? s.ga_id : s.aw_id;
-        injectScript(`https://www.googletagmanager.com/gtag/js?id=${libId}`);
-        const configs = [];
-        if (hasGA)  configs.push(`gtag('config', '${s.ga_id}', { anonymize_ip: true });`);
-        if (hasAds) configs.push(`gtag('config', '${s.aw_id}');`);
-        injectInlineScript('ga-init', `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          ${configs.join('\n          ')}
-        `);
-        // Expose Ads conversion helper for booking page to fire on success.
-        if (hasAds && s.aw_booking_label && VALID_AW_LABEL.test(s.aw_booking_label)) {
-          window.__aretiAds = { sendBookingConversion: () => {
-            try { window.gtag && window.gtag('event', 'conversion', { send_to: `${s.aw_id}/${s.aw_booking_label}` }); } catch {}
-          }};
+      // Consent Mode v2: gtag.js is already loaded from index.html with
+      // analytics_storage / ad_storage defaulting to denied. Here we push the
+      // current consent and add the Ads config when configured.
+      // Also: when the admin sets a *different* GA id than the one hardcoded in
+      // index.html, run an extra config() so both report side-by-side.
+      if (typeof window.gtag === 'function') {
+        const consent = {
+          analytics_storage: allowAnalytics ? 'granted' : 'denied',
+          ad_storage:        allowMarketing ? 'granted' : 'denied',
+          ad_user_data:      allowMarketing ? 'granted' : 'denied',
+          ad_personalization: allowMarketing ? 'granted' : 'denied',
+        };
+        try { window.gtag('consent', 'update', consent); } catch {}
+
+        // Optional secondary GA stream from admin
+        if (s.ga_id && VALID_GA.test(s.ga_id) && s.ga_id !== 'G-RB14REHZ0P') {
+          try { window.gtag('config', s.ga_id, { anonymize_ip: true }); } catch {}
+        }
+
+        // Google Ads — register the AW container so clicks and remarketing fire
+        const hasAds = s.aw_id && VALID_AW.test(s.aw_id);
+        if (hasAds) {
+          try { window.gtag('config', s.aw_id); } catch {}
+          if (s.aw_booking_label && VALID_AW_LABEL.test(s.aw_booking_label)) {
+            window.__aretiAds = { sendBookingConversion: () => {
+              try { window.gtag('event', 'conversion', { send_to: `${s.aw_id}/${s.aw_booking_label}` }); } catch {}
+            }};
+          }
         }
       }
 

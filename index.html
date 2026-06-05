@@ -61,6 +61,39 @@
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" />
   </noscript>
+
+  <!--
+    Google Consent Mode v2 + gtag bootstrap.
+    Loads gtag.js immediately so Tag Assistant detects the tag and Google can
+    send cookieless pings (campaign measurement, ad clicks). Real cookies +
+    full analytics only fire after the user grants consent in the cookie banner
+    — src/seo-inject.js calls gtag('consent','update', ...) on accept.
+    The Measurement ID is hardcoded here because consent must be set BEFORE the
+    React app boots (Google's documented requirement: consent → then config).
+  -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    // Read prior consent from localStorage so returning visitors who already
+    // accepted don't see a downgrade flash. Defaults to denied for first-timers.
+    (function () {
+      var defaults = { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', functionality_storage: 'granted', security_storage: 'granted', wait_for_update: 500 };
+      try {
+        var raw = localStorage.getItem('areti_cookies');
+        if (raw) {
+          var p = raw === 'all' ? { analytics: true, marketing: true }
+                : raw === 'essential' ? { analytics: false, marketing: false }
+                : JSON.parse(raw);
+          if (p && p.analytics) defaults.analytics_storage = 'granted';
+          if (p && p.marketing) { defaults.ad_storage = 'granted'; defaults.ad_user_data = 'granted'; defaults.ad_personalization = 'granted'; }
+        }
+      } catch (e) {}
+      gtag('consent', 'default', defaults);
+    })();
+    gtag('js', new Date());
+    gtag('config', 'G-RB14REHZ0P', { anonymize_ip: true });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RB14REHZ0P"></script>
 </head>
 <body>
   <div id="app"></div>

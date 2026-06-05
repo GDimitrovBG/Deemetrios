@@ -89,17 +89,38 @@ function CookieConsent({ lang, setRoute }) {
     }
   }, []);
 
+  // Push the Consent Mode v2 update to gtag immediately so analytics/ads start
+  // recording without a reload (gtag.js is bootstrapped in index.html with
+  // everything denied by default — see Consent Mode v2 in index.html).
+  const pushConsentUpdate = (prefs) => {
+    try {
+      window.gtag && window.gtag('consent', 'update', {
+        analytics_storage: prefs.analytics ? 'granted' : 'denied',
+        ad_storage:        prefs.marketing ? 'granted' : 'denied',
+        ad_user_data:      prefs.marketing ? 'granted' : 'denied',
+        ad_personalization: prefs.marketing ? 'granted' : 'denied',
+      });
+    } catch {}
+  };
+
   const acceptAll = () => {
-    saveConsent({ analytics: true, marketing: true });
+    const prefs = { analytics: true, marketing: true };
+    saveConsent(prefs);
+    pushConsentUpdate(prefs);
     setVisible(false);
+    // Reload still useful so any deferred scripts (FB pixel, GTM) bootstrap.
     window.location.reload();
   };
   const acceptEssential = () => {
-    saveConsent({ analytics: false, marketing: false });
+    const prefs = { analytics: false, marketing: false };
+    saveConsent(prefs);
+    pushConsentUpdate(prefs);
     setVisible(false);
   };
   const saveCustom = () => {
-    saveConsent({ analytics, marketing });
+    const prefs = { analytics, marketing };
+    saveConsent(prefs);
+    pushConsentUpdate(prefs);
     setVisible(false);
     if (analytics || marketing) window.location.reload();
   };
