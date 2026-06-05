@@ -101,6 +101,8 @@ function CookieConsent({ lang, setRoute }) {
         ad_personalization: prefs.marketing ? 'granted' : 'denied',
       });
     } catch {}
+    // Meta Pixel consent toggle (bootstrap in index.html, same Consent Mode idea)
+    try { window.fbq && window.fbq('consent', prefs.marketing ? 'grant' : 'revoke'); } catch {}
   };
 
   const acceptAll = () => {

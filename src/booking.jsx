@@ -595,8 +595,10 @@ function BookingPage({ lang, setRoute, dress = null }) {
                 // Fire Google Ads conversion (no-op if Ads not configured or
                 // user declined marketing cookies — see seo-inject.js).
                 try { window.__aretiAds?.sendBookingConversion?.(); } catch {}
-                // Also fire a GA4 event regardless of Ads — useful for goals.
+                // GA4 event regardless of Ads — useful for goals + import to Ads.
                 try { window.gtag?.('event', 'booking_request', { event_category: 'booking', event_label: booking.type || 'unknown' }); } catch {}
+                // Meta Pixel Lead event (no-op until user grants marketing consent).
+                try { window.fbq?.('track', 'Lead', { content_category: 'booking', content_name: booking.type || 'unknown' }); } catch {}
                 setDone(true);
               }} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
                 {t.booking.confirm}

@@ -108,16 +108,12 @@ function applySettings(s) {
         `);
       }
 
-      if (allowMarketing && s.fb_pixel && VALID_FB.test(s.fb_pixel)) {
-        injectInlineScript('fb-pixel', `
-          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-          (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${s.fb_pixel}');
-          fbq('track', 'PageView');
-        `);
+      // Meta Pixel is bootstrapped in index.html (Consent Mode style). Optional
+      // secondary Pixel from admin settings — only adds an extra init() so the
+      // client can plug in a second pixel without code changes. fbq.consent is
+      // already toggled by legal.jsx when the user accepts/revokes.
+      if (s.fb_pixel && VALID_FB.test(s.fb_pixel) && s.fb_pixel !== '1378406233980976') {
+        try { window.fbq && window.fbq('init', s.fb_pixel); } catch {}
       }
 
       if (s.gsc_verification && VALID_META.test(s.gsc_verification)) {
