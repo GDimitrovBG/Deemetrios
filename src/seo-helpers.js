@@ -32,6 +32,49 @@ const T = {
 const isEvening = p => p?.collection === 'evening';
 
 // -----------------------------------------------------
+//  Fabric localisation — the dress data stores fabric names in English
+//  ("Beaded tulle, Sparkling tulle"). Showing that raw on the Bulgarian site
+//  looks unprofessional and pollutes the BG keyword profile with terms like
+//  "tulle"/"embroidery". Translate each comma-separated token for display.
+// -----------------------------------------------------
+const FABRIC_BG = {
+  'tulle': 'тюл',
+  'beaded tulle': 'тюл с мъниста',
+  'sparkling tulle': 'блестящ тюл',
+  'sparkle tulle': 'блестящ тюл',
+  'sparkling underlace': 'блестяща подплата',
+  'underlace': 'подплата',
+  'lace': 'дантела',
+  'beaded lace': 'дантела с мъниста',
+  'beading': 'мъниста',
+  'embroidery': 'бродерия',
+  'satin': 'сатен',
+  'mikado': 'микадо',
+  'lux mikado': 'луксозно микадо',
+  'luxe dupione': 'дюпион',
+  'dupione': 'дюпион',
+  'chiffon': 'шифон',
+  'crepe': 'креп',
+  'taffeta': 'тафта',
+  'feathers': 'пера',
+  'organza': 'органза',
+};
+
+/** Translate a comma-separated fabric string for the given language. */
+export function localizeFabric(fabric, lang = 'bg') {
+  if (!fabric || lang !== 'bg') return fabric || '';
+  return fabric
+    .split(',')
+    .map(part => {
+      const key = part.trim().toLowerCase();
+      const bg = FABRIC_BG[key];
+      // Capitalise the first letter to match the original styling.
+      return bg ? bg.charAt(0).toUpperCase() + bg.slice(1) : part.trim();
+    })
+    .join(', ');
+}
+
+// -----------------------------------------------------
 //  Display names — keyword-rich, used in H1 and cards
 // -----------------------------------------------------
 
@@ -63,7 +106,7 @@ export function getProductAlt(p, lang = 'bg', idx = 0) {
   const kind = isEvening(p) ? t.evening : t.bridal;
   const collLabel = COLLECTION_LABEL[p.collection] || '';
   const silhouette = (lang === 'bg' ? p.silhouette : p.silhouette_en) || '';
-  const fabric = p.fabric || '';
+  const fabric = localizeFabric(p.fabric || '', lang);
 
   if (idx === 0) {
     const parts = [

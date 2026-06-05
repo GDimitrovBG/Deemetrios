@@ -3,7 +3,7 @@ import i18n from './i18n';
 import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { useSeo, orgSchema, websiteSchema } from './seo';
-import { getProductCardName, getProductAlt } from './seo-helpers';
+import { getProductCardName, getProductAlt, localizeFabric } from './seo-helpers';
 
 // =====================================================
 //  HOME — 3 hero variations + shared sections
@@ -206,11 +206,11 @@ function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
         </button>
       )}
       <Img src={d.img} alt={imgAlt} className="dress-img" width={600} height={800} />
-      <span className="quick">View · {d.ref}</span>
+      <span className="quick">{lang === "bg" ? "Виж" : "View"} · {d.ref}</span>
       <div className="dress-info">
         <div>
           <h3>{name}</h3>
-          <div className="meta">{sil} · {d.fabric}</div>
+          <div className="meta">{sil}{d.fabric ? ` · ${localizeFabric(d.fabric, lang)}` : ""}</div>
         </div>
         {d.price > 0 && <div className="price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>}
       </div>

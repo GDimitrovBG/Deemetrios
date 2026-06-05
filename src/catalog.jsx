@@ -5,7 +5,7 @@ import { IMG, DRESSES, ACCESSORIES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { DressCard } from './home';
 import { useSeo, productSchema, breadcrumbSchema } from './seo';
-import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema } from './seo-helpers';
+import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric } from './seo-helpers';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -751,7 +751,7 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
                   <div className="wishlist-card-info">
                     <div>
                       <div className="wishlist-card-name">{name}</div>
-                      <div className="wishlist-card-meta">{sil} · {d.fabric}</div>
+                      <div className="wishlist-card-meta">{sil}{d.fabric ? ` · ${localizeFabric(d.fabric, lang)}` : ""}</div>
                       {d.price > 0 && <div className="wishlist-card-price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>}
                     </div>
                     <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
