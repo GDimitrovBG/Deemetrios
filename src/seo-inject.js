@@ -21,6 +21,8 @@ function cacheSettings(data) {
 
 const VALID_GA  = /^G-[A-Z0-9]{4,12}$/;
 const VALID_GTM = /^GTM-[A-Z0-9]{4,12}$/;
+const VALID_AW  = /^AW-\d{8,12}$/;
+const VALID_AW_LABEL = /^[A-Za-z0-9_-]{4,40}$/;
 const VALID_FB  = /^\d{10,20}$/;
 const VALID_META = /^[A-Za-z0-9_-]{10,80}$/;
 
@@ -65,14 +67,31 @@ function applySettings(s) {
       const allowAnalytics = prefs.analytics;
       const allowMarketing = prefs.marketing;
 
-      if (allowAnalytics && s.ga_id && VALID_GA.test(s.ga_id)) {
-        injectScript(`https://www.googletagmanager.com/gtag/js?id=${s.ga_id}`);
+      // gtag.js powers BOTH GA4 (analytics consent) and Google Ads conversions
+      // (marketing consent). Load the library once if either is configured, then
+      // run config() for whichever ID(s) the user has consented to.
+      const hasGA  = allowAnalytics && s.ga_id  && VALID_GA.test(s.ga_id);
+      const hasAds = allowMarketing && s.aw_id  && VALID_AW.test(s.aw_id);
+      if (hasGA || hasAds) {
+        // Use the GA id when present (it lights up GA4 + tag library),
+        // otherwise the Ads id alone loads gtag.js correctly.
+        const libId = hasGA ? s.ga_id : s.aw_id;
+        injectScript(`https://www.googletagmanager.com/gtag/js?id=${libId}`);
+        const configs = [];
+        if (hasGA)  configs.push(`gtag('config', '${s.ga_id}', { anonymize_ip: true });`);
+        if (hasAds) configs.push(`gtag('config', '${s.aw_id}');`);
         injectInlineScript('ga-init', `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${s.ga_id}', { anonymize_ip: true });
+          ${configs.join('\n          ')}
         `);
+        // Expose Ads conversion helper for booking page to fire on success.
+        if (hasAds && s.aw_booking_label && VALID_AW_LABEL.test(s.aw_booking_label)) {
+          window.__aretiAds = { sendBookingConversion: () => {
+            try { window.gtag && window.gtag('event', 'conversion', { send_to: `${s.aw_id}/${s.aw_booking_label}` }); } catch {}
+          }};
+        }
       }
 
       if (allowAnalytics && s.gtm_id && VALID_GTM.test(s.gtm_id)) {

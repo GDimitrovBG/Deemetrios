@@ -592,6 +592,11 @@ function BookingPage({ lang, setRoute, dress = null }) {
                 };
                 createBooking(booking).catch(() => {});
                 sendBookingEmails(booking, lang);
+                // Fire Google Ads conversion (no-op if Ads not configured or
+                // user declined marketing cookies — see seo-inject.js).
+                try { window.__aretiAds?.sendBookingConversion?.(); } catch {}
+                // Also fire a GA4 event regardless of Ads — useful for goals.
+                try { window.gtag?.('event', 'booking_request', { event_category: 'booking', event_label: booking.type || 'unknown' }); } catch {}
                 setDone(true);
               }} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
                 {t.booking.confirm}

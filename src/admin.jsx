@@ -1030,6 +1030,14 @@ function SettingsSection({ user, onLogout }) {
             </div>
 
             <div className="adm-seo-group">
+              <h4 className="adm-seo-group-title">Google Ads (конверсии)</h4>
+              <AInput label="Conversion ID" value={s.aw_id||""} onChange={v=>set("aw_id",v)} placeholder="AW-XXXXXXXXXX" />
+              <p className="adm-hint">Google Ads Conversion ID. Намира се в Ads → Goals → Conversions → Tag setup.</p>
+              <AInput label="Booking Conversion Label" value={s.aw_booking_label||""} onChange={v=>set("aw_booking_label",v)} placeholder="abc123xyz" />
+              <p className="adm-hint">Conversion Label за резервация на проба. От същия Tag setup екран в Google Ads (полето "send_to" е "AW-ID/LABEL").</p>
+            </div>
+
+            <div className="adm-seo-group">
               <h4 className="adm-seo-group-title">Facebook Pixel</h4>
               <AInput label="Pixel ID" value={s.fb_pixel||""} onChange={v=>set("fb_pixel",v)} placeholder="123456789012345" />
             </div>
