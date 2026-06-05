@@ -14,7 +14,7 @@ function sanitizeHTML(html) {
   html = html.replace(/<(\/?)h1(\s[^>]*)?>/gi, '<$1h2$2>');
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['p','br','b','strong','i','em','u','a','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','span','div','figure','figcaption'],
-    ALLOWED_ATTR: ['href','src','alt','title','class','style','target','rel','width','height'],
+    ALLOWED_ATTR: ['href','src','alt','title','class','style','target','rel','width','height','loading','decoding'],
     ALLOW_DATA_ATTR: false,
   });
 }
