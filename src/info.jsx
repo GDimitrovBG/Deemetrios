@@ -62,8 +62,8 @@ function AboutPage({ lang, setRoute }) {
   useSeo({
     title: isBg ? "За Арети — сватбен салон в София от 1992 г." : "About Areti — Bridal Salon in Sofia since 1992",
     description: isBg
-      ? "Арети е луксозен булчински салон в София, основан през 1992 г. От 30 години обличаме булки в България — официален представител на Demetrios. Адрес: ул. Крум Попов 63, Лозенец."
-      : "Areti is a luxury bridal salon in Sofia, founded in 1992. For 30 years we have been dressing brides across Bulgaria as the official Demetrios representative. Address: 63 Krum Popov St, Lozenets.",
+      ? "Арети е луксозен булчински салон в София, основан през 1992 г. — официален представител на Demetrios в България. Над 30 години обличаме булки."
+      : "Areti is a luxury bridal salon in Sofia, founded in 1992 — the official Demetrios representative in Bulgaria. Dressing brides for over 30 years.",
     image: IMG.about, url: "/about", lang,
     keywords: "Арети, сватбен салон София, булчински салон Лозенец, история Demetrios България",
     jsonLd: orgSchema(),
@@ -212,8 +212,8 @@ function DemetriosPage({ lang, setRoute }) {
   useSeo({
     title: isBg ? "Деметриос Джеймс Елиас — историята на марката Demetrios" : "Demetrios James Elias — The Story of the Demetrios Brand",
     description: isBg
-      ? "Деметриос Джеймс Елиас — гръцки моден дизайнер, основател на Demetrios Bridal през 1982 г. Колекциите Demetrios, Platinum, Destination и Cosmobella в Арети — официален представител в България."
-      : "Demetrios James Elias — Greek-American designer, founder of Demetrios Bridal in 1982. The Demetrios, Platinum, Destination and Cosmobella collections at Areti — official representative in Bulgaria.",
+      ? "Деметриос Джеймс Елиас — гръцки дизайнер, основал Demetrios Bridal през 1982 г. Колекциите му в Арети — официален представител на Demetrios в България."
+      : "Demetrios James Elias — Greek-American designer who founded Demetrios Bridal in 1982. His collections at Areti, official Demetrios representative in Bulgaria.",
     url: "/demetrios", lang,
     keywords: "Demetrios James Elias, Деметриос дизайнер, Demetrios Bridal, Demetrios колекции, Cosmobella, Platinum",
     jsonLd: { "@graph": [
@@ -386,8 +386,8 @@ function ContactPage({ lang, setRoute }) {
   useSeo({
     title: isBg ? "Контакти — Арети сватбен салон София" : "Contact — Areti Bridal Salon Sofia",
     description: isBg
-      ? "Контакти на сватбен салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време: пн-пт 10:00-19:00, сб 10:30-18:00. Запазете час за безплатна проба."
-      : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours: Mon-Fri 10:00-19:00, Sat 10:30-18:00. Book a free fitting.",
+      ? "Контакти на булчински салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време пн–пт 10–19 ч., сб 10:30–18 ч."
+      : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours Mon–Fri 10–19, Sat 10:30–18.",
     url: "/contact", lang,
     keywords: "Арети контакти, сватбен салон Лозенец, телефон булчински салон София, адрес Арети",
     jsonLd: orgSchema(),

@@ -113,8 +113,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         : (isBg ? "Луксозни булчински и сватбени рокли в София | Арети" : "Luxury Wedding & Bridal Dresses in Sofia | Areti"),
     description: isEvening
       ? (isBg
-          ? "Официални, бални и абитуриентски рокли в София от Арети. Елегантни вечерни рокли за абитуриентски бал, сватба, кръщене или коктейл — записване за проба по предварителен час."
-          : "Evening, prom and formal dresses in Sofia by Areti. Elegant gowns for proms, weddings, christenings and cocktail events — fittings by appointment.")
+          ? "Официални, бални и абитуриентски рокли в София от Арети. Елегантни вечерни рокли за бал, сватба или коктейл — проба по предварителен час."
+          : "Evening, prom and formal dresses in Sofia by Areti. Elegant gowns for proms, weddings and cocktail events — fittings by appointment.")
       : colData
         ? (isBg ? colData.desc_bg : colData.desc_en)
         : (isBg
