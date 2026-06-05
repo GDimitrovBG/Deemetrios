@@ -680,6 +680,86 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink);
 }
 
+/* ============================================
+   REVIEWS SECTION (homepage)
+   ============================================ */
+.reviews-section {
+  background: var(--bg-soft);
+  padding: var(--s-9) var(--gutter);
+}
+.reviews-inner { max-width: var(--maxw); margin: 0 auto; }
+.reviews-head { text-align: center; margin-bottom: 56px; }
+.reviews-head .reviews-eye {
+  color: var(--champagne-deep);
+  margin-bottom: 18px;
+}
+.reviews-title {
+  font-family: var(--f-display);
+  font-size: clamp(48px, 6vw, 88px);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.reviews-title em { font-family: var(--f-serif); font-style: italic; color: var(--champagne-deep); }
+.reviews-lede {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--ink-soft);
+}
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.review-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 32px 28px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+.review-stars {
+  color: var(--champagne);
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.review-quote {
+  font-family: var(--f-serif);
+  font-size: 16px;
+  line-height: 1.55;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+  flex: 1;
+  quotes: "“" "”";
+}
+.review-quote::before { content: open-quote; }
+.review-quote::after  { content: close-quote; }
+.review-author {
+  font-family: var(--f-sans);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-top: auto;
+}
+.reviews-foot { text-align: center; margin-top: 48px; }
+@media (max-width: 1024px) {
+  .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+  .reviews-grid > :nth-child(n+5) { display: none; } /* show 4 on tablet, hide 5th */
+}
+@media (max-width: 720px) {
+  .reviews-section { padding: 64px var(--gutter); }
+  .reviews-head { margin-bottom: 36px; }
+  .reviews-grid { grid-template-columns: 1fr; gap: 16px; }
+  .reviews-grid > :nth-child(n+5) { display: flex; } /* show all on mobile */
+  .review-card { padding: 24px 22px; }
+  .review-quote { font-size: 15px; }
+  .reviews-foot { margin-top: 32px; }
+}
+
 /* editorial split */
 .editorial {
   display: grid;

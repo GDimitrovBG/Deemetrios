@@ -350,6 +350,40 @@ function PriceRangesSection({ t, lang, setRoute }) {
   );
 }
 
+function ReviewsSection({ t }) {
+  const r = t.home;
+  return (
+    <section className="reviews-section">
+      <div className="reviews-inner">
+        <div className="reviews-head">
+          <div className="t-eyebrow reviews-eye">{r.reviews_eye}</div>
+          <h2 className="reviews-title">{r.reviews_title} <em>{r.reviews_title_em}</em></h2>
+          <p className="reviews-lede">{r.reviews_lede}</p>
+        </div>
+        <div className="reviews-grid">
+          {r.reviews.map((rev, i) => (
+            <figure key={i} className="review-card">
+              <div className="review-stars" aria-label="5 stars">★★★★★</div>
+              <blockquote className="review-quote">{rev.q}</blockquote>
+              <figcaption className="review-author">— {rev.n}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="reviews-foot">
+          <a
+            className="btn"
+            href="https://www.google.com/maps/search/?api=1&query=%D0%90%D1%80%D0%B5%D1%82%D0%B8+%D0%91%D1%83%D0%BB%D1%87%D0%B8%D0%BD%D1%81%D0%BA%D0%B8+%D0%A1%D0%B0%D0%BB%D0%BE%D0%BD+%D0%A1%D0%BE%D1%84%D0%B8%D1%8F"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {r.reviews_link}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CtaBand({ t, setRoute }) {
   return (
     <section style={{ background: "var(--ink)", color: "var(--bg)", padding: "120px var(--gutter)" }}>
@@ -394,6 +428,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       <StorySection t={t} setRoute={setRoute} />
       <PriceRangesSection t={t} lang={lang} setRoute={setRoute} />
       <ServicesSection t={t} />
+      <ReviewsSection t={t} />
       <CtaBand t={t} setRoute={setRoute} />
     </div>
   );

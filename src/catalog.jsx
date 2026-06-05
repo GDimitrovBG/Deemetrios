@@ -225,8 +225,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           ) : (
             <p className="collection-intro">
               {isBg
-                ? "Над 110 луксозни булчински и сватбени рокли в София от четирите колекции на Demetrios — Cosmobella, Demetrios, Platinum и Destination Romance. Арети е булчински салон и официален представител на Demetrios в България от 1992 г. Цените са от 1 000 до 4 000 € според колекцията, с безплатни корекции и записване за проба по предварителен час."
-                : "Over 110 luxury wedding dresses in Sofia from the four Demetrios collections — Cosmobella, Demetrios, Platinum and Destination Romance. Areti is a bridal salon and the official Demetrios representative in Bulgaria since 1992. Prices from €1,000 to €4,000 depending on collection, with free alterations and fittings by appointment."}
+                ? "Над 100 луксозни булчински и сватбени рокли в София от четирите колекции на Demetrios — Cosmobella, Demetrios, Platinum и Destination Romance. Пет силуета: А-силует, русалка, принцеса, права линия и бохо. Арети е булчински салон и официален представител на Demetrios в България от 1992 г. Цените са от 1 000 до 4 000 €, с безплатни корекции и записване за проба по предварителен час."
+                : "Over 100 luxury wedding dresses in Sofia from the four Demetrios collections — Cosmobella, Demetrios, Platinum and Destination Romance. Five silhouettes: A-line, mermaid, ball gown, column and boho. Areti is a bridal salon and the official Demetrios representative in Bulgaria since 1992. Prices from €1,000 to €4,000, with free alterations and fittings by appointment."}
             </p>
           )}
         </div>
