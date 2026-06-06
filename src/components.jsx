@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import i18n from './i18n';
 import { COLLECTIONS } from './data';
+import { cdnImage } from './cdn';
 
 // =====================================================
 //  Shared components: Nav, Footer, Image placeholders
@@ -29,7 +30,7 @@ function Img({ src, label, alt, className = "", style = {}, priority = false, wi
   return (
     <div className={`ph ph-img ${className}`} style={style}>
       <img
-        src={src}
+        src={cdnImage(src, width)}
         alt={a}
         width={width}
         height={height}

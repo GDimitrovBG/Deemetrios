@@ -4,6 +4,7 @@ import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { useSeo, orgSchema, websiteSchema } from './seo';
 import { getProductCardName, getProductAlt, localizeFabric } from './seo-helpers';
+import { cdnImage } from './cdn';
 
 // =====================================================
 //  HOME — 3 hero variations + shared sections
@@ -12,7 +13,7 @@ import { getProductCardName, getProductAlt, localizeFabric } from './seo-helpers
 function HomeHeroV1({ t, setRoute }) {
   return (
     <section className="hero hero-v1">
-      <div className="hero-bg" style={{ backgroundImage: `url(${IMG.hero1})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
+      <div className="hero-bg" style={{ backgroundImage: `url(${cdnImage(IMG.hero1, 1920)})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
       <div className="hero-content">
         <div className="top-strip fade-in">
           <span>{t.home.tagline_top_left}</span>
@@ -49,7 +50,7 @@ function HomeHeroV1({ t, setRoute }) {
 function HomeHeroV2({ t, lang, setRoute }) {
   return (
     <section className="hero-v2">
-      <div className="hero-img" style={{ backgroundImage: `url(${IMG.hero2})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
+      <div className="hero-img" style={{ backgroundImage: `url(${cdnImage(IMG.hero2, 1100)})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
       <div className="hero-text">
         <div className="fade-up delay-1" style={{ marginTop: 60 }}>
           <h1 className="t-display">
@@ -76,7 +77,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
 function HomeHeroV3({ t, setRoute }) {
   return (
     <section className="hero hero-v3">
-      <div className="hero-bg" style={{ backgroundImage: `url(${IMG.hero3})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
+      <div className="hero-bg" style={{ backgroundImage: `url(${cdnImage(IMG.hero3, 1920)})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
       <div className="hero-content">
         <div className="top-strip fade-in" style={{ display: "flex", justifyContent: "space-between", width: "100%", fontSize: 10, letterSpacing: "0.32em", textTransform: "uppercase", opacity: 0.85 }}>
           <span>—— Atelier Areti</span>

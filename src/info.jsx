@@ -5,6 +5,7 @@ import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
 import { useSeo, orgSchema, articleSchema, breadcrumbSchema, blogPostPath } from './seo';
 import { faqSchema } from './seo-helpers';
+import { cdnImage } from './cdn';
 
 function sanitizeHTML(html) {
   if (!html) return '';
@@ -454,7 +455,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
           <div className="blog-feature" style={{ cursor: "pointer" }} onClick={() => goBlogPost(featured.id)}>
             <div className="img-wrap">
               {featured.image
-                ? <img src={featured.image} alt={featured.title} className="img" loading="lazy" decoding="async" />
+                ? <img src={cdnImage(featured.image, 1200)} alt={featured.title} className="img" loading="lazy" decoding="async" />
                 : <div className="img" style={{ background: "var(--champagne)" }} />
               }
             </div>
@@ -480,7 +481,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
             >
               <div className="img-wrap">
                 {post.image
-                  ? <img src={post.image} alt={post.title} className="img" loading="lazy" decoding="async" />
+                  ? <img src={cdnImage(post.image, 600)} alt={post.title} className="img" loading="lazy" decoding="async" />
                   : <div className="img" style={{ background: "var(--champagne)" }} />
                 }
               </div>
@@ -535,7 +536,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
       {/* Hero */}
       <div className="blog-post-hero">
         {post.image && (
-          <img src={post.image} alt={post.title} className="blog-post-hero-img" loading="eager" decoding="sync" />
+          <img src={cdnImage(post.image, 1400)} alt={post.title} className="blog-post-hero-img" loading="eager" decoding="sync" />
         )}
         <div className="blog-post-hero-overlay" />
         <div className="blog-post-hero-content">
@@ -567,7 +568,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
               <div className="blog-sidebar-scroll">
                 {relatedProducts.map(p => (
                   <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
-                    <img src={p.imgs?.[0] || p.img} alt={dressName(p)} loading="lazy" decoding="async" />
+                    <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                     <div className="blog-sidebar-card-info">
                       <h4>{dressName(p)}</h4>
                       <span>{p.silhouette}</span>
@@ -605,7 +606,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
               <div className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</div>
               {relatedProducts.map(p => (
                 <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
-                  <img src={p.imgs?.[0] || p.img} alt={dressName(p)} loading="lazy" decoding="async" />
+                  <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                   <div className="blog-sidebar-card-info">
                     <h4>{dressName(p)}</h4>
                     <span>{p.silhouette}</span>
@@ -637,7 +638,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
                 onClick={() => goBlogPost(op.id)}
               >
                 {op.image
-                  ? <img src={op.image} alt={op.title} loading="lazy" decoding="async"
+                  ? <img src={cdnImage(op.image, 600)} alt={op.title} loading="lazy" decoding="async"
                       style={{ width: "100%", aspectRatio: "3/2", objectFit: "cover", display: "block", marginBottom: 16 }} />
                   : <div style={{ width: "100%", aspectRatio: "3/2", background: "var(--champagne)", marginBottom: 16 }} />
                 }
