@@ -210,6 +210,13 @@ export function productSchema(p, lang = 'bg') {
     "description": (lang === 'bg' ? p.seo_description_bg : p.seo_description_en) || p.description_bg || DEFAULT_DESC,
     "brand": { "@type": "Brand", "name": "Demetrios" },
     "category": "Булчинска рокля",
+    "offers": {
+      "@type": "AggregateOffer",
+      "lowPrice": "1000",
+      "highPrice": "4000",
+      "priceCurrency": "EUR",
+      "availability": "https://schema.org/InStoreOnly",
+    },
   };
   if (REVIEW_COUNT > 0) {
     schema.aggregateRating = {
