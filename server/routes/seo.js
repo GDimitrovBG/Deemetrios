@@ -84,11 +84,16 @@ router.get('/sitemap.xml', async (req, res) => {
 `;
     }
 
+    const clientSlugsSet = new Set(CLIENT_BLOG_SLUGS.map(b => b.slug));
     const emittedBlogSlugs = new Set();
     for (const a of articles) {
+      const blogPath = a.slug ? `/blog/${a.slug}` : null;
+      // Skip articles without slug (ObjectId URLs that likely 404)
+      // and articles whose slug is managed client-side (prefer CLIENT_BLOG_SLUGS dates)
+      if (!blogPath || clientSlugsSet.has(a.slug)) continue;
+      if (emittedBlogSlugs.has(a.slug)) continue;
+      emittedBlogSlugs.add(a.slug);
       const mod = (a.updatedAt || a.date) ? new Date(a.updatedAt || a.date).toISOString().split('T')[0] : now;
-      const blogPath = a.slug ? `/blog/${a.slug}` : `/blog/${a._id}`;
-      if (a.slug) emittedBlogSlugs.add(a.slug);
       xml += `  <url>
     <loc>${SITE_URL}${blogPath}</loc>
     <lastmod>${mod}</lastmod>
@@ -99,7 +104,6 @@ router.get('/sitemap.xml', async (req, res) => {
     }
 
     for (const b of CLIENT_BLOG_SLUGS) {
-      if (emittedBlogSlugs.has(b.slug)) continue;
       xml += `  <url>
     <loc>${SITE_URL}/blog/${b.slug}</loc>
     <lastmod>${b.date}</lastmod>

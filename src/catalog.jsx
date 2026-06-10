@@ -220,6 +220,50 @@ function CollectionSeoContent({ lang, setRoute }) {
   );
 }
 
+const SUB_COLLECTION_SEO = {
+  bg: {
+    cosmobella: { heading: "Булчински рокли Cosmobella", price: "1 000 – 1 800 €", text: "Cosmobella е достъпната линия на Demetrios — романтични силуети с флорални апликации, илюзорни деколтета и деликатни презрамки. Идеална за булки, които търсят качество и елегантност на разумна цена. Всички рокли са оригинални, с международна гаранция." },
+    demetrios: { heading: "Булчински рокли Demetrios", price: "1 500 – 2 800 €", text: "Основната колекция Demetrios предлага пълния спектър от силуети — А-силует, русалка и принцеса. Съвременни дизайни с дантела, бродерия и тюл с мъниста. Водещата линия на бранда с над 40 години традиция в булчинската мода." },
+    platinum: { heading: "Луксозни булчински рокли Demetrios Platinum", price: "2 500 – 4 000 €", text: "Demetrios Platinum е ексклузивната линия за булки, които не правят компромиси. Ръчно апликирани кристали Swarovski, перли и луксозни европейски дантели. Всеки модел изисква над 200 часа ръчна работа — истинско произведение на изкуството." },
+    destination: { heading: "Сватбени рокли Destination Romance", price: "1 200 – 2 000 €", text: "Destination Romance е създадена за дестинационни сватби — на плаж, в градина или на открито. Леки тъкани, къси шлейфове и бохо естетика. Удобни и красиви рокли, които се пътуват лесно и изглеждат зашеметяващо под слънцето." },
+  },
+  en: {
+    cosmobella: { heading: "Cosmobella Wedding Dresses", price: "€1,000 – €1,800", text: "Cosmobella is the accessible Demetrios line — romantic silhouettes with floral appliqués, illusion necklines and delicate straps. Perfect for brides seeking quality and elegance at a reasonable price. All dresses are original with an international guarantee." },
+    demetrios: { heading: "Demetrios Wedding Dresses", price: "€1,500 – €2,800", text: "The core Demetrios collection offers the full range of silhouettes — A-line, mermaid and ball gown. Contemporary designs in lace, embroidery and beaded tulle. The brand's flagship line with over 40 years of bridal tradition." },
+    platinum: { heading: "Luxury Demetrios Platinum Wedding Dresses", price: "€2,500 – €4,000", text: "Demetrios Platinum is the exclusive line for brides who don't compromise. Hand-applied Swarovski crystals, pearls and luxurious European lace. Each gown requires over 200 hours of handwork — a true work of art." },
+    destination: { heading: "Destination Romance Wedding Dresses", price: "€1,200 – €2,000", text: "Destination Romance is designed for destination weddings — beach, garden or outdoor. Lightweight fabrics, short trains and boho aesthetics. Comfortable and beautiful gowns that travel easily." },
+  },
+};
+
+function SubCollectionSeo({ lang, setRoute, colId }) {
+  const isBg = lang === "bg";
+  const info = (SUB_COLLECTION_SEO[lang] || SUB_COLLECTION_SEO.bg)[colId];
+  if (!info) return null;
+  const count = DRESSES.filter(d => d.collection === colId).length;
+
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {info.heading}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>{info.text}</p>
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
+        <span>{isBg ? `${count} модела в салона` : `${count} styles in store`}</span>
+        <span>{isBg ? `Цени: ${info.price}` : `Prices: ${info.price}`}</span>
+        <span>{isBg ? "Безплатна проба и корекция" : "Free fitting & alteration"}</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <button className="btn btn-solid" onClick={() => setRoute("booking")}>
+          {isBg ? "Запази проба →" : "Book a fitting →"}
+        </button>
+        <button className="btn" onClick={() => setRoute("collection")}>
+          {isBg ? "Всички колекции" : "All collections"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
@@ -236,7 +280,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           ? "Официални, бални и абитуриентски рокли в София от Арети. Елегантни вечерни рокли за бал, сватба или коктейл — проба по предварителен час."
           : "Evening, prom and formal dresses in Sofia by Areti. Elegant gowns for proms, weddings and cocktail events — fittings by appointment.")
       : colData
-        ? (isBg ? colData.desc_bg : colData.desc_en)
+        ? (isBg ? (colData.seo_desc_bg || colData.desc_bg) : (colData.seo_desc_en || colData.desc_en))
         : (isBg
             ? "Над 100 луксозни булчински рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, безплатни корекции. Арети — от 1992 г."
             : "Over 100 luxury wedding dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, free alterations. Areti — since 1992."),
@@ -472,6 +516,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
       </div>
 
       {!initCollection && <CollectionSeoContent lang={lang} setRoute={setRoute} />}
+      {initCollection && !isEvening && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}
       {createPortal(
