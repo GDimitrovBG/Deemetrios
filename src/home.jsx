@@ -411,11 +411,11 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   useSeo({
     title: lang === "bg"
-      ? "Луксозни булчински рокли в София | Арети — Demetrios"
-      : "Luxury Wedding Dresses in Sofia | Areti — Demetrios",
+      ? "Арети — Булчински салон Demetrios в София | От 1992 г."
+      : "Areti — Demetrios Bridal Salon in Sofia | Since 1992",
     description: lang === "bg"
-      ? "Луксозни булчински и сватбени рокли в София. Арети — булчински салон и официален представител на Demetrios от 1992 г. Запазете час за безплатна проба."
-      : "Luxury wedding and bridal dresses in Sofia. Areti — bridal salon and official Demetrios representative since 1992. Book a free fitting.",
+      ? "Арети е официален представител на Demetrios в България от 1992 г. Луксозен сватбен салон в Лозенец, София — над 100 булчински рокли, безплатна консултация и корекции. Запазете час."
+      : "Areti is the official Demetrios representative in Bulgaria since 1992. Luxury bridal salon in Sofia — over 100 wedding dresses, free consultation and alterations. Book a fitting.",
     image: IMG.hero1,
     url: "/",
     lang,

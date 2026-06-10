@@ -19,7 +19,7 @@ const WP_REDIRECTS = {
   '/fqa':                 '/contact',
   '/nashite-bulki':       '/about',
   '/author/areti1':       '/',
-  '/bulchinski-rokli':    '/collection/demetrios',
+  '/bulchinski-rokli':    '/collection',
   '/bulchinski-rokli-2':  '/collection',
   '/bulchenski-rokli-sofia': '/collection',
   '/vecherni-rokli':      '/collection/evening',
@@ -30,7 +30,7 @@ const WP_REDIRECTS = {
 };
 
 function patternRedirect(p) {
-  if (/^\/bulchinski-rokli\/page\/\d+$/.test(p)) return '/collection/demetrios';
+  if (/^\/bulchinski-rokli\/page\/\d+$/.test(p)) return '/collection';
   if (/^\/vecherni-rokli\/page\/\d+$/.test(p)) return '/collection/evening';
   if (/^\/blog\/page\/\d+$/.test(p)) return '/blog';
 

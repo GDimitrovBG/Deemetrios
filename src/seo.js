@@ -295,4 +295,17 @@ export function websiteSchema() {
   };
 }
 
+/** FAQPage schema */
+export function faqSchema(items) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": items.map(({ q, a }) => ({
+      "@type": "Question",
+      "name": q,
+      "acceptedAnswer": { "@type": "Answer", "text": a },
+    })),
+  };
+}
+
 export { SITE_NAME, SITE_URL, DEFAULT_DESC, DEFAULT_IMG };

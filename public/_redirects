@@ -23,8 +23,8 @@
 /nashite-bulki/       /about                       301
 /author/areti1        /                            301
 /author/areti1/       /                            301
-/bulchinski-rokli     /collection/demetrios        301
-/bulchinski-rokli/    /collection/demetrios        301
+/bulchinski-rokli     /collection                  301
+/bulchinski-rokli/    /collection                  301
 /bulchinski-rokli-2   /collection                  301
 /bulchinski-rokli-2/  /collection                  301
 /bulchenski-rokli-sofia  /collection               301
@@ -43,7 +43,7 @@
 /сватбен-магазин-в-софия-сватбени-ро/     /collection                       301
 
 # Paginated and category WP routes
-/bulchinski-rokli/page/*  /collection/demetrios    301
+/bulchinski-rokli/page/*  /collection              301
 /vecherni-rokli/page/*    /collection/evening      301
 /blog/page/*              /blog                    301
 /product-category/*       /collection              301

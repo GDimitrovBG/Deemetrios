@@ -4,7 +4,8 @@ import i18n from './i18n';
 import { IMG, DRESSES, ACCESSORIES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { DressCard } from './home';
-import { useSeo, productSchema, breadcrumbSchema } from './seo';
+import { useSeo, productSchema, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
+import { BLOG_POSTS } from './blog_data';
 import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric } from './seo-helpers';
 
 // =====================================================
@@ -58,6 +59,167 @@ function applyFiltersAndSort(list, filters, sortBy) {
   return result;
 }
 
+const SILHOUETTE_KEY = {
+  "А-силует": "aline", "Прав": "column", "Принцеса": "ballgown", "Сирена": "mermaid", "Балон": "ballgown", "Ампир": "empire",
+  "A-line": "aline", "Column": "column", "Ball Gown": "ballgown", "Mermaid": "mermaid", "Empire": "empire",
+};
+
+const COLLECTION_FAQ = {
+  bg: [
+    { q: "Колко струват булчинските рокли в Арети?", a: "Цените на булчинските рокли в Арети варират в зависимост от колекцията: Cosmobella от 1 000 до 1 800 €, Demetrios от 1 500 до 2 800 €, Destination Romance от 1 200 до 2 000 €, а Demetrios Platinum — от 2 500 до 4 000 €. В цената са включени безплатна консултация с личен стилист и една безплатна корекция." },
+    { q: "Какви силуети булчински рокли предлагате?", a: "В салона в София разполагаме с над 100 рокли в 5 основни силуета: А-силует (универсален и флатериращ), русалка (подчертава извивките), принцеса (обемна пола с корсет), права линия (елегантен минимализъм) и бохо (леки материи и свободни кройки). Всеки силует е достъпен в различни тъкани — от дантела и тюл до коприна и сатен." },
+    { q: "Кога да започна търсенето на сватбена рокля?", a: "Препоръчваме да започнете 8 до 12 месеца преди сватбата. Ако избраната рокля не е налична в шоурума, поръчката от Demetrios отнема 3–4 месеца, плюс 1–2 месеца за корекции. За по-спешни случаи имаме рокли в наличност, които могат да бъдат коригирани за 2–3 седмици." },
+    { q: "Предлагате ли достъпни булчински рокли?", a: "Да. Колекцията Cosmobella предлага елегантни булчински рокли от 1 000 €, а Destination Romance — леки рокли за дестинационни сватби от 1 200 €. Периодично организираме и намаления на модели от предишни сезони. Всички рокли са оригинални Demetrios с гаранция за качество." },
+    { q: "Какво включва пробата на булчинска рокля?", a: "Пробата трае около 60–90 минути и включва: лична консултация със стилист, който подбира рокли по вашата фигура и предпочитания; проба на неограничен брой модели от всички колекции; съвети за аксесоари и воал. Пробата е безплатна и по предварителен час." },
+    { q: "Мога ли да поръчам рокля, която не е в шоурума?", a: "Да. Като официален представител на Demetrios в България, можем да поръчаме всеки модел от текущите колекции, включително Demetrios, Cosmobella, Platinum и Destination Romance. Доставката отнема 3–4 месеца. Показваме ви каталозите и мострените тъкани на място." },
+    { q: "Правите ли корекции на роклята?", a: "Да. В ателието работи Кети — шивачка с многогодишен опит в булчинска мода. Една безплатна корекция е включена в цената на всяка рокля. Корекциите включват скъсяване, стесняване, добавяне на подплати или промяна на деколтето. Отнема 1–2 седмици." },
+    { q: "Колко рокли мога да пробвам на една среща?", a: "Няма ограничение — можете да пробвате толкова рокли, колкото желаете. Стилистът подбира 5–8 модела въз основа на вашите предпочитания, но ако харесате и други, ги добавяме без проблем. Средно булките пробват 6–10 рокли преди да направят своя избор." },
+  ],
+  en: [
+    { q: "How much do wedding dresses cost at Areti?", a: "Prices vary by collection: Cosmobella from €1,000 to €1,800, Demetrios from €1,500 to €2,800, Destination Romance from €1,200 to €2,000, and Demetrios Platinum from €2,500 to €4,000. A free consultation and one alteration are included." },
+    { q: "What silhouettes do you offer?", a: "We carry over 100 dresses in 5 silhouettes: A-line, mermaid, ball gown, column and boho. Each is available in various fabrics including lace, tulle, silk and satin." },
+    { q: "When should I start looking for a wedding dress?", a: "We recommend starting 8–12 months before the wedding. Custom orders from Demetrios take 3–4 months, plus 1–2 months for alterations. For urgent timelines, we have in-stock dresses that can be altered within 2–3 weeks." },
+    { q: "Do you offer affordable wedding dresses?", a: "Yes. Cosmobella starts from €1,000, and Destination Romance from €1,200. We also run seasonal sales on previous-season styles. All dresses are original Demetrios with a quality guarantee." },
+    { q: "What does a fitting appointment include?", a: "A 60–90 minute session with a personal stylist who selects gowns based on your figure and preferences. You can try an unlimited number of dresses. The appointment is free and by reservation." },
+    { q: "Can I order a dress not in the showroom?", a: "Yes. As the official Demetrios representative in Bulgaria, we can order any current-season style. Delivery takes 3–4 months. We show you the full catalogue and fabric swatches in the salon." },
+    { q: "Do you offer alterations?", a: "Yes. Our in-house seamstress Keti specializes in bridal alterations. One free alteration is included with every dress. Turnaround is 1–2 weeks." },
+    { q: "How many dresses can I try on?", a: "There's no limit. Our stylist pre-selects 5–8 gowns based on your preferences, but you can add more. Most brides try 6–10 before making their choice." },
+  ],
+};
+
+const SILHOUETTE_INFO = {
+  bg: {
+    aline:    { name: "А-силует", desc: "Универсалният избор — стеснява се от рамената и се разширява плавно от талията. Подходящ за всеки тип фигура. Подчертава талията, скрива бедрата и създава елегантен, хармоничен силует." },
+    mermaid:  { name: "Русалка", desc: "Прилепва тялото до коленете и се разширява драматично. Перфектен за булки, които искат да подчертаят извивките си. Изисква увереност и е зашеметяващ на снимки." },
+    ballgown: { name: "Принцеса", desc: "Класическата приказна рокля — прилепнал корсет и обемна пола. Създава впечатляващ ефект при влизане в залата. Идеален за голяма сватба в хотел или църква." },
+    column:   { name: "Права линия", desc: "Елегантен минимализъм — следва контурите на тялото без излишен обем. Модерен и изтънчен избор за булки с висока фигура или за градска/дестинационна сватба." },
+    empire:   { name: "Бохо", desc: "Свободни, леки тъкани и романтична естетика. Лека и удобна кройка, подходяща за сватби на открито, на плаж или в природата. Често с флорални елементи и мека дантела." },
+  },
+  en: {
+    aline:    { name: "A-line", desc: "The universal choice — narrows at the shoulders and flows from the waist. Flattering on every body type, it emphasizes the waist and creates an elegant silhouette." },
+    mermaid:  { name: "Mermaid", desc: "Hugs the body to the knees and flares dramatically. Perfect for brides who want to accentuate their curves." },
+    ballgown: { name: "Ball gown", desc: "The classic fairytale dress — fitted bodice with a voluminous skirt. Ideal for grand venues and big celebrations." },
+    column:   { name: "Column", desc: "Elegant minimalism that follows the body's contours. A modern, refined choice for tall brides or destination weddings." },
+    empire:   { name: "Boho", desc: "Light, flowing fabrics with romantic aesthetics. Comfortable and perfect for outdoor, beach or garden weddings." },
+  },
+};
+
+function CollectionSeoContent({ lang, setRoute }) {
+  const isBg = lang === "bg";
+  const faq = COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg;
+  const sil = SILHOUETTE_INFO[lang] || SILHOUETTE_INFO.bg;
+  const [faqOpen, setFaqOpen] = useState({});
+
+  const silCounts = useMemo(() => {
+    const counts = {};
+    DRESSES.filter(d => d.collection !== "evening").forEach(d => {
+      const key = SILHOUETTE_KEY[d.silhouette] || "other";
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
+  return (
+    <section className="collection-seo" style={{ maxWidth: 820, margin: "0 auto", padding: "64px 24px 0" }}>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(28px, 3.5vw, 42px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? "Булчински рокли — наръчник по силуети" : "Wedding dresses — silhouette guide"}
+      </h2>
+      <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 15, color: "var(--ink-soft)", marginBottom: 32 }}>
+        {isBg
+          ? "Изборът на силует е първата и най-важна стъпка. Ето кратък наръчник за петте основни типа булчински рокли, които ще намерите в нашия салон."
+          : "Choosing the right silhouette is the first and most important step. Here's a quick guide to the five main types of wedding dresses in our salon."}
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 48 }}>
+        {Object.entries(sil).map(([key, { name, desc }]) => (
+          <div key={key} style={{ borderTop: "2px solid var(--champagne-deep)", paddingTop: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+              <h3 style={{ fontFamily: "var(--f-display)", fontSize: 20, fontWeight: 400 }}>{name}</h3>
+              <span style={{ fontSize: 13, color: "var(--ink-mute)" }}>{silCounts[key] || 0} {isBg ? "модела" : "styles"}</span>
+            </div>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? "Цени на булчинските рокли" : "Wedding dress prices"}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
+        {isBg
+          ? "Цените в Арети зависят от колекцията и сложността на изработката. Всички рокли са оригинални Demetrios — с международна гаранция за качество. В цената е включена безплатна консултация и една корекция."
+          : "Prices at Areti depend on the collection and craftsmanship. All dresses are original Demetrios with an international quality guarantee. A free consultation and one alteration are included."}
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 48 }}>
+        {[
+          { label: "Cosmobella", range: "1 000 – 1 800 €" },
+          { label: "Demetrios", range: "1 500 – 2 800 €" },
+          { label: "Destination Romance", range: "1 200 – 2 000 €" },
+          { label: "Demetrios Platinum", range: "2 500 – 4 000 €" },
+        ].map(c => (
+          <div key={c.label} style={{ background: "var(--surface)", padding: "16px 20px", borderRadius: 8 }}>
+            <div style={{ fontFamily: "var(--f-display)", fontSize: 16 }}>{c.label}</div>
+            <div style={{ fontSize: 15, fontWeight: 500, marginTop: 6 }}>{c.range}</div>
+          </div>
+        ))}
+      </div>
+
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? "Как да изберете булчинска рокля" : "How to choose a wedding dress"}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 12 }}>
+        {isBg
+          ? "Изборът на булчинска рокля е едно от най-вълнуващите решения преди сватбата. Препоръчваме да започнете 8–12 месеца предварително — така имате достатъчно време за поръчка по ваш размер и корекции. Запишете се за проба и нашият стилист ще подбере модели, подходящи за вашата фигура, стил и бюджет."
+          : "Choosing a wedding dress is one of the most exciting decisions before the wedding. We recommend starting 8–12 months ahead — this gives enough time for custom orders and alterations. Book a fitting and our stylist will select dresses suited to your figure, style and budget."}
+      </p>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 12 }}>
+        {isBg
+          ? "В Арети разполагаме с над 100 рокли на място в 5 силуета и от 4 колекции на Demetrios. Можете да пробвате неограничен брой модели. Нашата шивачка Кети извършва всички корекции на място — от промяна на дължината до пълна промяна на деколтето."
+          : "At Areti we have over 100 dresses on-site in 5 silhouettes from 4 Demetrios collections. You can try an unlimited number of styles. Our seamstress Keti handles all alterations in-house — from hemming to full neckline modifications."}
+      </p>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+        <button className="btn btn-solid" onClick={() => setRoute("booking")}>
+          {isBg ? "Запази час за проба →" : "Book a fitting →"}
+        </button>
+      </div>
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 48, fontSize: 14 }}>
+        <a href="/blog/svatbeni-rokli-kak-da-namerite-perfektnata" onClick={e => { e.preventDefault(); setRoute("blog/svatbeni-rokli-kak-da-namerite-perfektnata"); }} style={{ color: "var(--ink-soft)" }}>
+          {isBg ? "Пълен наръчник за избор →" : "Full buying guide →"}
+        </a>
+        <a href="/blog/bulchinski-rokli-tseni-2026" onClick={e => { e.preventDefault(); setRoute("blog/bulchinski-rokli-tseni-2026"); }} style={{ color: "var(--ink-soft)" }}>
+          {isBg ? "Цени 2026 →" : "Prices 2026 →"}
+        </a>
+        <a href="/blog/bulchinska-roklia-silueti-narachnik" onClick={e => { e.preventDefault(); setRoute("blog/bulchinska-roklia-silueti-narachnik"); }} style={{ color: "var(--ink-soft)" }}>
+          {isBg ? "Наръчник по силуети →" : "Silhouette guide →"}
+        </a>
+      </div>
+
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20 }}>
+        {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
+      </h2>
+      <div style={{ borderTop: "1px solid var(--rule)" }}>
+        {faq.map((item, i) => (
+          <div key={i} style={{ borderBottom: "1px solid var(--rule)" }}>
+            <button
+              onClick={() => setFaqOpen(prev => ({ ...prev, [i]: !prev[i] }))}
+              style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%",
+                padding: "16px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left",
+                fontFamily: "var(--f-sans)", fontSize: 15, fontWeight: 500, color: "var(--ink)",
+              }}
+            >
+              <span>{item.q}</span>
+              <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0, marginLeft: 12, color: "var(--ink-mute)", transition: "transform 0.2s", transform: faqOpen[i] ? "rotate(45deg)" : "none" }}>+</span>
+            </button>
+            <div style={{ maxHeight: faqOpen[i] ? 500 : 0, overflow: "hidden", transition: "max-height 0.3s ease" }}>
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--ink-soft)", padding: "0 0 16px" }}>{item.a}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
@@ -76,8 +238,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
       : colData
         ? (isBg ? colData.desc_bg : colData.desc_en)
         : (isBg
-            ? "Разгледайте всички колекции булчински и сватбени рокли в Арети — булчински салон в София. Demetrios, Cosmobella, Platinum и Destination Romance. Над 100 модела."
-            : "Browse all wedding dress collections at Areti — bridal salon in Sofia. Demetrios, Cosmobella, Platinum and Destination Romance."),
+            ? "Над 100 луксозни булчински рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, безплатни корекции. Арети — от 1992 г."
+            : "Over 100 luxury wedding dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, free alterations. Areti — since 1992."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
@@ -92,6 +254,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         (initCollection ? DRESSES.filter(d => d.collection === initCollection) : DRESSES),
         lang,
       ),
+      ...(!initCollection ? [faqSchema(COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg)] : []),
     ]},
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -307,6 +470,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
           </div>
         )}
       </div>
+
+      {!initCollection && <CollectionSeoContent lang={lang} setRoute={setRoute} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}
       {createPortal(
@@ -547,6 +712,28 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             </button>
           </div>
         </section>
+
+        {(() => {
+          const refLower = dress.ref.toLowerCase();
+          const related = BLOG_POSTS.filter(p => p.relatedRefs && p.relatedRefs.some(r => r.toLowerCase() === refLower));
+          if (!related.length) return null;
+          return (
+            <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
+              <h2 style={{ fontFamily: "var(--f-display)", fontSize: 24, fontWeight: 400, marginBottom: 20 }}>
+                {isBg ? "Свързани статии" : "Related articles"}
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16 }}>
+                {related.slice(0, 3).map(post => (
+                  <a key={post.id} href={blogPostPath(post)} onClick={e => { e.preventDefault(); setRoute(`blog/${post.slug || post.id}`); window.scrollTo(0, 0); }}
+                    style={{ display: "block", padding: "16px 20px", background: "var(--surface)", borderRadius: 8, textDecoration: "none", color: "var(--ink)", transition: "box-shadow 0.2s" }}>
+                    <div style={{ fontFamily: "var(--f-display)", fontSize: 15, fontWeight: 400, marginBottom: 6 }}>{post.title}</div>
+                    <div style={{ fontSize: 13, color: "var(--ink-mute)", lineHeight: 1.5 }}>{post.excerpt?.slice(0, 100)}…</div>
+                  </a>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
       </div>
       {lightboxIdx !== null && (
         <Lightbox imgs={galleryImgs} idx={lightboxIdx} setIdx={setLightboxIdx} label={heading} dress={dress} lang={lang} />
