@@ -164,8 +164,16 @@ export function enhancedProductSchema(p, lang = 'bg') {
       "name": collLabel,
     },
   };
+  // Exact prices aren't published — an AggregateOffer price range still lets
+  // Google show price info in Product rich results.
+  schema.offers = {
+    "@type": "AggregateOffer",
+    "lowPrice": "1000",
+    "highPrice": "4000",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStoreOnly",
+  };
   // Google Product rich results require offers, review, OR aggregateRating.
-  // We don't show prices, so we use the salon's aggregateRating from Google reviews.
   if (REVIEW_COUNT > 0) {
     schema.aggregateRating = {
       "@type": "AggregateRating",
