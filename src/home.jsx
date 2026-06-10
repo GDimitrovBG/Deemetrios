@@ -22,6 +22,7 @@ function HomeHeroV1({ t, setRoute }) {
         <h1 className="t-display fade-up">
           АРЕТИ
           <em>forever</em>
+          <span className="sr-only">{t.home.hero_kw}</span>
         </h1>
         <div className="bottom-strip fade-up delay-2">
           <p className="tag">{t.home.lede}</p>
@@ -56,8 +57,8 @@ function HomeHeroV2({ t, lang, setRoute }) {
           <h1 className="t-display">
             АРЕТИ
             <em>София.</em>
+            <span className="hero-kw">{t.home.hero_kw}</span>
           </h1>
-          <h2 className="hero-kw">{t.home.hero_kw}</h2>
           <p className="lede">{t.home.lede}</p>
         </div>
         <div className="meta-row fade-up delay-3">
@@ -86,6 +87,7 @@ function HomeHeroV3({ t, setRoute }) {
         <div style={{ flex: 1 }}></div>
         <h1 className="marquee fade-up">
           АРЕТИ <em>noir.</em>
+          <span className="sr-only">{t.home.hero_kw}</span>
         </h1>
         <div className="v3-row fade-up delay-2">
           <p>{t.home.lede}</p>

@@ -48,6 +48,42 @@ function LegalPage({ page, lang, setRoute }) {
   );
 }
 
+function NotFoundPage({ lang, setRoute }) {
+  const isBg = lang === "bg";
+  useSeo({
+    title: isBg ? "Страницата не е намерена | Арети — Bridal Couture" : "Page not found | Areti — Bridal Couture",
+    description: isBg
+      ? "Страницата, която търсите, не съществува. Разгледайте колекциите ни с булчински рокли Demetrios или запазете час за проба."
+      : "The page you are looking for does not exist. Browse our Demetrios wedding dress collections or book a fitting.",
+    lang,
+    noindex: true,
+  });
+
+  return (
+    <div className="page-enter">
+      <div className="legal-page" style={{ textAlign: "center" }}>
+        <div className="legal-head">
+          <div className="t-eyebrow" style={{ marginBottom: 16 }}>404</div>
+          <h1>{isBg ? "Страницата не е намерена" : "Page not found"}</h1>
+          <p className="legal-updated">
+            {isBg
+              ? "Страницата, която търсите, е преместена или не съществува."
+              : "The page you are looking for has been moved or does not exist."}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", marginTop: 32 }}>
+          <button className="btn btn-solid" onClick={() => setRoute("collection")}>
+            {isBg ? "Разгледай колекциите" : "Browse collections"}
+          </button>
+          <button className="btn" onClick={() => setRoute("home")}>
+            {isBg ? "← Начало" : "← Home"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PrivacyPage(props) { return <LegalPage page="privacy" {...props} />; }
 function TermsPage(props) { return <LegalPage page="terms" {...props} />; }
 function CookiePolicyPage(props) { return <LegalPage page="cookies" {...props} />; }
@@ -196,4 +232,4 @@ function CookieConsent({ lang, setRoute }) {
   );
 }
 
-export { PrivacyPage, TermsPage, CookiePolicyPage, CookieConsent };
+export { PrivacyPage, TermsPage, CookiePolicyPage, CookieConsent, NotFoundPage };

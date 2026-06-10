@@ -491,8 +491,8 @@ a { color: inherit; text-decoration: none; }
   font-style: italic;
   display: block;
 }
-/* SEO-bearing subtitle — carries the primary keyword in an <h2>, styled as a
-   refined eyebrow so it reinforces the brand H1 without competing visually. */
+/* SEO-bearing subtitle — carries the primary keyword inside the <h1>, styled as a
+   refined eyebrow so it reinforces the brand mark without competing visually. */
 .hero-v2 .hero-kw {
   font-family: var(--f-sans);
   font-size: 12px;
@@ -501,6 +501,20 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
   color: var(--champagne-deep);
   margin-top: 20px;
+  display: block;
+}
+
+/* Visually hidden but readable by crawlers and screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .hero-v2 .lede {
   font-family: var(--f-serif);

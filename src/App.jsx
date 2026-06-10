@@ -4,7 +4,7 @@ import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
 import { BookingPage } from './booking';
 import { AboutPage, ContactPage, BlogPage, BlogPostPage, DemetriosPage } from './info';
-import { PrivacyPage, TermsPage, CookiePolicyPage, CookieConsent } from './legal';
+import { PrivacyPage, TermsPage, CookiePolicyPage, CookieConsent, NotFoundPage } from './legal';
 import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
 import { useSeoInject } from './seo-inject';
 import { pathToState, stateToPath, readInitialState } from './router';
@@ -79,7 +79,7 @@ export default function App() {
   const firstSync = useRef(true);
   useEffect(() => {
     if (firstSync.current) { firstSync.current = false; return; }
-    if (route === "admin") return;
+    if (route === "admin" || route === "not-found") return;
     const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost });
     if (window.location.pathname !== path) {
       window.history.pushState({}, "", path);
@@ -152,6 +152,7 @@ export default function App() {
     case "privacy": page = <PrivacyPage lang={lang} setRoute={setRoute} />; break;
     case "terms": page = <TermsPage lang={lang} setRoute={setRoute} />; break;
     case "cookies": page = <CookiePolicyPage lang={lang} setRoute={setRoute} />; break;
+    case "not-found": page = <NotFoundPage lang={lang} setRoute={setRoute} />; break;
     case "admin": page = null; break;
     default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
   }

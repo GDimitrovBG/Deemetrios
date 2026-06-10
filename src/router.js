@@ -127,7 +127,8 @@ export function pathToState(pathname) {
   if (p === '/terms')   return { route: 'terms' };
   if (p === '/cookies') return { route: 'cookies' };
 
-  return { redirect: '/' };
+  // Unknown URL → noindex 404 page (avoids soft-404: home content on a foreign URL)
+  return { route: 'not-found' };
 }
 
 export function stateToPath({ route, collectionId, productRef, blogPostId }) {
