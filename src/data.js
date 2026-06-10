@@ -3,9 +3,9 @@
 export const IMG = {
   about:    'https://images.unsplash.com/photo-1606490194859-07c18c9f0968?w=1800&q=80&auto=format',
   blog:     'https://images.unsplash.com/photo-1583939411023-14783179e581?w=1400&q=80&auto=format',
-  hero1:    '/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.jpg',
-  hero2:    '/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled.jpg',
-  hero3:    '/wp-content/uploads/2025/11/Булчинска-рокля-1264.jpeg',
+  hero1:    '/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.webp',
+  hero2:    '/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled.webp',
+  hero3:    '/wp-content/uploads/2025/11/Булчинска-рокля-1264.webp',
   veil:     'https://images.unsplash.com/photo-1563729627-2cc83a2c3d39?w=1000&q=80&auto=format',
   shoes:    'https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=1000&q=80&auto=format',
   earrings: 'https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?w=1000&q=80&auto=format',

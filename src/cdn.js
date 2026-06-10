@@ -24,17 +24,24 @@ const ORIGIN_RE = /^https?:\/\/(www\.)?demetriosbride-bg\.com/i;
  *                         (Bunny Optimizer still auto-converts to WebP).
  */
 export function cdnImage(src, width) {
-  if (!CDN_BASE || !src || typeof src !== 'string') return src;
+  if (!src || typeof src !== 'string') return src;
   if (src.startsWith('data:') || src.startsWith('blob:')) return src;
 
   // Normalise to a site-relative path; only rewrite our own uploads.
   const path = src.replace(ORIGIN_RE, '');
   if (!path.startsWith('/wp-content/')) return src;
 
-  let url = CDN_BASE.replace(/\/+$/, '') + path;
-  if (width && Number.isFinite(width)) {
-    const w = Math.min(Math.round(width * 2), 2000); // retina-aware, capped
-    url += (url.includes('?') ? '&' : '?') + 'width=' + w;
+  // Prefer WebP version of JPEG uploads (50% smaller, same quality)
+  let optimized = path.replace(/\.jpe?g$/i, '.webp');
+
+  if (CDN_BASE) {
+    let url = CDN_BASE.replace(/\/+$/, '') + optimized;
+    if (width && Number.isFinite(width)) {
+      const w = Math.min(Math.round(width * 2), 2000);
+      url += (url.includes('?') ? '&' : '?') + 'width=' + w;
+    }
+    return url;
   }
-  return url;
+
+  return optimized;
 }
