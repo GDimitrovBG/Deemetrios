@@ -7,6 +7,23 @@ const router = Router();
 
 const SITE_URL = process.env.SITE_URL || 'https://demetriosbride-bg.com';
 
+// Client-side blog posts (from src/blog_data.js) that aren't in MongoDB.
+// Keep in sync when adding new posts to blog_data.js.
+const CLIENT_BLOG_SLUGS = [
+  { slug: 'bulchinska-roklia-moment-ne-prosto-pokupka', date: '2026-03-06' },
+  { slug: 'bulchinska-vizia-stil-siluet-useshchane', date: '2026-03-06' },
+  { slug: 'svatben-den-tsyalostno-prezhivyavane', date: '2026-03-06' },
+  { slug: 'balna-roklia-spored-figurata', date: '2026-03-06' },
+  { slug: 'nameri-svoyata-roklia-areti', date: '2026-03-06' },
+  { slug: 'koi-e-demetrios', date: '2026-03-06' },
+  { slug: 'kak-da-izberete-bulchinska-roklia-sofia', date: '2026-06-01' },
+  { slug: 'bulchinski-rokli-tseni-2026', date: '2026-06-10' },
+  { slug: 'svatbeni-rokli-kak-da-namerite-perfektnata', date: '2026-06-10' },
+  { slug: 'bulchinska-roklia-silueti-narachnik', date: '2026-06-10' },
+  { slug: 'luksozni-bulchinski-rokli', date: '2026-06-10' },
+  { slug: 'bulchinski-rokli-sofia-svatben-salon', date: '2026-06-10' },
+];
+
 function xmlEscape(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -67,14 +84,27 @@ router.get('/sitemap.xml', async (req, res) => {
 `;
     }
 
+    const emittedBlogSlugs = new Set();
     for (const a of articles) {
       const mod = (a.updatedAt || a.date) ? new Date(a.updatedAt || a.date).toISOString().split('T')[0] : now;
       const blogPath = a.slug ? `/blog/${a.slug}` : `/blog/${a._id}`;
+      if (a.slug) emittedBlogSlugs.add(a.slug);
       xml += `  <url>
     <loc>${SITE_URL}${blogPath}</loc>
     <lastmod>${mod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+`;
+    }
+
+    for (const b of CLIENT_BLOG_SLUGS) {
+      if (emittedBlogSlugs.has(b.slug)) continue;
+      xml += `  <url>
+    <loc>${SITE_URL}/blog/${b.slug}</loc>
+    <lastmod>${b.date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 `;
     }
