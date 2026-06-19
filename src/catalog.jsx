@@ -6,7 +6,7 @@ import { Img } from './components';
 import { DressCard } from './home';
 import { useSeo, productSchema, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
-import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric } from './seo-helpers';
+import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs } from './seo-helpers';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -671,12 +671,22 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   const isBg = lang === "bg";
   const heading = getProductHeading(dress, lang);
   const cardName = `Style ${dress.ref}`;
-  const productDescription = isBg ? (dress.description_bg || t.product.desc) : (dress.description_en || t.product.desc);
+  const productDescription = buildProductDescription(dress, lang) || (isBg ? (dress.description_bg || t.product.desc) : (dress.description_en || t.product.desc));
+  const productSpecs = buildProductSpecs(dress, lang);
   const colData = COLLECTIONS.find(c => c.id === dress.collection);
+
+  // Unique, trimmed meta description derived from the generated copy
+  // (the stored seo_description_* fields are near-duplicate across products).
+  const metaDesc = (() => {
+    const full = productDescription || "";
+    if (full.length <= 160) return full;
+    const cut = full.slice(0, 160);
+    return cut.slice(0, cut.lastIndexOf(" ")) + "…";
+  })();
 
   useSeo({
     title: isBg ? (dress.seo_title_bg || `${heading}`) : (dress.seo_title_en || `${heading}`),
-    description: isBg ? dress.seo_description_bg : dress.seo_description_en,
+    description: metaDesc || (isBg ? dress.seo_description_bg : dress.seo_description_en),
     image: dress.imgs?.[0] || dress.img,
     url: `/product/${dress.ref}`,
     type: "product",
@@ -724,11 +734,9 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <div className="ref">{t.product.ref}: {dress.ref}</div>
             <p className="desc">{productDescription}</p>
             <dl>
-              <div className="spec-row"><dt>{t.product.specs.fabric}</dt><dd>{t.product.specs.fabric_v}</dd></div>
-              <div className="spec-row"><dt>{t.product.specs.silhouette}</dt><dd>{t.product.specs.silhouette_v}</dd></div>
-              <div className="spec-row"><dt>{t.product.specs.neckline}</dt><dd>{t.product.specs.neckline_v}</dd></div>
-              <div className="spec-row"><dt>{t.product.specs.train}</dt><dd>{t.product.specs.train_v}</dd></div>
-              <div className="spec-row"><dt>{t.product.specs.details}</dt><dd>{t.product.specs.details_v}</dd></div>
+              {productSpecs.map((s) => (
+                <div className="spec-row" key={s.label}><dt>{s.label}</dt><dd>{s.value}</dd></div>
+              ))}
             </dl>
             <div className="cta-stack" style={{ marginTop: 32 }}>
               <button className="btn btn-solid" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_book}</button>
