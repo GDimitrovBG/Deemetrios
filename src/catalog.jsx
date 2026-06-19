@@ -74,6 +74,7 @@ const COLLECTION_FAQ = {
     { q: "Мога ли да поръчам рокля, която не е в шоурума?", a: "Да. Като официален представител на Demetrios в България, можем да поръчаме всеки модел от текущите колекции, включително Demetrios, Cosmobella, Platinum и Destination Romance. Доставката отнема 3–4 месеца. Показваме ви каталозите и мострените тъкани на място." },
     { q: "Правите ли корекции на роклята?", a: "Да. В ателието работи Кети — шивачка с многогодишен опит в булчинска мода. Една безплатна корекция е включена в цената на всяка рокля. Корекциите включват скъсяване, стесняване, добавяне на подплати или промяна на деколтето. Отнема 1–2 седмици." },
     { q: "Колко рокли мога да пробвам на една среща?", a: "Няма ограничение — можете да пробвате толкова рокли, колкото желаете. Стилистът подбира 5–8 модела въз основа на вашите предпочитания, но ако харесате и други, ги добавяме без проблем. Средно булките пробват 6–10 рокли преди да направят своя избор." },
+    { q: "Давате ли булчински рокли под наем?", a: "Арети е салон за продажба на оригинални булчински рокли Demetrios, а не под наем. Вярваме, че роклята за най-важния ден трябва да е само ваша — ушита по вашата фигура и съхранена като спомен. За булки с по-ограничен бюджет предлагаме достъпната колекция Cosmobella от 1 000 € и периодични намаления на модели от предишни сезони, които често излизат по-изгодно от наема." },
   ],
   en: [
     { q: "How much do wedding dresses cost at Areti?", a: "Prices vary by collection: Cosmobella from €1,000 to €1,800, Demetrios from €1,500 to €2,800, Destination Romance from €1,200 to €2,000, and Demetrios Platinum from €2,500 to €4,000. A free consultation and one alteration are included." },
@@ -84,6 +85,7 @@ const COLLECTION_FAQ = {
     { q: "Can I order a dress not in the showroom?", a: "Yes. As the official Demetrios representative in Bulgaria, we can order any current-season style. Delivery takes 3–4 months. We show you the full catalogue and fabric swatches in the salon." },
     { q: "Do you offer alterations?", a: "Yes. Our in-house seamstress Keti specializes in bridal alterations. One free alteration is included with every dress. Turnaround is 1–2 weeks." },
     { q: "How many dresses can I try on?", a: "There's no limit. Our stylist pre-selects 5–8 gowns based on your preferences, but you can add more. Most brides try 6–10 before making their choice." },
+    { q: "Do you rent wedding dresses?", a: "Areti sells original Demetrios wedding dresses rather than renting. We believe the dress for your most important day should be yours alone — tailored to your figure and kept as a keepsake. For brides on a tighter budget, our Cosmobella collection starts from €1,000, and seasonal sales on previous-season styles often work out cheaper than renting." },
   ],
 };
 
@@ -226,12 +228,14 @@ const SUB_COLLECTION_SEO = {
     demetrios: { heading: "Булчински рокли Demetrios", price: "1 500 – 2 800 €", text: "Основната колекция Demetrios предлага пълния спектър от силуети — А-силует, русалка и принцеса. Съвременни дизайни с дантела, бродерия и тюл с мъниста. Водещата линия на бранда с над 40 години традиция в булчинската мода." },
     platinum: { heading: "Луксозни булчински рокли Demetrios Platinum", price: "2 500 – 4 000 €", text: "Demetrios Platinum е ексклузивната линия за булки, които не правят компромиси. Ръчно апликирани кристали Swarovski, перли и луксозни европейски дантели. Всеки модел изисква над 200 часа ръчна работа — истинско произведение на изкуството." },
     destination: { heading: "Сватбени рокли Destination Romance", price: "1 200 – 2 000 €", text: "Destination Romance е създадена за дестинационни сватби — на плаж, в градина или на открито. Леки тъкани, къси шлейфове и бохо естетика. Удобни и красиви рокли, които се пътуват лесно и изглеждат зашеметяващо под слънцето." },
+    evening: { heading: "Официални, бални и абитуриентски рокли в София", price: "по запитване", text: "Освен булчински рокли, Арети предлага и официални вечерни рокли за специални поводи — абитуриентски бал, сватба като гостенка, кръщене или коктейлно парти. Елегантни абитуриентски рокли и бални рокли в София с богат избор от силуети, цветове и тъкани. Запазете час за проба и нашият стилист ще ви помогне да изберете перфектната рокля за вашето събитие." },
   },
   en: {
     cosmobella: { heading: "Cosmobella Wedding Dresses", price: "€1,000 – €1,800", text: "Cosmobella is the accessible Demetrios line — romantic silhouettes with floral appliqués, illusion necklines and delicate straps. Perfect for brides seeking quality and elegance at a reasonable price. All dresses are original with an international guarantee." },
     demetrios: { heading: "Demetrios Wedding Dresses", price: "€1,500 – €2,800", text: "The core Demetrios collection offers the full range of silhouettes — A-line, mermaid and ball gown. Contemporary designs in lace, embroidery and beaded tulle. The brand's flagship line with over 40 years of bridal tradition." },
     platinum: { heading: "Luxury Demetrios Platinum Wedding Dresses", price: "€2,500 – €4,000", text: "Demetrios Platinum is the exclusive line for brides who don't compromise. Hand-applied Swarovski crystals, pearls and luxurious European lace. Each gown requires over 200 hours of handwork — a true work of art." },
     destination: { heading: "Destination Romance Wedding Dresses", price: "€1,200 – €2,000", text: "Destination Romance is designed for destination weddings — beach, garden or outdoor. Lightweight fabrics, short trains and boho aesthetics. Comfortable and beautiful gowns that travel easily." },
+    evening: { heading: "Evening, Prom & Formal Dresses in Sofia", price: "on request", text: "Beyond wedding gowns, Areti offers formal evening dresses for special occasions — proms, wedding guests, christenings and cocktail parties. Elegant prom and ball dresses in Sofia with a wide selection of silhouettes, colours and fabrics. Book a fitting and our stylist will help you find the perfect dress for your event." },
   },
 };
 
@@ -516,7 +520,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
       </div>
 
       {!initCollection && <CollectionSeoContent lang={lang} setRoute={setRoute} />}
-      {initCollection && !isEvening && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
+      {initCollection && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}
       {createPortal(
