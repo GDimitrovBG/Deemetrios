@@ -355,6 +355,7 @@ export function enhancedProductSchema(p, lang = 'bg') {
     "lowPrice": "1000",
     "highPrice": "4000",
     "priceCurrency": "EUR",
+    "offerCount": "1",
     "availability": "https://schema.org/InStoreOnly",
   };
   // Google Product rich results require offers, review, OR aggregateRating.
