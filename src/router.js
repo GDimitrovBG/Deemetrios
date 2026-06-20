@@ -98,6 +98,11 @@ export function pathToState(pathname) {
     if (DRESSES.some(d => d.ref === ref)) {
       return { route: 'product', productRef: ref };
     }
+    // Case-insensitive match → canonicalise the casing (e.g. /product/dr436
+    // → /product/DR436). Lets a server-side 301 redirect safely to a
+    // lower-cased ref without bouncing to /collection.
+    const ci = DRESSES.find(d => d.ref.toUpperCase() === ref.toUpperCase());
+    if (ci) return { redirect: `/product/${ci.ref}` };
     return { redirect: '/collection' };
   }
 
