@@ -1,0 +1,76 @@
+# =============================================================================
+#  Caddy 301 redirects — old WordPress URLs → new SPA routes
+# =============================================================================
+#  WHY: This site runs on Caddy (Hetzner VPS). Caddy does NOT read the
+#  _redirects (Netlify) or vercel.json (Vercel) files in the repo — they are
+#  dead config here. Without the rules below, old WP URLs return HTTP 200
+#  (SPA shell) and only redirect client-side via JS, which is weaker for SEO.
+#
+#  HOW TO USE: paste this block INSIDE your site block in /etc/caddy/Caddyfile,
+#  BEFORE the SPA fallback (try_files {path} /index.html). Then:
+#     caddy validate --config /etc/caddy/Caddyfile
+#     systemctl reload caddy
+#  Verify:  curl -I https://demetriosbride-bg.com/za-nas        → 301 → /about
+#           curl -I https://demetriosbride-bg.com/product/mermaid-wedding-dress-style-1537/
+#                                                               → 301 → /product/1537
+#
+#  Caddy keeps source order for repeated `redir` directives, so the specific
+#  rules below run before the catch-alls. `redir ... permanent` issues a 301.
+# =============================================================================
+
+# --- 1:1 static redirects (Latin slugs, with/without trailing slash) ---
+@r_about        path /za-nas /za-nas/ /otzivi /otzivi/ /nashite-bulki /nashite-bulki/
+redir @r_about        /about 301
+@r_contact      path /kontakti /kontakti/ /fqa /fqa/
+redir @r_contact      /contact 301
+@r_booking      path /zapishi-chas /zapishi-chas/
+redir @r_booking      /booking 301
+@r_demetrios    path /za-demetrios /za-demetrios/
+redir @r_demetrios    /demetrios 301
+@r_platinum     path /demetrios-platinum /demetrios-platinum/
+redir @r_platinum     /collection/platinum 301
+@r_cosmobella   path /cosmobella /cosmobella/
+redir @r_cosmobella   /collection/cosmobella 301
+@r_destination  path /destination-romance /destination-romance/
+redir @r_destination  /collection/destination 301
+@r_evening      path /vecherni-rokli /vecherni-rokli/
+redir @r_evening      /collection/evening 301
+@r_collection   path /bulchinski-rokli /bulchinski-rokli/ /bulchinski-rokli-2 /bulchinski-rokli-2/ /bulchenski-rokli-sofia /bulchenski-rokli-sofia/
+redir @r_collection   /collection 301
+@r_home         path /author/areti1 /author/areti1/
+redir @r_home         / 301
+
+# --- Old Cyrillic WordPress content slugs ---
+@r_cyr_collection path_regexp ^/(булчински-рокли-и-сватбени-рокли-в-соф|сватбен-магазин-в-софия-сватбени-ро)/?$
+redir @r_cyr_collection /collection 301
+@r_cyr_balna      path_regexp ^/бална-рокля-според-фигурата-как-да-изб/?$
+redir @r_cyr_balna      /blog/balna-roklia-spored-figurata 301
+@r_cyr_demetrios  path_regexp ^/кой-е-demetrios/?$
+redir @r_cyr_demetrios  /blog/koi-e-demetrios 301
+
+# --- WordPress pagination ---
+@r_page_bulchinski path_regexp ^/bulchinski-rokli/page/\d+/?$
+redir @r_page_bulchinski /collection 301
+@r_page_vecherni   path_regexp ^/vecherni-rokli/page/\d+/?$
+redir @r_page_vecherni   /collection/evening 301
+@r_page_blog       path_regexp ^/blog/page/\d+/?$
+redir @r_page_blog       /blog 301
+
+# --- Old product-category pages → matching collection (specific first) ---
+@r_cat_demetrios  path_regexp ^/product-category/.*demetrios.*$
+redir @r_cat_demetrios  /collection/demetrios 301
+@r_cat_cosmobella path_regexp ^/product-category/.*cosmobella.*$
+redir @r_cat_cosmobella /collection/cosmobella 301
+@r_cat_platinum   path_regexp ^/product-category/.*platinum.*$
+redir @r_cat_platinum   /collection/platinum 301
+@r_cat_evening    path_regexp ^/product-category/.*(вечерни|evening|abiturient).*$
+redir @r_cat_evening    /collection/evening 301
+@r_cat_rest       path_regexp ^/product-category/.*$
+redir @r_cat_rest       /collection 301
+
+# --- Old WP product slugs → canonical ref URL ---
+# e.g. /product/mermaid-wedding-dress-style-1537/ → /product/1537
+# Code is lower-cased by WP; the SPA router canonicalises case
+# (/product/dr436 → /product/DR436), so a lower-cased target is safe.
+@wp_product path_regexp wpprod ^/product/.+-style-([A-Za-z0-9]+)/?$
+redir @wp_product /product/{re.wpprod.1} 301

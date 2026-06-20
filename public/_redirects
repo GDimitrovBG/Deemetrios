@@ -1,5 +1,9 @@
 # Old WordPress URLs → new SPA routes (Netlify/Cloudflare Pages syntax)
 # Status 301 transfers full SEO equity from the old pages.
+#
+# ⚠️  NOTE: production runs on CADDY (Hetzner), which does NOT read this file.
+# The live 301s live in deploy/redirects.caddy — keep both in sync. This file
+# is kept only for a potential Netlify/Cloudflare deploy.
 
 /za-nas               /about                       301
 /za-nas/              /about                       301
