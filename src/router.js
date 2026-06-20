@@ -49,7 +49,14 @@ function patternRedirect(p) {
   if (p.startsWith('/product/')) {
     const slug = p.slice('/product/'.length);
     if (DRESSES.some(d => d.ref === slug)) return null;  // valid ref, no redirect needed
-    const m = slug.match(/([A-Za-z]{0,3}\d{2,6})$/);
+    // Old WP slugs end in "...-style-<code>" (sometimes with a "-2" duplicate
+    // suffix). Prefer the code after the last "style-" marker, then strip any
+    // WP duplicate suffix, then match the ref code.
+    let codePart = slug;
+    const styleIdx = slug.lastIndexOf('style-');
+    if (styleIdx !== -1) codePart = slug.slice(styleIdx + 'style-'.length);
+    codePart = codePart.replace(/-\d{1,2}$/, '');
+    const m = codePart.match(/^([A-Za-z]{0,4}\d{2,6})/) || slug.match(/([A-Za-z]{0,4}\d{2,6})$/);
     if (m) {
       const candidate = m[1];
       const found = DRESSES.find(d => d.ref.toUpperCase() === candidate.toUpperCase());
