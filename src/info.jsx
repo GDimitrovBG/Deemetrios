@@ -461,7 +461,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
             </div>
             <div>
               <div className="meta">{featured.category} · {featured.date}</div>
-              <h2>{featured.title}</h2>
+              <h2><a href={featured.slug ? `/blog/${featured.slug}` : `/blog/${featured.id}`} onClick={(e) => e.preventDefault()}>{featured.title}</a></h2>
               <p>{featured.excerpt}</p>
               <button className="btn" onClick={e => { e.stopPropagation(); goBlogPost(featured.id); }}>
                 {isBg ? "Прочети →" : "Read →"}
@@ -486,7 +486,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
                 }
               </div>
               <div className="meta">{post.category} · {post.date}</div>
-              <h3>{post.title}</h3>
+              <h3><a href={post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`} onClick={(e) => e.preventDefault()}>{post.title}</a></h3>
               <p>{post.excerpt}</p>
             </article>
           ))}
@@ -570,7 +570,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
                   <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                     <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                     <div className="blog-sidebar-card-info">
-                      <h4>{dressName(p)}</h4>
+                      <h4><a href={`/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
                       <span>{p.silhouette}</span>
                     </div>
                   </article>
@@ -608,7 +608,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
                 <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                   <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                   <div className="blog-sidebar-card-info">
-                    <h4>{dressName(p)}</h4>
+                    <h4><a href={`/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
                     <span>{p.silhouette}</span>
                   </div>
                 </article>

@@ -93,45 +93,45 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
       <nav className={cls}>
         <div className="nav-inner">
           <div className="nav-left">
-            <span className={`nav-link ${route === "home" ? "active" : ""}`} onClick={() => { setDrawerOpen(false); setRoute("home"); }}>{t.nav.home}</span>
+            <a href="/" className={`nav-link ${route === "home" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setDrawerOpen(false); setRoute("home"); }}>{t.nav.home}</a>
             <div className="nav-has-drop" onMouseEnter={showDrop} onMouseLeave={hideDrop}>
-              <span className={`nav-link ${route === "collection" ? "active" : ""}`} onClick={() => goCollection(null)}>
+              <a href="/collection" className={`nav-link ${route === "collection" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); goCollection(null); }}>
                 {t.nav.collection}
-              </span>
+              </a>
               {colHover && (
                 <div className="nav-drop" onMouseEnter={showDrop} onMouseLeave={hideDrop}>
-                  <div className="nd-item nd-all" onClick={() => { setColHover(false); goCollection(null); }}>
+                  <a href="/collection" className="nd-item nd-all" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(null); }}>
                     {lang === "bg" ? "Всички колекции" : "All Collections"}
-                  </div>
+                  </a>
                   {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
-                    <div key={c.id} className="nd-item" onClick={() => { setColHover(false); goCollection(c.id); }}>
+                    <a key={c.id} href={`/collection/${c.id}`} className="nd-item" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(c.id); }}>
                       <span className="nd-label">{c.label}</span>
                       <span className="nd-desc">{lang === "bg" ? c.desc_bg.split("—")[0] : c.desc_en.split("—")[0]}</span>
-                    </div>
+                    </a>
                   ))}
                 </div>
               )}
             </div>
-            <span className={`nav-link`} onClick={() => goCollection("evening")}>{t.nav.accessories}</span>
-            <span className={`nav-link ${route === "about" ? "active" : ""}`} onClick={() => setRoute("about")}>{t.nav.about}</span>
+            <a href="/collection/evening" className={`nav-link`} onClick={(e) => { e.preventDefault(); goCollection("evening"); }}>{t.nav.accessories}</a>
+            <a href="/about" className={`nav-link ${route === "about" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("about"); }}>{t.nav.about}</a>
           </div>
           <div className={`burger ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(!drawerOpen)}>
             <span></span><span></span><span></span>
           </div>
-          <div className="brand-mark" onClick={() => { setDrawerOpen(false); setRoute("home"); }}>
+          <a href="/" className="brand-mark" onClick={(e) => { e.preventDefault(); setDrawerOpen(false); setRoute("home"); }}>
             АРЕТИ
             <span className="sub">— {lang === "bg" ? "БУЛЧИНСКИ САЛОН · СОФИЯ" : "WEDDING SALON · SOFIA"} —</span>
-          </div>
+          </a>
           <div className="nav-right">
-            <span className={`nav-link ${route === "blog" ? "active" : ""}`} onClick={() => setRoute("blog")}>{t.nav.blog}</span>
-            <span className={`nav-link ${route === "contact" ? "active" : ""}`} onClick={() => setRoute("contact")}>{t.nav.contact}</span>
+            <a href="/blog" className={`nav-link ${route === "blog" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("blog"); }}>{t.nav.blog}</a>
+            <a href="/contact" className={`nav-link ${route === "contact" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("contact"); }}>{t.nav.contact}</a>
             <button className={`nav-fav ${route === "wishlist" ? "active" : ""}`} onClick={() => setRoute("wishlist")} aria-label={t.nav.wishlist}>
               <svg viewBox="0 0 24 24" fill={favorites.length > 0 ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" width="18" height="18">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
               {favorites.length > 0 && <span className="nav-fav-count">{favorites.length}</span>}
             </button>
-            <span className={`nav-link nav-link--cta ${route === "booking" ? "active" : ""}`} onClick={() => setRoute("booking")}>{t.nav.bookings}</span>
+            <a href="/booking" className={`nav-link nav-link--cta ${route === "booking" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("booking"); }}>{t.nav.bookings}</a>
             <div className="lang-toggle">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}><span>BG</span></button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}><span>EN</span></button>
@@ -145,36 +145,36 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
           <button className="m-close" onClick={() => setDrawerOpen(false)}>✕</button>
         </div>
         <nav className="m-nav">
-          <div className={`m-link ${route === "home" ? "m-link--active" : ""}`} onClick={() => goTo("home")}>
+          <a href="/" className={`m-link ${route === "home" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("home"); }}>
             <span>{t.nav.home}</span>
             <span className="arr">→</span>
-          </div>
-          <div className={`m-link ${route === "collection" ? "m-link--active" : ""}`} onClick={() => { goTo("collection"); goCollection(null); }}>
+          </a>
+          <a href="/collection" className={`m-link ${route === "collection" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(null); }}>
             <span>{t.nav.collection}</span>
             <span className="arr">→</span>
-          </div>
+          </a>
           {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
-            <div key={c.id} className="m-link m-link-sub" onClick={() => { goTo("collection"); goCollection(c.id); }}>
+            <a key={c.id} href={`/collection/${c.id}`} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(c.id); }}>
               <span>{c.label}</span>
-            </div>
+            </a>
           ))}
           <div className="m-divider" />
-          <div className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={() => goTo("about")}>
+          <a href="/about" className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("about"); }}>
             <span>{t.nav.about}</span>
             <span className="arr">→</span>
-          </div>
-          <div className={`m-link m-link-sub ${route === "demetrios" ? "m-link--active" : ""}`} onClick={() => goTo("demetrios")}>
+          </a>
+          <a href="/demetrios" className={`m-link m-link-sub ${route === "demetrios" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("demetrios"); }}>
             <span style={{ fontStyle: "italic" }}>{t.nav.demetrios}</span>
-          </div>
-          <div className={`m-link ${route === "blog" ? "m-link--active" : ""}`} onClick={() => goTo("blog")}>
+          </a>
+          <a href="/blog" className={`m-link ${route === "blog" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("blog"); }}>
             <span>{t.nav.blog}</span>
             <span className="arr">→</span>
-          </div>
-          <div className={`m-link ${route === "contact" ? "m-link--active" : ""}`} onClick={() => goTo("contact")}>
+          </a>
+          <a href="/contact" className={`m-link ${route === "contact" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("contact"); }}>
             <span>{t.nav.contact}</span>
             <span className="arr">→</span>
-          </div>
-          <div className={`m-link ${route === "wishlist" ? "m-link--active" : ""}`} onClick={() => goTo("wishlist")}>
+          </a>
+          <a href="/wishlist" className={`m-link ${route === "wishlist" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("wishlist"); }}>
             <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {t.nav.wishlist}
               {favorites.length > 0 && (
@@ -182,7 +182,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
               )}
             </span>
             <span className="arr">→</span>
-          </div>
+          </a>
         </nav>
         <div className="m-foot">
           <button className="m-cta" onClick={() => goTo("booking")}>{t.nav.bookings} →</button>
@@ -247,17 +247,24 @@ function Footer({ lang, setRoute }) {
           </div>
           <div>
             <h4>{t.shop}</h4>
-            <ul>{t.shop_links.map((x, i) => <li key={i}><a onClick={() => setRoute(i === 0 ? "collection" : i === 2 ? "accessories" : "collection")}>{x}</a></li>)}</ul>
+            <ul>{t.shop_links.map((x, i) => {
+              const r = i === 0 ? "collection" : i === 2 ? "accessories" : "collection";
+              return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
+            })}</ul>
           </div>
           <div>
             <h4>{t.atelier}</h4>
-            <ul>{t.atelier_links.map((x, i) => <li key={i}><a onClick={() => setRoute(i === 0 ? "about" : i === 1 ? "demetrios" : i === 2 ? "blog" : "contact")}>{x}</a></li>)}</ul>
+            <ul>{t.atelier_links.map((x, i) => {
+              const r = i === 0 ? "about" : i === 1 ? "demetrios" : i === 2 ? "blog" : "contact";
+              return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
+            })}</ul>
           </div>
           <div>
             <h4>{t.help}</h4>
             <ul>{t.help_links.map((x, i) => {
               const routes = ["booking", "contact", "terms", "privacy", "cookies"];
-              return <li key={i}><a onClick={() => setRoute(routes[i] || "contact")}>{x}</a></li>;
+              const r = routes[i] || "contact";
+              return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
             })}</ul>
           </div>
         </div>

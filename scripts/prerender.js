@@ -74,6 +74,10 @@ function startServer() {
 async function renderRoute(browser, route) {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 1800 });
+  // Flag prerender mode BEFORE any app code runs — collection pages use it to
+  // render ALL products (crawlable <a href> links) instead of the first
+  // load-more page. Real visitors still get the paginated 20-at-a-time UX.
+  await page.evaluateOnNewDocument(() => { window.__PRERENDER__ = true; });
   // Block external images during prerender — we only need the HTML, not assets.
   // Speeds the run by ~10×; nav images still resolve via <link rel=preload> tags.
   await page.setRequestInterception(true);

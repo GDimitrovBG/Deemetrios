@@ -51,6 +51,9 @@ function FilterPanel({ t, lang, filters, setFilters, onClose }) {
 }
 
 const PAGE_SIZE = 20;
+// During build-time prerender, render the full grid so every product gets a
+// crawlable <a href> link from its collection page (fixes orphan products).
+const INITIAL_PAGE_SIZE = (typeof window !== 'undefined' && window.__PRERENDER__) ? 10_000 : PAGE_SIZE;
 
 function applyFiltersAndSort(list, filters, sortBy) {
   let result = [...list];
@@ -319,12 +322,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
   const [activeCol, setActiveCol] = useState(initCollection);
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   const [gridCols, setGridCols] = useState(isMobile ? 2 : 2);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE_SIZE);
 
   useEffect(() => { setActiveCol(initCollection); }, [initCollection]);
 
   // Reset pagination whenever the tab / filters / sort change
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeCol, filters, sortBy]);
+  useEffect(() => { setVisibleCount(INITIAL_PAGE_SIZE); }, [activeCol, filters, sortBy]);
 
   // Build cross-collection ordered list:
   // When a specific collection is selected, continue into subsequent collections
@@ -719,8 +722,8 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
     <div className="page-enter">
       <div className="product">
         <div className="product-crumb">
-          <a onClick={() => setRoute("home")} style={{ cursor: "pointer" }}>Areti</a>
-          <a onClick={() => setRoute("collection")} style={{ cursor: "pointer" }}>{t.product.crumb_back}</a>
+          <a href="/" onClick={(e) => { e.preventDefault(); setRoute("home"); }} style={{ cursor: "pointer" }}>Areti</a>
+          <a href="/collection" onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ cursor: "pointer" }}>{t.product.crumb_back}</a>
           <span style={{ color: "var(--ink)" }}>{cardName}</span>
         </div>
         <div className="product-main">

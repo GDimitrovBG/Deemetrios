@@ -326,7 +326,10 @@ export function enhancedProductSchema(p, lang = 'bg') {
   // identical schema descriptions are a thin-content signal.
   const desc = buildProductDescription(p, lang) ||
                (lang === 'bg' ? p.seo_description_bg : p.seo_description_en) || DEFAULT_DESC;
-  const images = (p.imgs && p.imgs.length ? p.imgs : [p.img]).filter(Boolean);
+  // Schema image URLs should be absolute (safer for Google, required by other consumers)
+  const images = (p.imgs && p.imgs.length ? p.imgs : [p.img])
+    .filter(Boolean)
+    .map(u => (u.startsWith('/') ? `${SITE_URL}${u}` : u));
 
   const schema = {
     "@context": "https://schema.org",
@@ -384,7 +387,7 @@ export function collectionItemListSchema(items, lang = 'bg') {
       "position": i + 1,
       "url": `${SITE_URL}/product/${p.ref}`,
       "name": getProductHeading(p, lang),
-      "image": p.imgs?.[0] || p.img,
+      "image": (() => { const u = p.imgs?.[0] || p.img; return u && u.startsWith('/') ? `${SITE_URL}${u}` : u; })(),
     })),
   };
 }

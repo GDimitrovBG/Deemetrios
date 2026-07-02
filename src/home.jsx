@@ -212,7 +212,9 @@ function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
       <span className="quick">{lang === "bg" ? "Виж" : "View"} · {d.ref}</span>
       <div className="dress-info">
         <div>
-          <h3>{name}</h3>
+          {/* Real <a href> — the only crawlable path from grids to product pages.
+              Click is handled by the card's onClick; preventDefault stops full reload. */}
+          <h3><a href={`/product/${d.ref}`} onClick={(e) => e.preventDefault()}>{name}</a></h3>
           <div className="meta">{sil}{d.fabric ? ` · ${localizeFabric(d.fabric, lang)}` : ""}</div>
         </div>
         {d.price > 0 && <div className="price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>}

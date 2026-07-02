@@ -85,7 +85,11 @@ export function useSeo({
       ? (hasBrand ? title : `${title} | ${SITE_NAME}`)
       : SITE_NAME;
     const finalDesc  = description || DEFAULT_DESC;
-    const finalImg   = image || DEFAULT_IMG;
+    // og:image / twitter:image must be ABSOLUTE URLs (Facebook & Twitter reject
+    // relative paths). Our uploads also have WebP twins — prefer those.
+    let finalImg = image || DEFAULT_IMG;
+    if (finalImg.startsWith('/')) finalImg = `${SITE_URL}${finalImg}`;
+    finalImg = finalImg.replace(/^https?:\/\/(www\.)?demetriosbride-bg\.com(\/wp-content\/[^?]*)\.jpe?g/i, `${SITE_URL}$2.webp`);
     const finalUrl   = url
       ? (url.startsWith('http') ? url : `${SITE_URL}${url.startsWith('/') ? '' : '/'}${url}`)
       : SITE_URL;
@@ -242,7 +246,7 @@ export function articleSchema(post, lang = 'bg') {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": post.title,
-    "image": post.image ? [post.image] : [DEFAULT_IMG],
+    "image": post.image ? [post.image.startsWith('/') ? `${SITE_URL}${post.image}` : post.image] : [DEFAULT_IMG],
     "datePublished": post.isoDate || post.date,
     "dateModified":  post.isoDate || post.date,
     "author": {
