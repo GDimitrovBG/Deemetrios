@@ -124,11 +124,11 @@ function CollectionSeoContent({ lang, setRoute }) {
   return (
     <section className="collection-seo" style={{ maxWidth: 820, margin: "0 auto", padding: "64px 24px 0" }}>
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(28px, 3.5vw, 42px)", fontWeight: 400, marginBottom: 12 }}>
-        {isBg ? "Булчински рокли — наръчник по силуети" : "Wedding dresses — silhouette guide"}
+        {isBg ? "Булчински и сватбени рокли — наръчник по силуети" : "Wedding dresses — silhouette guide"}
       </h2>
       <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 15, color: "var(--ink-soft)", marginBottom: 32 }}>
         {isBg
-          ? "Изборът на силует е първата и най-важна стъпка. Ето кратък наръчник за петте основни типа булчински рокли, които ще намерите в нашия салон."
+          ? "Изборът на силует е първата и най-важна стъпка. Ето кратък наръчник за петте основни типа сватбени рокли, които ще намерите в нашия салон."
           : "Choosing the right silhouette is the first and most important step. Here's a quick guide to the five main types of wedding dresses in our salon."}
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 48 }}>
@@ -166,17 +166,17 @@ function CollectionSeoContent({ lang, setRoute }) {
       </div>
 
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
-        {isBg ? "Как да изберете булчинска рокля" : "How to choose a wedding dress"}
+        {isBg ? "Как да изберете сватбена рокля" : "How to choose a wedding dress"}
       </h2>
       <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 12 }}>
         {isBg
-          ? "Изборът на булчинска рокля е едно от най-вълнуващите решения преди сватбата. Препоръчваме да започнете 8–12 месеца предварително — така имате достатъчно време за поръчка по ваш размер и корекции. Запишете се за проба и нашият стилист ще подбере модели, подходящи за вашата фигура, стил и бюджет."
+          ? "Изборът на сватбена рокля е едно от най-вълнуващите решения преди сватбата. Препоръчваме да започнете 8–12 месеца предварително — така имате достатъчно време за поръчка по ваш размер и корекции. Запишете се за проба и нашият стилист ще подбере модели, подходящи за вашата фигура, стил и бюджет."
           : "Choosing a wedding dress is one of the most exciting decisions before the wedding. We recommend starting 8–12 months ahead — this gives enough time for custom orders and alterations. Book a fitting and our stylist will select dresses suited to your figure, style and budget."}
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 12 }}>
         {isBg
-          ? "В Арети разполагаме с над 100 рокли на място в 5 силуета и от 4 колекции на Demetrios. Можете да пробвате неограничен брой модели. Нашата шивачка Кети извършва всички корекции на място — от промяна на дължината до пълна промяна на деколтето."
-          : "At Areti we have over 100 dresses on-site in 5 silhouettes from 4 Demetrios collections. You can try an unlimited number of styles. Our seamstress Keti handles all alterations in-house — from hemming to full neckline modifications."}
+          ? "В Арети разполагаме с над 100 булчински и сватбени рокли на място в 5 силуета и от 4 колекции на Demetrios. Можете да пробвате неограничен брой модели. Нашата шивачка Кети извършва всички корекции на място — от промяна на дължината до пълна промяна на деколтето."
+          : "At Areti we have over 100 wedding dresses on-site in 5 silhouettes from 4 Demetrios collections. You can try an unlimited number of styles. Our seamstress Keti handles all alterations in-house — from hemming to full neckline modifications."}
       </p>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
         <button className="btn btn-solid" onClick={() => setRoute("booking")}>
@@ -224,18 +224,18 @@ function CollectionSeoContent({ lang, setRoute }) {
 
 const SUB_COLLECTION_SEO = {
   bg: {
-    cosmobella: { heading: "Булчински рокли Cosmobella", price: "1 000 – 1 800 €", text: "Cosmobella е достъпната линия на Demetrios — романтични силуети с флорални апликации, илюзорни деколтета и деликатни презрамки. Идеална за булки, които търсят качество и елегантност на разумна цена. Всички рокли са оригинални, с международна гаранция." },
-    demetrios: { heading: "Булчински рокли Demetrios", price: "1 500 – 2 800 €", text: "Основната колекция Demetrios предлага пълния спектър от силуети — А-силует, русалка и принцеса. Съвременни дизайни с дантела, бродерия и тюл с мъниста. Водещата линия на бранда с над 40 години традиция в булчинската мода." },
-    platinum: { heading: "Луксозни булчински рокли Demetrios Platinum", price: "2 500 – 4 000 €", text: "Demetrios Platinum е ексклузивната линия за булки, които не правят компромиси. Ръчно апликирани кристали Swarovski, перли и луксозни европейски дантели. Всеки модел изисква над 200 часа ръчна работа — истинско произведение на изкуството." },
-    destination: { heading: "Сватбени рокли Destination Romance", price: "1 200 – 2 000 €", text: "Destination Romance е създадена за дестинационни сватби — на плаж, в градина или на открито. Леки тъкани, къси шлейфове и бохо естетика. Удобни и красиви рокли, които се пътуват лесно и изглеждат зашеметяващо под слънцето." },
-    evening: { heading: "Официални, бални и абитуриентски рокли в София", price: "по запитване", text: "Освен булчински рокли, Арети предлага и официални вечерни рокли за специални поводи — абитуриентски бал, сватба като гостенка, кръщене или коктейлно парти. Елегантни абитуриентски рокли и бални рокли в София с богат избор от силуети, цветове и тъкани. Запазете час за проба и нашият стилист ще ви помогне да изберете перфектната рокля за вашето събитие." },
+    cosmobella: { heading: "Булчински рокли Cosmobella", price: "1 000 – 1 800 €", text: "Cosmobella е достъпната линия на Demetrios — романтични силуети с флорални апликации, илюзорни деколтета и деликатни презрамки. Идеална за булки, които търсят качество и елегантност на разумна цена. Всички сватбени рокли са оригинални, с международна гаранция.", blogSlug: "bulchinski-rokli-tseni-2026", blogLabel: "Цени на булчинските рокли 2026 →" },
+    demetrios: { heading: "Булчински рокли Demetrios", price: "1 500 – 2 800 €", text: "Основната колекция Demetrios предлага пълния спектър от силуети — А-силует, русалка и принцеса. Съвременни сватбени рокли с дантела, бродерия и тюл с мъниста. Водещата линия на бранда с над 40 години традиция в булчинската мода.", blogSlug: "bulchinska-roklia-silueti-narachnik", blogLabel: "Наръчник по силуети →" },
+    platinum: { heading: "Луксозни булчински рокли Demetrios Platinum", price: "2 500 – 4 000 €", text: "Demetrios Platinum е ексклузивната линия за булки, които не правят компромиси. Ръчно апликирани кристали Swarovski, перли и луксозни европейски дантели. Всеки модел изисква над 200 часа ръчна работа — истинско произведение на изкуството.", blogSlug: "luksozni-bulchinski-rokli", blogLabel: "Луксозни булчински рокли — детайлите →" },
+    destination: { heading: "Сватбени рокли Destination Romance", price: "1 200 – 2 000 €", text: "Destination Romance е създадена за дестинационни сватби — на плаж, в градина или на открито. Леки сватбени рокли с къси шлейфове и бохо естетика. Удобни и красиви модели, които се пътуват лесно и изглеждат зашеметяващо под слънцето.", blogSlug: "svatbeni-rokli-kak-da-namerite-perfektnata", blogLabel: "Как да намерите перфектната сватбена рокля →" },
+    evening: { heading: "Официални, бални и абитуриентски рокли в София", price: "по запитване", text: "Освен булчински рокли, Арети предлага и официални вечерни рокли за специални поводи — абитуриентски бал, сватба като гостенка, кръщене или коктейлно парти. Елегантни абитуриентски рокли и бални рокли в София с богат избор от силуети, цветове и тъкани. Запазете час за проба и нашият стилист ще ви помогне да изберете перфектната рокля за вашето събитие.", blogSlug: "abiturientski-balni-rokli-sofia", blogLabel: "Как да изберете абитуриентска рокля →" },
   },
   en: {
-    cosmobella: { heading: "Cosmobella Wedding Dresses", price: "€1,000 – €1,800", text: "Cosmobella is the accessible Demetrios line — romantic silhouettes with floral appliqués, illusion necklines and delicate straps. Perfect for brides seeking quality and elegance at a reasonable price. All dresses are original with an international guarantee." },
-    demetrios: { heading: "Demetrios Wedding Dresses", price: "€1,500 – €2,800", text: "The core Demetrios collection offers the full range of silhouettes — A-line, mermaid and ball gown. Contemporary designs in lace, embroidery and beaded tulle. The brand's flagship line with over 40 years of bridal tradition." },
-    platinum: { heading: "Luxury Demetrios Platinum Wedding Dresses", price: "€2,500 – €4,000", text: "Demetrios Platinum is the exclusive line for brides who don't compromise. Hand-applied Swarovski crystals, pearls and luxurious European lace. Each gown requires over 200 hours of handwork — a true work of art." },
-    destination: { heading: "Destination Romance Wedding Dresses", price: "€1,200 – €2,000", text: "Destination Romance is designed for destination weddings — beach, garden or outdoor. Lightweight fabrics, short trains and boho aesthetics. Comfortable and beautiful gowns that travel easily." },
-    evening: { heading: "Evening, Prom & Formal Dresses in Sofia", price: "on request", text: "Beyond wedding gowns, Areti offers formal evening dresses for special occasions — proms, wedding guests, christenings and cocktail parties. Elegant prom and ball dresses in Sofia with a wide selection of silhouettes, colours and fabrics. Book a fitting and our stylist will help you find the perfect dress for your event." },
+    cosmobella: { heading: "Cosmobella Wedding Dresses", price: "€1,000 – €1,800", text: "Cosmobella is the accessible Demetrios line — romantic silhouettes with floral appliqués, illusion necklines and delicate straps. Perfect for brides seeking quality and elegance at a reasonable price. All dresses are original with an international guarantee.", blogSlug: "bulchinski-rokli-tseni-2026", blogLabel: "Wedding dress prices 2026 →" },
+    demetrios: { heading: "Demetrios Wedding Dresses", price: "€1,500 – €2,800", text: "The core Demetrios collection offers the full range of silhouettes — A-line, mermaid and ball gown. Contemporary designs in lace, embroidery and beaded tulle. The brand's flagship line with over 40 years of bridal tradition.", blogSlug: "bulchinska-roklia-silueti-narachnik", blogLabel: "Silhouette guide →" },
+    platinum: { heading: "Luxury Demetrios Platinum Wedding Dresses", price: "€2,500 – €4,000", text: "Demetrios Platinum is the exclusive line for brides who don't compromise. Hand-applied Swarovski crystals, pearls and luxurious European lace. Each gown requires over 200 hours of handwork — a true work of art.", blogSlug: "luksozni-bulchinski-rokli", blogLabel: "Luxury wedding dresses — the details →" },
+    destination: { heading: "Destination Romance Wedding Dresses", price: "€1,200 – €2,000", text: "Destination Romance is designed for destination weddings — beach, garden or outdoor. Lightweight fabrics, short trains and boho aesthetics. Comfortable and beautiful gowns that travel easily.", blogSlug: "svatbeni-rokli-kak-da-namerite-perfektnata", blogLabel: "How to find the perfect wedding dress →" },
+    evening: { heading: "Evening, Prom & Formal Dresses in Sofia", price: "on request", text: "Beyond wedding gowns, Areti offers formal evening dresses for special occasions — proms, wedding guests, christenings and cocktail parties. Elegant prom and ball dresses in Sofia with a wide selection of silhouettes, colours and fabrics. Book a fitting and our stylist will help you find the perfect dress for your event.", blogSlug: "abiturientski-balni-rokli-sofia", blogLabel: "How to choose a prom dress →" },
   },
 };
 
@@ -264,6 +264,13 @@ function SubCollectionSeo({ lang, setRoute, colId }) {
           {isBg ? "Всички колекции" : "All collections"}
         </button>
       </div>
+      {info.blogSlug && (
+        <div style={{ marginTop: 16, fontSize: 14 }}>
+          <a href={`/blog/${info.blogSlug}`} onClick={e => { e.preventDefault(); setRoute(`blog/${info.blogSlug}`); }} style={{ color: "var(--ink-soft)" }}>
+            {info.blogLabel}
+          </a>
+        </div>
+      )}
     </section>
   );
 }
