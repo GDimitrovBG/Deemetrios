@@ -61,7 +61,7 @@ function AboutPage({ lang, setRoute }) {
   const t = i18n[lang].about;
   const isBg = lang === "bg";
   useSeo({
-    title: isBg ? "За Арети — сватбен салон в София от 1992 г." : "About Areti — Bridal Salon in Sofia since 1992",
+    title: isBg ? "За Арети — сватбен салон в София от 1992 г. ★ 4.8 (266 отзива)" : "About Areti — Bridal Salon in Sofia since 1992 ★ 4.8 (266 reviews)",
     description: isBg
       ? "Арети е луксозен булчински салон в София, основан през 1992 г. — официален представител на Demetrios в България. Над 30 години обличаме булки."
       : "Areti is a luxury bridal salon in Sofia, founded in 1992 — the official Demetrios representative in Bulgaria. Dressing brides for over 30 years.",
@@ -385,7 +385,7 @@ function ContactPage({ lang, setRoute }) {
   const t = i18n[lang].contact;
   const isBg = lang === "bg";
   useSeo({
-    title: isBg ? "Контакти — Арети сватбен салон София" : "Contact — Areti Bridal Salon Sofia",
+    title: isBg ? "Контакти — Арети, ул. Крум Попов 63, Лозенец, София" : "Contact — Areti, 63 Krum Popov St, Lozenets, Sofia",
     description: isBg
       ? "Контакти на булчински салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време пн–пт 10–19 ч., сб 10:30–18 ч."
       : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours Mon–Fri 10–19, Sat 10:30–18.",

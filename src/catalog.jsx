@@ -283,21 +283,39 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
   const isBg = lang === "bg";
   const colData = initCollection ? COLLECTIONS.find(c => c.id === initCollection) : null;
   const isEvening = initCollection === "evening";
+  // CTR-optimized titles: pages already earn impressions, but generic titles
+  // win few clicks (GSC: /collection/demetrios 1% CTR at 506 impressions).
+  // Numbers + price anchors + concrete benefit lift SERP click-through.
+  const colCount = initCollection ? DRESSES.filter(d => d.collection === initCollection).length : DRESSES.length;
+  const CTR_TITLES = {
+    bg: {
+      demetrios:   `Булчински рокли Demetrios — ${colCount} модела от 1 500 € | Арети София`,
+      cosmobella:  `Булчински рокли Cosmobella — цени от 1 000 € | Арети София`,
+      platinum:    `Луксозни булчински рокли Platinum от 2 500 € | Арети София`,
+      destination: `Сватбени рокли Destination Romance — бохо и плажна сватба | Арети`,
+    },
+    en: {
+      demetrios:   `Demetrios Wedding Dresses — ${colCount} styles from €1,500 | Areti Sofia`,
+      cosmobella:  `Cosmobella Wedding Dresses — prices from €1,000 | Areti Sofia`,
+      platinum:    `Luxury Platinum Wedding Dresses from €2,500 | Areti Sofia`,
+      destination: `Destination Romance Wedding Dresses — boho & beach | Areti`,
+    },
+  };
   useSeo({
     title: isEvening
-      ? (isBg ? "Официални, бални и абитуриентски рокли в София | Арети" : "Evening, Prom & Formal Dresses in Sofia | Areti")
+      ? (isBg ? "Абитуриентски и бални рокли в София — вечерна колекция | Арети" : "Prom & Evening Dresses in Sofia | Areti")
       : colData
-        ? (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`)
-        : (isBg ? "Луксозни булчински и сватбени рокли в София | Арети" : "Luxury Wedding & Bridal Dresses in Sofia | Areti"),
+        ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
+        : (isBg ? "Булчински рокли София — 100+ модела, цени от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
     description: isEvening
       ? (isBg
-          ? "Официални, бални и абитуриентски рокли в София от Арети. Елегантни вечерни рокли за бал, сватба или коктейл — проба по предварителен час."
-          : "Evening, prom and formal dresses in Sofia by Areti. Elegant gowns for proms, weddings and cocktail events — fittings by appointment.")
+          ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Елегантни вечерни рокли за бал, сватба или коктейл. Безплатна проба по предварителен час, корекции на място.`
+          : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Elegant evening gowns for proms, weddings and cocktails. Free fitting by appointment, in-house alterations.`)
       : colData
         ? (isBg ? (colData.seo_desc_bg || colData.desc_bg) : (colData.seo_desc_en || colData.desc_en))
         : (isBg
-            ? "Над 100 луксозни булчински рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, безплатни корекции. Арети — от 1992 г."
-            : "Over 100 luxury wedding dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, free alterations. Areti — since 1992."),
+            ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, безплатна проба и корекции. Арети — от 1992 г."
+            : "Over 100 wedding and bridal dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, free fitting and alterations. Areti — since 1992."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
