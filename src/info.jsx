@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import DOMPurify from 'dompurify';
 import i18n from './i18n';
 import { IMG, DRESSES } from './data';
@@ -42,7 +43,9 @@ function getActivePosts(lang) {
           category: a.category || orig.category || 'Блог',
           image:   a.img || orig.image || '',
           excerpt: a.excerpt_bg || a.excerpt || orig.excerpt || '',
-          content: a.content || orig.content || '',
+          // Admin-authored body stays inline; static posts load it lazily from
+          // blog_content.js in BlogPostPage (keeps 106KB off every route).
+          content: a.content || '',
           relatedRefs: (a.relatedRefs && a.relatedRefs.length) ? a.relatedRefs : (orig.relatedRefs || []),
           seo_title: a.seo_title || '',
           seo_description: a.seo_description || '',
@@ -501,6 +504,21 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
   const posts = getActivePosts(lang);
   const post = posts.find(p => p.id === postId || String(p.id) === String(postId)) || posts[0];
   const others = posts.filter(p => p.id !== post.id).slice(0, 3);
+
+  // Article body is split into blog_content.js (106KB) and loaded on demand so
+  // it never ships on non-blog routes. Admin-authored posts carry their own
+  // inline `content`; static posts resolve it from BLOG_CONTENT by id.
+  // During prerender the dynamic import resolves before Puppeteer snapshots
+  // (networkidle0 + settle), so the full text is baked into the static HTML.
+  const [bodyHtml, setBodyHtml] = useState(post.content || '');
+  useEffect(() => {
+    if (post.content) { setBodyHtml(post.content); return; }
+    let alive = true;
+    import('./blog_content.js').then(m => {
+      if (alive) setBodyHtml(m.BLOG_CONTENT[String(post.id)] || '');
+    });
+    return () => { alive = false; };
+  }, [post.id, post.content]);
   // Resolve related products by ref
   const relatedProducts = (post.relatedRefs || [])
     .map(ref => DRESSES.find(d => d.ref === ref))
@@ -581,7 +599,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
 
           <div
             className="blog-post-content"
-            dangerouslySetInnerHTML={{ __html: sanitizeHTML(post.content) }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHTML(bodyHtml) }}
             onClick={(e) => {
               const link = e.target.closest('.blog-internal-link');
               if (link) {
