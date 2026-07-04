@@ -149,7 +149,13 @@ router.get('/sitemap-images.xml', async (req, res) => {
     <lastmod>${now}</lastmod>
 `;
       for (const imgUrl of allImgs) {
-        const absUrl = imgUrl.startsWith('http') ? imgUrl : `${SITE_URL}${imgUrl}`;
+        // Match the on-page <img src>: cdnImage() serves /wp-content/ JPEGs as
+        // WebP, so the sitemap must list the SAME .webp URL — otherwise Google
+        // Images sees a sitemap/page mismatch and suppresses indexing.
+        const webpUrl = imgUrl.startsWith('/wp-content/')
+          ? imgUrl.replace(/\.jpe?g$/i, '.webp')
+          : imgUrl;
+        const absUrl = webpUrl.startsWith('http') ? webpUrl : `${SITE_URL}${webpUrl}`;
         xml += `    <image:image>
       <image:loc>${xmlEscape(absUrl)}</image:loc>
       <image:title>${xmlEscape(title)}</image:title>
