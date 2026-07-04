@@ -64,12 +64,12 @@
 
   <!--
     Google Consent Mode v2 + gtag bootstrap.
-    Loads gtag.js immediately so Tag Assistant detects the tag and Google can
-    send cookieless pings (campaign measurement, ad clicks). Real cookies +
-    full analytics only fire after the user grants consent in the cookie banner
-    — src/seo-inject.js calls gtag('consent','update', ...) on accept.
-    The Measurement ID is hardcoded here because consent must be set BEFORE the
-    React app boots (Google's documented requirement: consent → then config).
+    Consent default is set SYNCHRONOUSLY here (Google's requirement: consent →
+    then config) and gtag('js'/'config') queue into dataLayer immediately. The
+    heavy gtag.js LIBRARY, however, is loaded lazily (see the deferred loader
+    below) so it never competes with the critical mobile render — the queued
+    commands flush the moment it arrives. src/seo-inject.js calls
+    gtag('consent','update', ...) on accept; that queues fine too.
   -->
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -93,21 +93,18 @@
     gtag('js', new Date());
     gtag('config', 'G-RB14REHZ0P', { anonymize_ip: true });
   </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RB14REHZ0P"></script>
 
   <!--
-    Meta (Facebook) Pixel — same pattern as gtag.
-    Loads immediately so Meta's Pixel Helper / Tag Assistant detects it on the
-    first page view. Until the visitor accepts marketing cookies, fbq stays in
-    "consent revoke" mode (no identifiers / cookies). On accept, src/legal.jsx
-    calls fbq('consent', 'grant') and full tracking begins.
+    Meta (Facebook) Pixel — stub only. fbq() queues calls immediately; the
+    fbevents.js LIBRARY is loaded by the deferred loader below (not injected
+    here), so it stays off the critical mobile render path. Until the visitor
+    accepts marketing cookies, fbq stays in "consent revoke" mode. On accept,
+    src/legal.jsx calls fbq('consent', 'grant') and full tracking begins.
   -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window,document);
     (function () {
       var granted = false;
       try {
@@ -122,6 +119,42 @@
       if (!granted) fbq('consent', 'revoke');
       fbq('init', '1378406233980976');
       fbq('track', 'PageView');
+    })();
+  </script>
+
+  <!--
+    Deferred third-party loader — mobile Core Web Vitals.
+    gtag.js + fbevents.js are the heaviest main-thread cost during first paint.
+    We load them only after the first user interaction, or on idle (≤5s) so
+    bounces still register. All gtag()/fbq() calls above are already queued, so
+    they flush the instant the libraries arrive — no lost PageViews, no consent
+    leak (consent defaults were set synchronously above).
+  -->
+  <script>
+    (function () {
+      // Skip entirely during prerender — otherwise the injected <script> tags
+      // get serialized into the static HTML and would load eagerly for real
+      // users, defeating the whole point. __PRERENDER__ is set before any page
+      // script runs (scripts/prerender.js → evaluateOnNewDocument).
+      if (window.__PRERENDER__) return;
+      var loaded = false;
+      function loadThirdParty() {
+        if (loaded) return; loaded = true;
+        var g = document.createElement('script'); g.async = true;
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=G-RB14REHZ0P';
+        document.head.appendChild(g);
+        var f = document.createElement('script'); f.async = true;
+        f.src = 'https://connect.facebook.net/en_US/fbevents.js';
+        document.head.appendChild(f);
+      }
+      var evs = ['pointerdown', 'keydown', 'touchstart', 'scroll', 'mousemove'];
+      function onFirst() {
+        evs.forEach(function (e) { window.removeEventListener(e, onFirst, { passive: true }); });
+        loadThirdParty();
+      }
+      evs.forEach(function (e) { window.addEventListener(e, onFirst, { passive: true }); });
+      if ('requestIdleCallback' in window) requestIdleCallback(loadThirdParty, { timeout: 5000 });
+      else setTimeout(loadThirdParty, 4000);
     })();
   </script>
   <!-- Pixel <noscript> fallback omitted: this is a React SPA, so no-JS visitors
