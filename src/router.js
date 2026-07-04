@@ -92,7 +92,7 @@ export function pathToState(pathname) {
     return { route: 'collection', collectionId: collMatch[1] };
   }
 
-  const prodMatch = p.match(/^\/product\/([A-Za-z0-9]+)$/);
+  const prodMatch = p.match(/^\/product\/([A-Za-z0-9_]+)$/);
   if (prodMatch) {
     const ref = prodMatch[1];
     if (DRESSES.some(d => d.ref === ref)) {
