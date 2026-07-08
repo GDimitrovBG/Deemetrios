@@ -17,7 +17,7 @@ const T = {
     detail:    'детайл',
     collection:'колекция',
     salon:     'Арети София',
-    book:      'Запази безплатна проба',
+    book:      'Запази час за проба',
   },
   en: {
     bridal:    'Wedding Dress',
@@ -25,7 +25,7 @@ const T = {
     detail:    'detail',
     collection:'collection',
     salon:     'Areti Sofia',
-    book:      'Book a free fitting',
+    book:      'Book a fitting',
   },
 };
 
@@ -140,9 +140,9 @@ const DESC_POOLS = {
       "Подходяща за абитуриентки и дами, които търсят елегантна официална визия.",
     ],
     closer: [
-      "Запазете час за безплатна проба в Арети — официален представител на Demetrios в България от 1992 г.",
+      "Запазете час за проба в Арети — официален представител на Demetrios в България от 1992 г.",
       "Пробвайте я лично в салон Арети в София и усетете качеството на Demetrios.",
-      "Очакваме ви в Арети за безплатна консултация и проба по предварителен час.",
+      "Очакваме ви в Арети за консултация и проба по предварителен час.",
       "Резервирайте проба в Арети и открийте дали Style {ref} е вашата рокля.",
     ],
   },
@@ -192,9 +192,9 @@ const DESC_POOLS = {
       "Suited to graduates and women seeking an elegant formal look.",
     ],
     closer: [
-      "Book a free fitting at Areti — the official Demetrios representative in Bulgaria since 1992.",
+      "Book a fitting at Areti — the official Demetrios representative in Bulgaria since 1992.",
       "Try it on in person at the Areti salon in Sofia and feel the Demetrios quality.",
-      "We welcome you to Areti for a free consultation and fitting by appointment.",
+      "We welcome you to Areti for a consultation and fitting by appointment.",
       "Reserve a fitting at Areti and discover whether Style {ref} is your dress.",
     ],
   },

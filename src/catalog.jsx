@@ -69,7 +69,7 @@ const SILHOUETTE_KEY = {
 
 const COLLECTION_FAQ = {
   bg: [
-    { q: "Колко струват булчинските рокли в Арети?", a: "Цените на булчинските рокли в Арети варират в зависимост от колекцията: Cosmobella от 1 000 до 1 800 €, Demetrios от 1 500 до 2 800 €, Destination Romance от 1 200 до 2 000 €, а Demetrios Platinum — от 2 500 до 4 000 €. В цената са включени безплатна консултация с личен стилист и една безплатна корекция." },
+    { q: "Колко струват булчинските рокли в Арети?", a: "Цените на булчинските рокли в Арети варират в зависимост от колекцията: Cosmobella от 1 000 до 1 800 €, Demetrios от 1 500 до 2 800 €, Destination Romance от 1 200 до 2 000 €, а Demetrios Platinum — от 2 500 до 4 000 €. В цената са включени консултация с личен стилист и една безплатна корекция." },
     { q: "Какви силуети булчински рокли предлагате?", a: "В салона в София разполагаме с над 100 рокли в 5 основни силуета: А-силует (универсален и флатериращ), русалка (подчертава извивките), принцеса (обемна пола с корсет), права линия (елегантен минимализъм) и бохо (леки материи и свободни кройки). Всеки силует е достъпен в различни тъкани — от дантела и тюл до коприна и сатен." },
     { q: "Кога да започна търсенето на сватбена рокля?", a: "Препоръчваме да започнете 8 до 12 месеца преди сватбата. Ако избраната рокля не е налична в шоурума, поръчката от Demetrios отнема 3–4 месеца, плюс 1–2 месеца за корекции. За по-спешни случаи имаме рокли в наличност, които могат да бъдат коригирани за 2–3 седмици." },
     { q: "Предлагате ли достъпни булчински рокли?", a: "Да. Колекцията Cosmobella предлага елегантни булчински рокли от 1 000 €, а Destination Romance — леки рокли за дестинационни сватби от 1 200 €. Периодично организираме и намаления на модели от предишни сезони. Всички рокли са оригинални Demetrios с гаранция за качество." },
@@ -80,7 +80,7 @@ const COLLECTION_FAQ = {
     { q: "Давате ли булчински рокли под наем?", a: "Арети е салон за продажба на оригинални булчински рокли Demetrios, а не под наем. Вярваме, че роклята за най-важния ден трябва да е само ваша — ушита по вашата фигура и съхранена като спомен. За булки с по-ограничен бюджет предлагаме достъпната колекция Cosmobella от 1 000 € и периодични намаления на модели от предишни сезони, които често излизат по-изгодно от наема." },
   ],
   en: [
-    { q: "How much do wedding dresses cost at Areti?", a: "Prices vary by collection: Cosmobella from €1,000 to €1,800, Demetrios from €1,500 to €2,800, Destination Romance from €1,200 to €2,000, and Demetrios Platinum from €2,500 to €4,000. A free consultation and one alteration are included." },
+    { q: "How much do wedding dresses cost at Areti?", a: "Prices vary by collection: Cosmobella from €1,000 to €1,800, Demetrios from €1,500 to €2,800, Destination Romance from €1,200 to €2,000, and Demetrios Platinum from €2,500 to €4,000. A consultation and one free alteration are included." },
     { q: "What silhouettes do you offer?", a: "We carry over 100 dresses in 5 silhouettes: A-line, mermaid, ball gown, column and boho. Each is available in various fabrics including lace, tulle, silk and satin." },
     { q: "When should I start looking for a wedding dress?", a: "We recommend starting 8–12 months before the wedding. Custom orders from Demetrios take 3–4 months, plus 1–2 months for alterations. For urgent timelines, we have in-stock dresses that can be altered within 2–3 weeks." },
     { q: "Do you offer affordable wedding dresses?", a: "Yes. Cosmobella starts from €1,000, and Destination Romance from €1,200. We also run seasonal sales on previous-season styles. All dresses are original Demetrios with a quality guarantee." },
@@ -151,8 +151,8 @@ function CollectionSeoContent({ lang, setRoute }) {
       </h2>
       <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
         {isBg
-          ? "Цените в Арети зависят от колекцията и сложността на изработката. Всички рокли са оригинални Demetrios — с международна гаранция за качество. В цената е включена безплатна консултация и една корекция."
-          : "Prices at Areti depend on the collection and craftsmanship. All dresses are original Demetrios with an international quality guarantee. A free consultation and one alteration are included."}
+          ? "Цените в Арети зависят от колекцията и сложността на изработката. Всички рокли са оригинални Demetrios — с международна гаранция за качество. В цената е включена консултация и една безплатна корекция."
+          : "Prices at Areti depend on the collection and craftsmanship. All dresses are original Demetrios with an international quality guarantee. A consultation and one free alteration are included."}
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 48 }}>
         {[
@@ -257,7 +257,7 @@ function SubCollectionSeo({ lang, setRoute, colId }) {
       <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
         <span>{isBg ? `${count} модела в салона` : `${count} styles in store`}</span>
         <span>{isBg ? `Цени: ${info.price}` : `Prices: ${info.price}`}</span>
-        <span>{isBg ? "Безплатна проба и корекция" : "Free fitting & alteration"}</span>
+        <span>{isBg ? "Проба и безплатна корекция" : "Fitting & free alteration"}</span>
       </div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
         <button className="btn btn-solid" onClick={() => setRoute("booking")}>
@@ -309,13 +309,13 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         : (isBg ? "Булчински рокли София — 100+ модела, цени от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
     description: isEvening
       ? (isBg
-          ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Елегантни вечерни рокли за бал, сватба или коктейл. Безплатна проба по предварителен час, корекции на място.`
-          : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Elegant evening gowns for proms, weddings and cocktails. Free fitting by appointment, in-house alterations.`)
+          ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Елегантни вечерни рокли за бал, сватба или коктейл. Проба по предварителен час, корекции на място.`
+          : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Elegant evening gowns for proms, weddings and cocktails. Fitting by appointment, in-house alterations.`)
       : colData
         ? (isBg ? (colData.seo_desc_bg || colData.desc_bg) : (colData.seo_desc_en || colData.desc_en))
         : (isBg
-            ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, безплатна проба и корекции. Арети — от 1992 г."
-            : "Over 100 wedding and bridal dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, free fitting and alterations. Areti — since 1992."),
+            ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, проба по час, безплатна корекция. Арети — от 1992 г."
+            : "Over 100 wedding and bridal dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, fittings and alterations. Areti — since 1992."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: initCollection ? `/collection/${initCollection}` : "/collection",
     lang,

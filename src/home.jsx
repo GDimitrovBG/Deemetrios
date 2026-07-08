@@ -416,8 +416,8 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       ? "Арети — Булчински салон Demetrios в София | От 1992 г."
       : "Areti — Demetrios Bridal Salon in Sofia | Since 1992",
     description: lang === "bg"
-      ? "Арети е официален представител на Demetrios в България от 1992 г. Луксозен сватбен салон в Лозенец, София — над 100 булчински рокли, безплатна консултация и корекции. Запазете час."
-      : "Areti is the official Demetrios representative in Bulgaria since 1992. Luxury bridal salon in Sofia — over 100 wedding dresses, free consultation and alterations. Book a fitting.",
+      ? "Арети е официален представител на Demetrios в България от 1992 г. Луксозен сватбен салон в Лозенец, София — над 100 булчински рокли, консултация и корекции. Запазете час."
+      : "Areti is the official Demetrios representative in Bulgaria since 1992. Luxury bridal salon in Sofia — over 100 wedding dresses, consultation and alterations. Book a fitting.",
     image: IMG.hero1,
     url: "/",
     lang,
