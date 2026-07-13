@@ -158,6 +158,11 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
               <span>{c.label}</span>
             </a>
           ))}
+          {/* Evening is a top-level nav item on desktop; add it to the mobile
+              drawer too — it was missing, so вечерни рокли were unreachable on phones. */}
+          <a href="/collection/evening" className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection("evening"); }}>
+            <span>{t.nav.accessories}</span>
+          </a>
           <div className="m-divider" />
           <a href="/about" className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("about"); }}>
             <span>{t.nav.about}</span>
