@@ -74,3 +74,22 @@ redir @r_cat_rest       /collection 301
 # (/product/dr436 → /product/DR436), so a lower-cased target is safe.
 @wp_product path_regexp wpprod ^/product/.+-style-([A-Za-z0-9]+)/?$
 redir @wp_product /product/{re.wpprod.1} 301
+
+# --- Old WP content archives with no SPA equivalent → nearest page (301) ---
+# Author/tag/date archives from the old WordPress site. Redirecting (not 410)
+# preserves any residual link equity and gives the user a useful landing page.
+@wp_author path_regexp ^/author/.*$
+redir @wp_author / 301
+@wp_tag    path_regexp ^/tag/.*$
+redir @wp_tag    /collection 301
+@wp_date   path_regexp ^/20\d\d(/\d{2})?/?$
+redir @wp_date   /blog 301
+
+# --- Dead WP technical URLs → 410 Gone ---
+# Feeds, wp-json, xmlrpc, comment feeds etc. must never be indexed. Returning
+# 410 (Gone) tells Google they are permanently removed, so they drop out of the
+# index quickly instead of lingering as soft-404 (noindex) entries in Coverage.
+@wp_dead     path_regexp ^/(wp-json|xmlrpc\.php|wp-login\.php|wp-content/.*\.php|comments/feed|feed)(/.*)?$
+respond @wp_dead 410
+@wp_feed_any path_regexp ^/.+/feed/?$
+respond @wp_feed_any 410
