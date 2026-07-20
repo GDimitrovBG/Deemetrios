@@ -23,6 +23,7 @@ const CLIENT_BLOG_SLUGS = [
   { slug: 'luksozni-bulchinski-rokli', date: '2026-06-10' },
   { slug: 'bulchinski-rokli-sofia-svatben-salon', date: '2026-06-10' },
   { slug: 'abiturientski-balni-rokli-sofia', date: '2026-07-02' },
+  { slug: 'svatbeni-rokli-sofia', date: '2026-07-20' },
 ];
 
 function xmlEscape(s) {
