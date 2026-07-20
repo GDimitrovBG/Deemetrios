@@ -765,7 +765,7 @@ function CollectionGrid({ items, lang, gridCols, goProduct, favorites, toggleFav
     }
     lastCol = d.collection;
     rows.push(
-      <DressCard key={d.ref} d={d} lang={lang} onClick={() => goProduct(d.ref)} favorites={favorites} toggleFavorite={toggleFavorite} />
+      <DressCard key={d.ref} d={d} lang={lang} onClick={() => goProduct(d.ref)} isFav={favorites.includes(d.ref)} toggleFavorite={toggleFavorite} />
     );
   });
 
@@ -899,7 +899,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
           </div>
           <div className="dress-grid dress-grid--4">
             {DRESSES.filter(d => d.ref !== dress.ref).slice(0, 4).map((d) => (
-              <DressCard key={d.ref} d={d} lang={lang} onClick={() => { goProduct && goProduct(d.ref); window.scrollTo(0, 0); }} favorites={favorites} toggleFavorite={toggleFavorite} />
+              <DressCard key={d.ref} d={d} lang={lang} onClick={() => { goProduct && goProduct(d.ref); window.scrollTo(0, 0); }} isFav={favorites.includes(d.ref)} toggleFavorite={toggleFavorite} />
             ))}
           </div>
           <div style={{ textAlign: "center", marginTop: 48 }}>

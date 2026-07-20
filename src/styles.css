@@ -641,6 +641,11 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   cursor: pointer;
   overflow: hidden;
+  /* Skip rendering/layout for off-screen cards — cuts main-thread work on
+     grid pages (100+ cards), lowering INP. `auto` keeps the real size once
+     rendered; 340px is only the pre-render placeholder. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 340px;
 }
 .dress-card .dress-img {
   aspect-ratio: 3/4;

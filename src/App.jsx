@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Nav, Footer, FloatDial } from './components';
 import { HomePage } from './home';
 import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
@@ -114,9 +114,10 @@ export default function App() {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  const toggleFavorite = (ref) => {
+  // Stable identity so memoized DressCards don't all re-render on every toggle.
+  const toggleFavorite = useCallback((ref) => {
     setFavorites(prev => prev.includes(ref) ? prev.filter(r => r !== ref) : [...prev, ref]);
-  };
+  }, []);
 
   const goCollection = (id = null) => {
     setActiveCollection(id);

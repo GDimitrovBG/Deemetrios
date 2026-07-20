@@ -175,7 +175,7 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
 
       <div className="dress-grid">
         {dresses.map((d) => (
-          <DressCard key={d.ref} d={d} lang={lang} onClick={() => goProduct ? goProduct(d.ref) : setRoute("product")} favorites={favorites} toggleFavorite={toggleFavorite} />
+          <DressCard key={d.ref} d={d} lang={lang} onClick={() => goProduct ? goProduct(d.ref) : setRoute("product")} isFav={favorites.includes(d.ref)} toggleFavorite={toggleFavorite} />
         ))}
       </div>
 
@@ -188,11 +188,10 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
   );
 }
 
-function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
+function DressCardBase({ d, lang, onClick, isFav = false, toggleFavorite }) {
   const t = i18n[lang];
   const name = getProductCardName(d, lang);
   const sil = lang === "bg" ? d.silhouette : d.silhouette_en;
-  const isFav = favorites.includes(d.ref);
   const imgAlt = getProductAlt(d, lang, 0);
   return (
     <article className="dress-card" onClick={onClick}>
@@ -222,6 +221,14 @@ function DressCard({ d, lang, onClick, favorites = [], toggleFavorite }) {
     </article>
   );
 }
+
+// Memoized so toggling one favorite re-renders only that card, not the whole
+// grid (100+ cards on /collection). onClick identity is intentionally ignored
+// in the comparator — it only navigates by d.ref, which never changes. Big INP
+// win on grid pages.
+const DressCard = React.memo(DressCardBase, (a, b) =>
+  a.d === b.d && a.lang === b.lang && a.isFav === b.isFav && a.toggleFavorite === b.toggleFavorite
+);
 
 function StorySection({ t, setRoute }) {
   return (
