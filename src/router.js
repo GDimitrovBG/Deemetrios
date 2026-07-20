@@ -68,6 +68,9 @@ function patternRedirect(p) {
 }
 
 const COLLECTION_IDS = ['cosmobella','demetrios','platinum','destination','evening'];
+// Silhouette landing pages — /collection/silueti/<slug>. Slugs kept in sync
+// with SILHOUETTE_PAGES in catalog.jsx (rusalka/printsesa/a-siluet).
+const SILHOUETTE_IDS = ['rusalka','printsesa','a-siluet'];
 
 function normalize(pathname) {
   let p = pathname || '/';
@@ -86,6 +89,12 @@ export function pathToState(pathname) {
 
   if (p === '/') return { route: 'home' };
   if (p === '/collection') return { route: 'collection', collectionId: null };
+
+  const silMatch = p.match(/^\/collection\/silueti\/([a-z-]+)$/);
+  if (silMatch && SILHOUETTE_IDS.includes(silMatch[1])) {
+    return { route: 'collection', collectionId: null, silhouetteId: silMatch[1] };
+  }
+  if (p === '/collection/silueti') return { redirect: '/collection' };
 
   const collMatch = p.match(/^\/collection\/([a-z]+)$/);
   if (collMatch && COLLECTION_IDS.includes(collMatch[1])) {
@@ -143,10 +152,12 @@ export function pathToState(pathname) {
   return { route: 'not-found' };
 }
 
-export function stateToPath({ route, collectionId, productRef, blogPostId }) {
+export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId }) {
   switch (route) {
     case 'home':        return '/';
-    case 'collection':  return collectionId ? `/collection/${collectionId}` : '/collection';
+    case 'collection':
+      if (silhouetteId) return `/collection/silueti/${silhouetteId}`;
+      return collectionId ? `/collection/${collectionId}` : '/collection';
     case 'product':     return productRef ? `/product/${productRef}` : '/collection';
     case 'accessories': return '/accessories';
     case 'booking':     return '/booking';

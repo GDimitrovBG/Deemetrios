@@ -70,6 +70,7 @@ export default function App() {
   }, [lang]);
 
   const [activeCollection, setActiveCollection] = useState(initial.collectionId || null);
+  const [activeSilhouette, setActiveSilhouette] = useState(initial.silhouetteId || null);
   const [activeProduct, setActiveProduct] = useState(initial.productRef || null);
   const [activeBlogPost, setActiveBlogPost] = useState(initial.blogPostId || null);
   const [favorites, setFavorites] = useState([]);
@@ -80,11 +81,11 @@ export default function App() {
   useEffect(() => {
     if (firstSync.current) { firstSync.current = false; return; }
     if (route === "admin" || route === "not-found") return;
-    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost });
+    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost, silhouetteId: activeSilhouette });
     if (window.location.pathname !== path) {
       window.history.pushState({}, "", path);
     }
-  }, [route, activeCollection, activeProduct, activeBlogPost]);
+  }, [route, activeCollection, activeSilhouette, activeProduct, activeBlogPost]);
 
   // Sync URL → state on back/forward
   useEffect(() => {
@@ -97,12 +98,14 @@ export default function App() {
         if (next.route) {
           setRouteRaw(next.route);
           setActiveCollection(next.collectionId || null);
+          setActiveSilhouette(next.silhouetteId || null);
           setActiveProduct(next.productRef || null);
           setActiveBlogPost(next.blogPostId || null);
         }
       } else if (s.route) {
         setRouteRaw(s.route);
         setActiveCollection(s.collectionId || null);
+        setActiveSilhouette(s.silhouetteId || null);
         setActiveProduct(s.productRef || null);
         setActiveBlogPost(s.blogPostId || null);
       }
@@ -117,6 +120,13 @@ export default function App() {
 
   const goCollection = (id = null) => {
     setActiveCollection(id);
+    setActiveSilhouette(null);
+    setRoute("collection");
+  };
+
+  const goSilhouette = (id) => {
+    setActiveCollection(null);
+    setActiveSilhouette(id);
     setRoute("collection");
   };
 
@@ -139,7 +149,7 @@ export default function App() {
 
   let page = null;
   switch (route) {
-    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
+    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
     case "product": page = <ProductPage lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
     case "accessories": page = <AccessoriesPage lang={lang} setRoute={setRoute} />; break;
     case "booking": page = <BookingPage lang={lang} setRoute={setRoute} dress={bookingDress} />; break;

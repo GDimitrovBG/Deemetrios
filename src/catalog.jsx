@@ -109,7 +109,10 @@ const SILHOUETTE_INFO = {
   },
 };
 
-function CollectionSeoContent({ lang, setRoute }) {
+// Guide silhouette keys → landing-page slugs (only the 3 with real stock).
+const GUIDE_KEY_TO_SLUG = { aline: "a-siluet", mermaid: "rusalka", ballgown: "printsesa" };
+
+function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
   const isBg = lang === "bg";
   const faq = COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg;
   const sil = SILHOUETTE_INFO[lang] || SILHOUETTE_INFO.bg;
@@ -135,15 +138,27 @@ function CollectionSeoContent({ lang, setRoute }) {
           : "Choosing the right silhouette is the first and most important step. Here's a quick guide to the five main types of wedding dresses in our salon."}
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 48 }}>
-        {Object.entries(sil).map(([key, { name, desc }]) => (
+        {Object.entries(sil).map(([key, { name, desc }]) => {
+          const slug = GUIDE_KEY_TO_SLUG[key];
+          const hasPage = slug && (silCounts[key] || 0) > 0;
+          return (
           <div key={key} style={{ borderTop: "2px solid var(--champagne-deep)", paddingTop: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-              <h3 style={{ fontFamily: "var(--f-display)", fontSize: 20, fontWeight: 400 }}>{name}</h3>
+              <h3 style={{ fontFamily: "var(--f-display)", fontSize: 20, fontWeight: 400 }}>
+                {hasPage
+                  ? <a href={`/collection/silueti/${slug}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }} style={{ color: "inherit" }}>{name}</a>
+                  : name}
+              </h3>
               <span style={{ fontSize: 13, color: "var(--ink-mute)" }}>{silCounts[key] || 0} {isBg ? "модела" : "styles"}</span>
             </div>
             <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{desc}</p>
+            {hasPage && (
+              <a href={`/collection/silueti/${slug}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }} style={{ fontSize: 13, color: "var(--ink-soft)", textDecoration: "underline" }}>
+                {isBg ? `Вижте роклите ${name.toLowerCase()} →` : `See ${name.toLowerCase()} dresses →`}
+              </a>
+            )}
           </div>
-        ))}
+        );})}
       </div>
 
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
@@ -278,10 +293,77 @@ function SubCollectionSeo({ lang, setRoute, colId }) {
   );
 }
 
-function CollectionPage({ lang, setRoute, initCollection = null, favorites = [], toggleFavorite, goProduct }) {
+// Silhouette landing pages — /collection/silueti/<slug>. Target long-tail
+// queries ("булчинска рокля русалка/принцеса/А-силует") with existing stock.
+// Slugs kept in sync with SILHOUETTE_IDS in router.js.
+const SILHOUETTE_PAGES = {
+  rusalka: {
+    bg: "Русалка", en: "Mermaid",
+    h1_bg: "Булчински рокли русалка", h1_en: "Mermaid Wedding Dresses",
+    intro_bg: "Булчинската рокля тип русалка приляга плътно по тялото от бюста до коляното, след което се разширява във фина пола. Силуетът подчертава извивките и е идеален за булки, които искат чувствена, драматична визия. В Арети предлагаме оригинални модели Demetrios с този силует.",
+    intro_en: "A mermaid wedding dress fits closely from the bust to the knee, then flares into a dramatic skirt. The silhouette accentuates the curves and suits brides who want a sensual, striking look. Areti offers original Demetrios mermaid gowns in Sofia.",
+  },
+  printsesa: {
+    bg: "Принцеса", en: "Ball gown",
+    h1_bg: "Булчински рокли принцеса", h1_en: "Princess (Ball Gown) Wedding Dresses",
+    intro_bg: "Булчинската рокля тип принцеса има прилепнал корсет и обемна пола, която създава класическа, приказна визия. Този силует е сред най-желаните за традиционни сватби и подхожда на почти всяка фигура. Разгледайте оригиналните модели принцеса на Demetrios в салон Арети, София.",
+    intro_en: "A princess (ball gown) wedding dress pairs a fitted bodice with a full skirt for a classic, fairy-tale look. It is one of the most requested silhouettes for traditional weddings and flatters almost every body type. Explore original Demetrios ball gowns at Areti, Sofia.",
+  },
+  "a-siluet": {
+    bg: "А-силует", en: "A-line",
+    h1_bg: "Булчински рокли А-силует", h1_en: "A-Line Wedding Dresses",
+    intro_bg: "Булчинската рокля с А-силует е прилепнала в горната част и плавно се разширява от талията надолу, оформяйки буквата „А“. Това е най-универсалният силует — балансиран, елегантен и ласкав за всяка фигура. В Арети това е най-голямата ни група модели Demetrios.",
+    intro_en: "An A-line wedding dress is fitted through the top and flows out gently from the waist, forming an “A” shape. It is the most versatile silhouette — balanced, elegant and flattering on every body type. It is our largest group of Demetrios styles at Areti.",
+  },
+};
+
+function SilhouetteSeo({ lang, setRoute, goSilhouette, slug, count }) {
+  const isBg = lang === "bg";
+  const data = SILHOUETTE_PAGES[slug];
+  if (!data) return null;
+  const others = Object.entries(SILHOUETTE_PAGES).filter(([s]) => s !== slug);
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? `Защо да изберете рокля ${data.bg.toLowerCase()}?` : `Why choose a ${data.en.toLowerCase()} dress?`}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
+        {isBg ? data.intro_bg : data.intro_en}
+      </p>
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
+        <span>{count} {isBg ? "модела в салона" : "styles in store"}</span>
+        <span>{isBg ? "Цени от 1 000 €" : "Prices from €1,000"}</span>
+        <span>{isBg ? "Оригинални Demetrios" : "Original Demetrios"}</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
+        <button className="btn btn-solid" onClick={() => setRoute("booking")}>
+          {isBg ? "Запази проба →" : "Book a fitting →"}
+        </button>
+        <button className="btn" onClick={() => setRoute("collection")}>
+          {isBg ? "Всички булчински рокли" : "All wedding dresses"}
+        </button>
+      </div>
+      <div style={{ fontSize: 14, color: "var(--ink-soft)" }}>
+        <strong>{isBg ? "Други силуети:" : "Other silhouettes:"}</strong>{" "}
+        {others.map(([s, d], i) => (
+          <span key={s}>
+            <a href={`/collection/silueti/${s}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(s); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+              {isBg ? d.h1_bg : d.h1_en}
+            </a>{i < others.length - 1 ? " · " : ""}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, goSilhouette, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
   const colData = initCollection ? COLLECTIONS.find(c => c.id === initCollection) : null;
+  const silData = initSilhouette ? SILHOUETTE_PAGES[initSilhouette] : null;
+  const silName = silData ? (isBg ? silData.bg : silData.en) : null;
+  const silCount = silData ? DRESSES.filter(d => d.silhouette === silData.bg).length : 0;
   const isEvening = initCollection === "evening";
   // CTR-optimized titles: pages already earn impressions, but generic titles
   // win few clicks (GSC: /collection/demetrios 1% CTR at 506 impressions).
@@ -302,12 +384,18 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
     },
   };
   useSeo({
-    title: isEvening
+    title: silData
+      ? (isBg ? `${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети` : `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`)
+      : isEvening
       ? (isBg ? "Абитуриентски и бални рокли в София — вечерна колекция | Арети" : "Prom & Evening Dresses in Sofia | Areti")
       : colData
         ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
         : (isBg ? "Булчински рокли София — 100+ модела, цени от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
-    description: isEvening
+    description: silData
+      ? (isBg
+          ? `${silData.intro_bg} ${silCount} модела, цени от 1 000 €. Проба по предварителен час в салон Арети, Лозенец.`
+          : `${silData.intro_en} ${silCount} styles, prices from €1,000. Fittings by appointment at Areti, Sofia.`)
+      : isEvening
       ? (isBg
           ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Елегантни вечерни рокли за бал, сватба или коктейл. Проба по предварителен час, корекции на място.`
           : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Elegant evening gowns for proms, weddings and cocktails. Fitting by appointment, in-house alterations.`)
@@ -317,20 +405,25 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
             ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, проба по час, безплатна корекция. Арети — от 1992 г."
             : "Over 100 wedding and bridal dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, fittings and alterations. Areti — since 1992."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
-    url: initCollection ? `/collection/${initCollection}` : "/collection",
+    url: silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
-    keywords: "колекции булчински рокли, Demetrios, Cosmobella, Platinum, Destination Romance, сватбени рокли София",
+    keywords: silData
+      ? (isBg ? `булчинска рокля ${silData.bg.toLowerCase()}, ${silData.bg.toLowerCase()} булчински рокли София, Demetrios` : `${silData.en.toLowerCase()} wedding dress, ${silData.en.toLowerCase()} bridal Sofia`)
+      : "колекции булчински рокли, Demetrios, Cosmobella, Platinum, Destination Romance, сватбени рокли София",
     jsonLd: { "@graph": [
       breadcrumbSchema([
         { name: isBg ? "Начало" : "Home", url: "/" },
         { name: isBg ? "Колекция" : "Collection", url: "/collection" },
         ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
+        ...(silData ? [{ name: isBg ? silData.h1_bg : silData.h1_en, url: `/collection/silueti/${initSilhouette}` }] : []),
       ]),
       collectionItemListSchema(
-        (initCollection ? DRESSES.filter(d => d.collection === initCollection) : DRESSES),
+        (silData ? DRESSES.filter(d => d.silhouette === silData.bg)
+          : initCollection ? DRESSES.filter(d => d.collection === initCollection)
+          : DRESSES),
         lang,
       ),
-      ...(!initCollection ? [faqSchema(COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg)] : []),
+      ...(!initCollection && !silData ? [faqSchema(COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg)] : []),
     ]},
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -351,6 +444,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
   // When a specific collection is selected, continue into subsequent collections
   // so the "Виж още" button flows naturally across all collections.
   const displayList = useMemo(() => {
+    // Silhouette landing page: show every dress with this silhouette, in
+    // collection order, then apply any extra user filters/sort on top.
+    if (silData) {
+      const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && d.silhouette === silData.bg));
+      return applyFiltersAndSort(ordered, filters, sortBy);
+    }
     if (!activeCol) {
       // All: respect collection order (cosmobella → demetrios → … → evening)
       const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id));
@@ -363,7 +462,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
       DRESSES.filter(d => d.collection === COLLECTIONS[i].id).forEach(d => ordered.push(d));
     }
     return applyFiltersAndSort(ordered, filters, sortBy);
-  }, [activeCol, filters, sortBy]);
+  }, [activeCol, filters, sortBy, initSilhouette]);
 
   // What's currently visible in the grid
   const visibleItems = displayList.slice(0, visibleCount);
@@ -402,9 +501,18 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         <div>
           <div className="t-eyebrow" style={{ marginBottom: 24 }}>{t.collection.crumb}</div>
           <h1>
-            {activeColData ? activeColData.label : <>{t.collection.title} <em>{t.collection.title_em}</em></>}
+            {silData ? (isBg ? silData.h1_bg : silData.h1_en)
+              : activeColData ? activeColData.label
+              : <>{t.collection.title} <em>{t.collection.title_em}</em></>}
           </h1>
-          {activeColData ? (
+          {silData ? (
+            <p className="collection-intro">
+              {isBg ? silData.intro_bg : silData.intro_en}{' '}
+              <a href="/collection" onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+                {isBg ? "Вижте всички булчински рокли →" : "See all wedding dresses →"}
+              </a>
+            </p>
+          ) : activeColData ? (
             <>
               <p style={{ fontFamily: 'var(--f-serif)', fontSize: 16, fontStyle: 'italic', opacity: 0.7, marginTop: 12, maxWidth: 480 }}>
                 {lang === 'bg' ? activeColData.desc_bg : activeColData.desc_en}
@@ -432,16 +540,18 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         </div>
       </div>
 
-      <div className="collection-tabs">
-        <button className={`col-tab ${!activeCol ? 'active' : ''}`} onClick={() => setActiveCol(null)}>
-          {isBg ? 'Всички' : 'All'}
-        </button>
-        {COLLECTIONS.map(c => (
-          <button key={c.id} className={`col-tab ${activeCol === c.id ? 'active' : ''}`} onClick={() => setActiveCol(c.id)}>
-            {c.label}
+      {!silData && (
+        <div className="collection-tabs">
+          <button className={`col-tab ${!activeCol ? 'active' : ''}`} onClick={() => setActiveCol(null)}>
+            {isBg ? 'Всички' : 'All'}
           </button>
-        ))}
-      </div>
+          {COLLECTIONS.map(c => (
+            <button key={c.id} className={`col-tab ${activeCol === c.id ? 'active' : ''}`} onClick={() => setActiveCol(c.id)}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="filter-bar">
         <div className="inner">
@@ -547,8 +657,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, favorites = [],
         )}
       </div>
 
-      {!initCollection && <CollectionSeoContent lang={lang} setRoute={setRoute} />}
+      {!initCollection && !silData && <CollectionSeoContent lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} />}
       {initCollection && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
+      {silData && <SilhouetteSeo lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} slug={initSilhouette} count={silCount} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}
       {createPortal(
