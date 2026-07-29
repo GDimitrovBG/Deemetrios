@@ -45,3 +45,26 @@ export function cdnImage(src, width) {
 
   return optimized;
 }
+
+/**
+ * Build a responsive srcset for one of our uploaded images.
+ *
+ * Returns '' unless the CDN is enabled — the origin has no resized variants
+ * (only the full-size ~2560px "-scaled" file), so a srcset there would just
+ * repeat the same heavy URL. Once Bunny is on, this lets the browser pick the
+ * smallest sufficient width per viewport, which is the real mobile win: a
+ * 2-column phone grid then pulls ~30–40 KB images instead of the 200 KB+
+ * full-size file the fixed `width` prop would otherwise request.
+ *
+ * @param {string} src      image path or absolute URL
+ * @param {number[]} widths candidate render widths (device px)
+ */
+export function cdnSrcset(src, widths = [320, 480, 640, 960, 1280, 1600]) {
+  if (!CDN_BASE || !src || typeof src !== 'string') return '';
+  if (src.startsWith('data:') || src.startsWith('blob:')) return '';
+  const path = src.replace(ORIGIN_RE, '');
+  if (!path.startsWith('/wp-content/')) return '';
+  const optimized = path.replace(/\.jpe?g$/i, '.webp');
+  const base = CDN_BASE.replace(/\/+$/, '') + optimized;
+  return widths.map(w => `${base}?width=${w} ${w}w`).join(', ');
+}

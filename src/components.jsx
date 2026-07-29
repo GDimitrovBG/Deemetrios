@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import i18n from './i18n';
 import { COLLECTIONS } from './data';
-import { cdnImage } from './cdn';
+import { cdnImage, cdnSrcset } from './cdn';
 
 // =====================================================
 //  Shared components: Nav, Footer, Image placeholders
@@ -14,7 +14,7 @@ function useImageBg(src) {
   return { backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 }
 
-function Img({ src, label, alt, className = "", style = {}, priority = false, width, height }) {
+function Img({ src, label, alt, className = "", style = {}, priority = false, width, height, sizes }) {
   const [errored, setErrored] = useState(false);
   const a = alt ?? label ?? "";
   if (!src || errored) {
@@ -27,10 +27,14 @@ function Img({ src, label, alt, className = "", style = {}, priority = false, wi
       ></div>
     );
   }
+  // Responsive srcset is only meaningful once the CDN is enabled (see cdn.js).
+  // Without it, srcSet is '' and the browser just uses `src` as today.
+  const srcSet = cdnSrcset(src);
   return (
     <div className={`ph ph-img ${className}`} style={style}>
       <img
         src={cdnImage(src, width)}
+        {...(srcSet ? { srcSet, sizes: sizes || "(max-width: 768px) 50vw, 25vw" } : {})}
         alt={a}
         width={width}
         height={height}

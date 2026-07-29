@@ -804,6 +804,29 @@ function CollectionGrid({ items, lang, gridCols, goProduct, favorites, toggleFav
   );
 }
 
+// Related products for the "you may also like" block. Prefers the same
+// collection + silhouette, then same collection, then the rest — and rotates
+// the tie-break by the current ref so different products surface different
+// neighbours. This spreads internal-link equity across the whole catalogue
+// (helping thin product pages get crawled & indexed) instead of always linking
+// the same first four dresses on every single product page.
+function refSeed(ref) {
+  return String(ref).split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0);
+}
+function getRelatedDresses(current, count = 4) {
+  const seed = refSeed(current.ref);
+  return DRESSES
+    .filter(d => d.ref !== current.ref)
+    .map(d => ({
+      d,
+      rel: (d.collection === current.collection ? 2 : 0) + (d.silhouette === current.silhouette ? 1 : 0),
+      spread: (refSeed(d.ref) ^ seed) >>> 0,
+    }))
+    .sort((a, b) => b.rel - a.rel || a.spread - b.spread)
+    .slice(0, count)
+    .map(x => x.d);
+}
+
 function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct }) {
   const t = i18n[lang];
   const [lightboxIdx, setLightboxIdx] = useState(null);
@@ -859,7 +882,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         </div>
         <div className="product-main">
           <div className="product-gallery">
-            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} />
+            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} sizes="(max-width: 768px) 100vw, 55vw" />
             {galleryImgs.slice(1, 4).map((imgSrc, i) => (
               <Img key={i} src={imgSrc} alt={getProductAlt(dress, lang, i + 1)} className="thumb" style={{ cursor: "zoom-in" }} width={600} height={800} />
             ))}
@@ -900,7 +923,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <span className="t-meta">— Demetrios 2026</span>
           </div>
           <div className="dress-grid dress-grid--4">
-            {DRESSES.filter(d => d.ref !== dress.ref).slice(0, 4).map((d) => (
+            {getRelatedDresses(dress, 4).map((d) => (
               <DressCard key={d.ref} d={d} lang={lang} onClick={() => { goProduct && goProduct(d.ref); window.scrollTo(0, 0); }} isFav={favorites.includes(d.ref)} toggleFavorite={toggleFavorite} />
             ))}
           </div>
