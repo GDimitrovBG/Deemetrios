@@ -37,7 +37,10 @@ if (!dir) {
   process.exit(1);
 }
 
-const EXT = /\.(jpe?g|png)$/i;
+// WebP is included because the storefront serves the .webp twins on-page
+// (see cdn.js) — those are the files that actually reach visitors, so they
+// are the ones worth shrinking.
+const EXT = /\.(jpe?g|png|webp)$/i;
 let scanned = 0, changed = 0, beforeBytes = 0, afterBytes = 0, skipped = 0, errors = 0;
 
 async function walk(d) {
@@ -54,15 +57,18 @@ async function optimize(file) {
     const before = (await fs.stat(file)).size;
     const img = sharp(file, { failOn: 'none' });
     const meta = await img.metadata();
-    const isJpeg = /jpe?g/i.test(meta.format || '');
+    const fmt = (meta.format || '').toLowerCase();
+    const isJpeg = /jpe?g/.test(fmt);
+    const isWebp = fmt === 'webp';
     const tooWide = meta.width && meta.width > MAX_WIDTH;
 
-    // Build pipeline: resize if wide, always recompress.
+    // Build pipeline: resize if wide, always recompress. Output format always
+    // matches the input so file extensions/URLs stay identical.
     let pipe = sharp(file, { failOn: 'none' }).rotate(); // honour EXIF orientation
     if (tooWide) pipe = pipe.resize({ width: MAX_WIDTH, withoutEnlargement: true });
-    pipe = isJpeg
-      ? pipe.jpeg({ quality: QUALITY, mozjpeg: true })
-      : pipe.png({ quality: QUALITY, compressionLevel: 9 });
+    pipe = isJpeg ? pipe.jpeg({ quality: QUALITY, mozjpeg: true })
+         : isWebp ? pipe.webp({ quality: QUALITY })
+         :          pipe.png({ quality: QUALITY, compressionLevel: 9 });
 
     const buf = await pipe.toBuffer();
 
