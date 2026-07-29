@@ -42,8 +42,11 @@
   <link rel="preconnect" href="https://demetriosbride-bg.com" crossorigin />
   <link rel="dns-prefetch" href="https://demetriosbride-bg.com" />
 
-  <!-- Preload hero image for fastest LCP on home page -->
-  <link rel="preload" as="image" href="https://demetriosbride-bg.com/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.webp" fetchpriority="high" />
+  <!-- Preload hero image for fastest LCP on home page.
+       Must match the DEFAULT hero variant ("split" → HomeHeroV2, which renders
+       hero2). Preloading a non-displayed image just wastes the high-priority
+       fetch and delays the real LCP element on mobile. -->
+  <link rel="preload" as="image" href="https://demetriosbride-bg.com/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled.webp" fetchpriority="high" />
 
   <!--
     CRITICAL fonts (block render): Italiana + Cormorant + Jost

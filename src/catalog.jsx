@@ -4,7 +4,7 @@ import i18n from './i18n';
 import { IMG, DRESSES, ACCESSORIES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { DressCard } from './home';
-import { useSeo, productSchema, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
+import { useSeo, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
 import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs } from './seo-helpers';
 
@@ -69,6 +69,7 @@ const SILHOUETTE_KEY = {
 
 const COLLECTION_FAQ = {
   bg: [
+    { q: "Къде да намеря сватбени рокли в София?", a: "Салонът на Арети се намира в кв. Лозенец, София (ул. Крум Попов 63) и предлага над 100 сватбени и булчински рокли на място — оригинални модели Demetrios в 5 силуета и 4 колекции. Можете да пробвате неограничен брой рокли по предварителен час, а всички корекции се извършват в ателието на място." },
     { q: "Колко струват булчинските рокли в Арети?", a: "Цените на булчинските рокли в Арети варират в зависимост от колекцията: Cosmobella от 1 000 до 1 800 €, Demetrios от 1 500 до 2 800 €, Destination Romance от 1 200 до 2 000 €, а Demetrios Platinum — от 2 500 до 4 000 €. В цената са включени консултация с личен стилист и една безплатна корекция." },
     { q: "Какви силуети булчински рокли предлагате?", a: "В салона в София разполагаме с над 100 рокли в 5 основни силуета: А-силует (универсален и флатериращ), русалка (подчертава извивките), принцеса (обемна пола с корсет), права линия (елегантен минимализъм) и бохо (леки материи и свободни кройки). Всеки силует е достъпен в различни тъкани — от дантела и тюл до коприна и сатен." },
     { q: "Кога да започна търсенето на сватбена рокля?", a: "Препоръчваме да започнете 8 до 12 месеца преди сватбата. Ако избраната рокля не е налична в шоурума, поръчката от Demetrios отнема 3–4 месеца, плюс 1–2 месеца за корекции. За по-спешни случаи имаме рокли в наличност, които могат да бъдат коригирани за 2–3 седмици." },
@@ -80,6 +81,7 @@ const COLLECTION_FAQ = {
     { q: "Давате ли булчински рокли под наем?", a: "Арети е салон за продажба на оригинални булчински рокли Demetrios, а не под наем. Вярваме, че роклята за най-важния ден трябва да е само ваша — ушита по вашата фигура и съхранена като спомен. За булки с по-ограничен бюджет предлагаме достъпната колекция Cosmobella от 1 000 € и периодични намаления на модели от предишни сезони, които често излизат по-изгодно от наема." },
   ],
   en: [
+    { q: "Where can I find wedding dresses in Sofia?", a: "Areti's salon is in Lozenets, Sofia (63 Krum Popov St) and carries over 100 wedding and bridal dresses on site — original Demetrios styles across 5 silhouettes and 4 collections. You can try on an unlimited number of gowns by appointment, and all alterations are done in our in-house atelier." },
     { q: "How much do wedding dresses cost at Areti?", a: "Prices vary by collection: Cosmobella from €1,000 to €1,800, Demetrios from €1,500 to €2,800, Destination Romance from €1,200 to €2,000, and Demetrios Platinum from €2,500 to €4,000. A consultation and one free alteration are included." },
     { q: "What silhouettes do you offer?", a: "We carry over 100 dresses in 5 silhouettes: A-line, mermaid, ball gown, column and boho. Each is available in various fabrics including lace, tulle, silk and satin." },
     { q: "When should I start looking for a wedding dress?", a: "We recommend starting 8–12 months before the wedding. Custom orders from Demetrios take 3–4 months, plus 1–2 months for alterations. For urgent timelines, we have in-stock dresses that can be altered within 2–3 weeks." },
@@ -503,7 +505,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           <h1>
             {silData ? (isBg ? silData.h1_bg : silData.h1_en)
               : activeColData ? activeColData.label
-              : <>{t.collection.title} <em>{t.collection.title_em}</em></>}
+              : (isBg ? <>Булчински и сватбени рокли <em>София</em></> : <>Wedding Dresses in <em>Sofia</em></>)}
           </h1>
           {silData ? (
             <p className="collection-intro">
@@ -810,7 +812,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   const isBg = lang === "bg";
   const heading = getProductHeading(dress, lang);
   const cardName = `Style ${dress.ref}`;
-  const productDescription = buildProductDescription(dress, lang) || (isBg ? (dress.description_bg || t.product.desc) : (dress.description_en || t.product.desc));
+  const productDescription = buildProductDescription(dress, lang) || t.product.desc;
   const productSpecs = buildProductSpecs(dress, lang);
   const colData = COLLECTIONS.find(c => c.id === dress.collection);
 

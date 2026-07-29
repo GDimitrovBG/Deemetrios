@@ -21,6 +21,9 @@ export default defineConfig({
           'admin': ['./src/admin.jsx'],
           // Blog data — shared between main bundle and admin, own chunk
           'blog-data': ['./src/blog_data.js'],
+          // Product catalog data — large, changes independently of app code,
+          // shared between the storefront and admin. Own chunk = better caching.
+          'catalog-data': ['./src/data.js'],
         },
       },
     },

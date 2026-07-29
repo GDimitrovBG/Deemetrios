@@ -1,15 +1,32 @@
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Nav, Footer, FloatDial } from './components';
-import { HomePage } from './home';
-import { CollectionPage, ProductPage, AccessoriesPage, WishlistPage } from './catalog';
-import { BookingPage } from './booking';
-import { AboutPage, ContactPage, BlogPage, BlogPostPage, DemetriosPage } from './info';
-import { PrivacyPage, TermsPage, CookiePolicyPage, CookieConsent, NotFoundPage } from './legal';
+// CookieConsent is always rendered, so legal.jsx (small) stays a static import.
+// The legal pages live in the same small file — import them statically too
+// (dynamic-importing them would not split, and would only add Suspense churn).
+import { CookieConsent, PrivacyPage, TermsPage, CookiePolicyPage, NotFoundPage } from './legal';
 import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
 import { useSeoInject } from './seo-inject';
 import { pathToState, stateToPath, readInitialState } from './router';
 
-// Heavy pages loaded only when needed
+// -----------------------------------------------------------------------------
+// Route pages are code-split so a visitor landing on the home page never
+// downloads the (large) catalog / booking / info bundles up front. Each page
+// file becomes its own chunk; Vite dedupes the dynamic import() so all exports
+// from the same file share one chunk. Big mobile Core-Web-Vitals win.
+// -----------------------------------------------------------------------------
+const HomePage        = lazy(() => import('./home').then(m => ({ default: m.HomePage })));
+const CollectionPage  = lazy(() => import('./catalog').then(m => ({ default: m.CollectionPage })));
+const ProductPage     = lazy(() => import('./catalog').then(m => ({ default: m.ProductPage })));
+const AccessoriesPage = lazy(() => import('./catalog').then(m => ({ default: m.AccessoriesPage })));
+const WishlistPage    = lazy(() => import('./catalog').then(m => ({ default: m.WishlistPage })));
+const BookingPage     = lazy(() => import('./booking').then(m => ({ default: m.BookingPage })));
+const AboutPage       = lazy(() => import('./info').then(m => ({ default: m.AboutPage })));
+const ContactPage     = lazy(() => import('./info').then(m => ({ default: m.ContactPage })));
+const BlogPage        = lazy(() => import('./info').then(m => ({ default: m.BlogPage })));
+const BlogPostPage    = lazy(() => import('./info').then(m => ({ default: m.BlogPostPage })));
+const DemetriosPage   = lazy(() => import('./info').then(m => ({ default: m.DemetriosPage })));
+
+// Admin panel — lazy loaded, only when #admin hash is used
 const AdminPanel = lazy(() => import('./admin'));
 
 // =====================================================
@@ -177,7 +194,11 @@ export default function App() {
   return (
     <>
       <Nav route={route} setRoute={setRoute} lang={lang} setLang={setLang} transparent={transparent} goCollection={goCollection} favorites={favorites} />
-      <main>{page}</main>
+      <main>
+        <Suspense fallback={<div style={{ minHeight: "70vh" }} aria-busy="true" />}>
+          {page}
+        </Suspense>
+      </main>
       <Footer lang={lang} setRoute={setRoute} />
       <FloatDial setRoute={setRoute} lang={lang} />
       <CookieConsent lang={lang} setRoute={setRoute} />
