@@ -97,6 +97,8 @@ async function run() {
   for (const id of SILHOUETTE_IDS) {
     out.push(urlBlock(`${SITE}/collection/silueti/${id}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }));
   }
+  // Free tool — high-intent landing page, worth a strong priority.
+  out.push(urlBlock(`${SITE}/kviz`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.8' }));
   for (const p of ['/accessories', '/booking', '/about', '/demetrios', '/contact', '/blog']) {
     out.push(urlBlock(`${SITE}${p}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }));
   }

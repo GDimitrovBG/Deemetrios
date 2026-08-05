@@ -115,6 +115,7 @@ export function pathToState(pathname) {
     return { redirect: '/collection' };
   }
 
+  if (p === '/kviz')        return { route: 'quiz' };
   if (p === '/accessories') return { route: 'accessories' };
   if (p === '/booking')     return { route: 'booking' };
   if (p === '/wishlist')    return { route: 'wishlist' };
@@ -159,6 +160,7 @@ export function stateToPath({ route, collectionId, productRef, blogPostId, silho
       if (silhouetteId) return `/collection/silueti/${silhouetteId}`;
       return collectionId ? `/collection/${collectionId}` : '/collection';
     case 'product':     return productRef ? `/product/${productRef}` : '/collection';
+    case 'quiz':        return '/kviz';
     case 'accessories': return '/accessories';
     case 'booking':     return '/booking';
     case 'wishlist':    return '/wishlist';

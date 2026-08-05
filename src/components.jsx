@@ -271,7 +271,7 @@ function Footer({ lang, setRoute }) {
           <div>
             <h4>{t.help}</h4>
             <ul>{t.help_links.map((x, i) => {
-              const routes = ["booking", "contact", "terms", "privacy", "cookies"];
+              const routes = ["booking", "quiz", "contact", "terms", "privacy", "cookies"];
               const r = routes[i] || "contact";
               return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
             })}</ul>

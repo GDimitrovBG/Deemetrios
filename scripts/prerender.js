@@ -41,6 +41,7 @@ async function loadRoutes() {
     '/collection/silueti/rusalka',
     '/collection/silueti/printsesa',
     '/collection/silueti/a-siluet',
+    '/kviz',
     '/accessories',
     '/booking',
     '/about',

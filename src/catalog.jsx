@@ -163,6 +163,15 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
         );})}
       </div>
 
+      {/* Free-tool cross-link: the quiz is a strong next step for a visitor
+          still deciding, and a useful internal link into the product pages. */}
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 40 }}>
+        {isBg ? "Не сте сигурна кой силует ви отива? " : "Not sure which silhouette suits you? "}
+        <a href="/kviz" onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
+          {isBg ? "Направете безплатния тест за булчинска рокля →" : "Take the free wedding dress quiz →"}
+        </a>
+      </p>
+
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
         {isBg ? "Цени на булчинските рокли" : "Wedding dress prices"}
       </h2>
