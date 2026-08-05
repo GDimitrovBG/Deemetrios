@@ -5,6 +5,7 @@ import { DRESSES, COLLECTIONS } from './data';
 import { useSeo, orgSchema, breadcrumbSchema } from './seo';
 import { faqSchema } from './seo-helpers';
 import { createBooking } from './api';
+import { getAttributionPayload } from './attribution';
 
 // =====================================================
 //  BOOKING — 4-step reservation flow
@@ -589,6 +590,8 @@ function BookingPage({ lang, setRoute, dress = null }) {
                   notes: data.notes || "",
                   dressRefs: dressRefs || [],
                   status: "new",
+                  // Where this lead came from (FB ad vs organic vs direct …).
+                  attribution: getAttributionPayload(),
                 };
                 createBooking(booking).catch(() => {});
                 sendBookingEmails(booking, lang);

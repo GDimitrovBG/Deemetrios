@@ -7,10 +7,33 @@ const router = Router();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Attribution arrives from the public form, so treat it as untrusted: keep only
+// known keys and hard-cap every string. Never let a marketing field bloat the
+// document or smuggle markup into the admin email.
+const TOUCH_KEYS = ['source','medium','campaign','content','term','gclid','fbclid','referrer','landing','ts'];
+function cleanTouch(t) {
+  if (!t || typeof t !== 'object') return undefined;
+  const out = {};
+  let any = false;
+  for (const k of TOUCH_KEYS) {
+    if (t[k] != null && t[k] !== '') { out[k] = String(t[k]).slice(0, 200); any = true; }
+  }
+  return any ? out : undefined;
+}
+function cleanAttribution(a) {
+  if (!a || typeof a !== 'object') return undefined;
+  const first = cleanTouch(a.first);
+  const last  = cleanTouch(a.last);
+  const label = a.label ? String(a.label).slice(0, 200) : '';
+  const lastLabel = a.lastLabel ? String(a.lastLabel).slice(0, 200) : '';
+  if (!first && !last && !label) return undefined;
+  return { first, last, label, lastLabel };
+}
+
 // Public: create booking (from website form)
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, type, location, date, time, dressRefs, budget, notes } = req.body;
+    const { name, email, phone, type, location, date, time, dressRefs, budget, notes, attribution } = req.body;
     if (!name || !email) {
       return res.status(400).json({ error: 'Име и email са задължителни' });
     }
@@ -31,6 +54,7 @@ router.post('/', async (req, res) => {
       notes:    notes  ? String(notes).trim()  : undefined,
       type, location, date, time,
       dressRefs: dressRefs || [], budget,
+      attribution: cleanAttribution(attribution),
     });
     res.status(201).json(booking);
 

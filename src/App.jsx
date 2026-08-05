@@ -7,6 +7,12 @@ import { CookieConsent, PrivacyPage, TermsPage, CookiePolicyPage, NotFoundPage }
 import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
 import { useSeoInject } from './seo-inject';
 import { pathToState, stateToPath, readInitialState } from './router';
+import { captureAttribution } from './attribution';
+
+// Record where this visit came from (UTM / ad-click / referrer) as early as
+// possible — before the first client-side navigation rewrites the URL and
+// drops the query string. First-touch is kept for the whole session.
+captureAttribution();
 
 // -----------------------------------------------------------------------------
 // Route pages are code-split so a visitor landing on the home page never

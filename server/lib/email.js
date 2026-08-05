@@ -58,9 +58,27 @@ export function bookingAdminEmail(b) {
     `<tr><td style="width:130px;font-weight:600;padding:2px 0;">${label}</td><td>${value}</td></tr>`;
   const dresses = Array.isArray(b.dressRefs) && b.dressRefs.length
     ? esc(b.dressRefs.join(', ')) : '—';
+
+  // Lead source banner — the single most useful thing to see at a glance.
+  const attr = b.attribution || {};
+  let sourceBanner = '';
+  if (attr.label) {
+    const extra = attr.lastLabel ? `<div style="font-size:12px;opacity:0.8;margin-top:2px;">Преди заявката: ${esc(attr.lastLabel)}</div>` : '';
+    const f = attr.first || {};
+    const detail = [f.campaign && `кампания: ${f.campaign}`, f.content && `реклама: ${f.content}`, f.landing && `вход: ${f.landing}`]
+      .filter(Boolean).map(esc).join(' · ');
+    sourceBanner = `
+      <div style="background:#f4ecdd;border-left:4px solid #c4a373;padding:12px 16px;margin:0 0 20px;border-radius:4px;">
+        <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a7556;">Източник на запитването</div>
+        <div style="font-size:16px;font-weight:600;margin-top:3px;">${esc(attr.label)}</div>
+        ${detail ? `<div style="font-size:12px;color:#6a5d48;margin-top:2px;">${detail}</div>` : ''}
+        ${extra}
+      </div>`;
+  }
   return `
     <div style="font-family:Arial,sans-serif;max-width:560px;color:#1a1612;">
       <h2 style="margin:0 0 16px;font-size:20px;">🗓 Нова заявка за консултация</h2>
+      ${sourceBanner}
       <table style="width:100%;font-size:14px;line-height:1.9;border-collapse:collapse;">
         ${row('Име', esc(b.name) || '—')}
         ${row('Имейл', b.email ? `<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>` : '—')}

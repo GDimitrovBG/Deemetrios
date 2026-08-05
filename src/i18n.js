@@ -287,6 +287,7 @@ const i18n = {
             paragraphs: [
               "Лични данни, предоставени от вас: име, телефон, имейл адрес, дата на сватба и бележки при резервация на час за проба.",
               "Автоматично събирани данни: IP адрес, тип на браузъра, операционна система, посетени страници, времетраене на посещението — чрез бисквитки и Google Analytics.",
+              "Източник на посещението: при резервация на час записваме от кой канал сте достигнали до сайта (напр. реклама, търсачка, социална мрежа или директно), чрез UTM параметри и данни за препращащата страница. Това ни помага да преценим кои маркетингови канали работят. Тези данни се пазят заедно със заявката и не се използват за индивидуално профилиране.",
               "Не събираме чувствителни лични данни (здравни, биометрични, генетични).",
             ],
           },
@@ -760,6 +761,7 @@ const i18n = {
             paragraphs: [
               "Personal data you provide: name, phone, email address, wedding date, and notes when booking a fitting appointment.",
               "Automatically collected data: IP address, browser type, operating system, pages visited, visit duration — via cookies and Google Analytics.",
+              "Visit source: when you book an appointment we record which channel brought you to the site (e.g. an ad, search engine, social network or direct), using UTM parameters and referrer data. This helps us judge which marketing channels work. It is stored alongside the request and is not used for individual profiling.",
               "We do not collect sensitive personal data (health, biometric, genetic).",
             ],
           },

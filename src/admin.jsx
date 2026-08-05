@@ -439,6 +439,33 @@ function Dashboard({ bookings, products, articles, user }) {
     { label:"Статии",           value:articles.length, sub:"публикувани",    color:"#7cc48a" },
   ];
   const recent = [...bookings].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
+
+  // Lead-source breakdown — answers "how many inquiries come from paid ads vs
+  // organic" at a glance. Grouped by the attribution `kind` inferred client-side.
+  const KIND_META = {
+    paid:           { label:"Платена реклама",  color:"#c47c7c" },
+    campaign:       { label:"Кампания (UTM)",   color:"#c4a373" },
+    organic_social: { label:"Социални (орг.)",  color:"#7ca3c4" },
+    organic_search: { label:"Търсене (орг.)",   color:"#7cc48a" },
+    referral:       { label:"Реферал",          color:"#9a8ac4" },
+    direct:         { label:"Директно",         color:"#888" },
+    unknown:        { label:"Без данни",        color:"#666" },
+  };
+  const kindOf = (b) => {
+    const l = b.attribution?.label || "";
+    if (!l) return "unknown";
+    if (l.startsWith("Платена") || l.startsWith("Google Ads")) return "paid";
+    if (l.startsWith("Кампания")) return "campaign";
+    if (l.startsWith("Facebook") || l.startsWith("Instagram")) return "organic_social";
+    if (l.startsWith("Органично")) return "organic_search";
+    if (l.startsWith("Реферал")) return "referral";
+    if (l.startsWith("Директно")) return "direct";
+    return "unknown";
+  };
+  const sourceCounts = bookings.reduce((acc,b)=>{ const k=kindOf(b); acc[k]=(acc[k]||0)+1; return acc; },{});
+  const sourceRows = Object.entries(sourceCounts).sort((a,b)=>b[1]-a[1]);
+  const withData = bookings.filter(b=>b.attribution?.label).length;
+
   return (
     <div className="adm-section">
       <h2 className="adm-section-title">Табло</h2>
@@ -454,6 +481,28 @@ function Dashboard({ bookings, products, articles, user }) {
           </div>
         ))}
       </div>
+
+      {withData > 0 && (
+        <>
+          <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:12 }}>
+            {sourceRows.map(([k,n]) => {
+              const m = KIND_META[k] || KIND_META.unknown;
+              const pct = Math.round(n/bookings.length*100);
+              return (
+                <div key={k} className="adm-stat-card" style={{ minWidth:150, flex:"0 1 auto" }}>
+                  <div className="adm-stat-value" style={{ color:m.color, fontSize:28 }}>{n}</div>
+                  <div className="adm-stat-label">{m.label}</div>
+                  <div className="adm-stat-sub">{pct}% от всички</div>
+                </div>
+              );
+            })}
+          </div>
+          <p style={{ color:"#666", fontSize:12, marginTop:10 }}>
+            С данни за източник: {withData} от {bookings.length}. По-старите запитвания нямат — броят расте от вкл. на проследяването.
+          </p>
+        </>
+      )}
       <h3 className="adm-subtitle" style={{ marginTop:40 }}>Последни резервации</h3>
       {recent.length === 0
         ? <p className="adm-empty">Все още няма резервации.</p>
@@ -520,6 +569,18 @@ function BookingsSection({ bookings, reload }) {
                     <div><span className="adm-lbl">Час</span> {b.time}</div>
                   </div>
                   {b.budget && <div style={{marginTop:8}}><span className="adm-lbl">Бюджет:</span> {b.budget}</div>}
+                  {b.attribution?.label && (
+                    <div style={{marginTop:10,padding:"8px 12px",background:"rgba(196,163,115,0.12)",borderLeft:"3px solid #c4a373",borderRadius:4}}>
+                      <span className="adm-lbl">Източник:</span>{" "}
+                      <strong style={{color:"#e8d5b0"}}>{b.attribution.label}</strong>
+                      {b.attribution.lastLabel && (
+                        <div style={{fontSize:12,color:"#999",marginTop:2}}>Преди заявката: {b.attribution.lastLabel}</div>
+                      )}
+                      {b.attribution.first?.landing && (
+                        <div style={{fontSize:12,color:"#888",marginTop:2}}>Вход: {b.attribution.first.landing}</div>
+                      )}
+                    </div>
+                  )}
                   {b.notes && <p style={{marginTop:8,color:"#aaa",fontSize:14,fontStyle:"italic",lineHeight:1.5}}>„{b.notes}"</p>}
                   {(b.dressRefs||[]).length>0&&(
                     <div style={{marginTop:12}}>
