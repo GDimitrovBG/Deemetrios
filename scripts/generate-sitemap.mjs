@@ -69,7 +69,9 @@ function urlBlock(loc, meta, def, images = []) {
   const changefreq = m.changefreq || def.changefreq;
   const priority   = m.priority   || def.priority;
   const imgXml = images.map(im =>
-    `\n    <image:image><image:loc>${im.loc}</image:loc><image:title>${esc(im.title)}</image:title></image:image>`
+    `\n    <image:image><image:loc>${im.loc}</image:loc><image:title>${esc(im.title)}</image:title>` +
+    (im.caption ? `<image:caption>${esc(im.caption)}</image:caption>` : '') +
+    `</image:image>`
   ).join('');
   return `  <url>
     <loc>${loc}</loc>
@@ -103,11 +105,13 @@ async function run() {
   }
 
   // --- Product pages (with image entries) ---------------------------------
+  // No cap: every gallery photo is a distinct, indexable asset for Google Images.
   for (const d of DRESSES) {
-    const imgs = (d.imgs && d.imgs.length ? d.imgs : [d.img]).filter(Boolean).slice(0, 6);
+    const imgs = (d.imgs && d.imgs.length ? d.imgs : [d.img]).filter(Boolean);
     const images = imgs.map((u, i) => ({
       loc: absImg(u),
       title: i === 0 ? heading(d) : `${heading(d)} — детайл ${i + 1}`,
+      caption: `${heading(d)} — булчински салон Арети, София`,
     }));
     out.push(urlBlock(`${SITE}/product/${d.ref}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, images));
   }

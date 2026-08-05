@@ -6,7 +6,7 @@ import { Img } from './components';
 import { DressCard } from './home';
 import { useSeo, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
-import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs } from './seo-helpers';
+import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle } from './seo-helpers';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -849,7 +849,9 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   })();
 
   useSeo({
-    title: isBg ? (dress.seo_title_bg || `${heading}`) : (dress.seo_title_en || `${heading}`),
+    // Attribute-based title (silhouette + fabric), not the stored seo_title_*
+    // templates — see buildProductTitle for why.
+    title: buildProductTitle(dress, lang),
     description: metaDesc || (isBg ? dress.seo_description_bg : dress.seo_description_en),
     image: dress.imgs?.[0] || dress.img,
     url: `/product/${dress.ref}`,

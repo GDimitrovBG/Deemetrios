@@ -30,6 +30,20 @@ function xmlEscape(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+//  NOTE — the canonical sitemap is the STATIC /sitemap.xml built at deploy time
+//  by scripts/generate-sitemap.mjs and served directly by Caddy. robots.txt
+//  below declares only that one.
+//
+//  The /api/sitemap*.xml endpoints here are kept for backwards compatibility
+//  but are no longer advertised, because:
+//    • they emitted <lastmod> = request time on every fetch, so every URL always
+//      looked "just modified" — Google learns to distrust lastmod entirely;
+//    • the storefront renders from src/data.js (not the DB), so a DB-driven
+//      sitemap can list URLs that differ from what is actually prerendered;
+//    • two overlapping sitemap sets are a conflicting signal.
+//  Declaring both was causing exactly that overlap. Keep one source of truth.
+// ─────────────────────────────────────────────────────────────────────────────
 router.get('/sitemap.xml', async (req, res) => {
   try {
     const doc = await Setting.findOne({ key: 'site' });
@@ -231,9 +245,7 @@ Allow: /
 # Context file for AI systems
 LLMs: ${SITE_URL}/llms.txt
 
-Sitemap: ${SITE_URL}/api/sitemap-index.xml
-Sitemap: ${SITE_URL}/api/sitemap.xml
-Sitemap: ${SITE_URL}/api/sitemap-images.xml
+Sitemap: ${SITE_URL}/sitemap.xml
 `;
     if (settings.robots_extra) {
       // Strip anything that isn't valid robots.txt content (printable ASCII + newlines)

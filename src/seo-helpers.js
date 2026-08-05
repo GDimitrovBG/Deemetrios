@@ -260,11 +260,80 @@ export function buildProductSpecs(p, lang = 'bg') {
 //  Display names — keyword-rich, used in H1 and cards
 // -----------------------------------------------------
 
-/** Long, keyword-rich heading used as H1 on product pages */
+// Silhouette wording that reads naturally inside a sentence/title.
+// "Булчинска рокля русалка" / "…тип принцеса" mirrors how the silhouette
+// landing pages already phrase it.
+const SIL_PHRASE_BG = {
+  'А-силует': 'А-силует',
+  'Русалка':  'русалка',
+  'Принцеса': 'принцеса',
+};
+const SIL_PHRASE_EN = {
+  'A-line':    'A-line',
+  'Mermaid':   'mermaid',
+  'Ball gown': 'ball gown',
+};
+
+/** Primary (first) fabric only — keeps titles short and scannable. */
+function primaryFabric(p, lang = 'bg') {
+  const raw = (p.fabric || '').split(',')[0].trim();
+  if (!raw) return '';
+  return localizeFabric(raw, lang).toLowerCase();
+}
+
+/**
+ * Title tag for a product page.
+ *
+ * The stored seo_title_* fields are templated ("Булчинска рокля 1500 |
+ * Demetrios | Арети София") — across 111 products they collapse to ~21
+ * distinct skeletons that differ only by a style number nobody searches for,
+ * which is a thin/near-duplicate signal and a likely cause of "crawled –
+ * currently not indexed".
+ *
+ * Instead we build the title from the attributes people actually search:
+ * silhouette + fabric ("булчинска рокля с дантела", "рокля русалка").
+ * The ref is kept for uniqueness and for brides comparing Demetrios styles.
+ */
+export function buildProductTitle(p, lang = 'bg') {
+  const t = T[lang] || T.bg;
+  const bg = lang !== 'en';
+  const kind = isEvening(p) ? t.evening : t.bridal;
+  const silRaw = (bg ? p.silhouette : p.silhouette_en) || '';
+  const sil = (bg ? SIL_PHRASE_BG : SIL_PHRASE_EN)[silRaw] || silRaw.toLowerCase();
+  const fabric = primaryFabric(p, lang);
+
+  // BG puts the silhouette after the noun ("рокля русалка"); EN puts it before
+  // ("Mermaid Wedding Dress"), so the two languages need different word order.
+  let base;
+  if (bg) {
+    base = [kind, sil].filter(Boolean).join(' ');
+    if (fabric) base += ` с ${fabric}`;
+  } else {
+    base = [cap(sil), kind].filter(Boolean).join(' ');
+    if (fabric) base += ` in ${cap(fabric)}`;
+  }
+  base += ` — ${p.ref}`;
+
+  // Keep the whole title inside Google's ~60-char display budget: use the full
+  // "Арети София" brand suffix when it fits, the short one when it doesn't.
+  const long = `${base} | ${t.salon}`;
+  if (long.length <= 60) return long;
+  const short = `${base} | ${bg ? 'Арети' : 'Areti'}`;
+  return short;
+}
+
+/**
+ * Long, keyword-rich heading used as H1 on product pages.
+ * Carries the silhouette (the strongest differentiating attribute) while
+ * staying short enough for the display typography.
+ */
 export function getProductHeading(p, lang = 'bg') {
   const t = T[lang] || T.bg;
+  const bg = lang !== 'en';
   const kind = isEvening(p) ? t.evening : t.bridal;
-  return `${kind} Style ${p.ref}`;
+  const silRaw = (bg ? p.silhouette : p.silhouette_en) || '';
+  const sil = (bg ? SIL_PHRASE_BG : SIL_PHRASE_EN)[silRaw] || silRaw.toLowerCase();
+  return sil ? `${kind} ${sil} — Style ${p.ref}` : `${kind} Style ${p.ref}`;
 }
 
 /** Short name for product cards in grids (clean visual) */
