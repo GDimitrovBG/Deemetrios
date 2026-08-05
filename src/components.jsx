@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import i18n from './i18n';
 import { COLLECTIONS } from './data';
 import { cdnImage, cdnSrcset } from './cdn';
+import { collectionLabel } from './seo-helpers';
 
 // =====================================================
 //  Shared components: Nav, Footer, Image placeholders
@@ -109,7 +110,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
                   </a>
                   {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
                     <a key={c.id} href={`/collection/${c.id}`} className="nd-item" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(c.id); }}>
-                      <span className="nd-label">{c.label}</span>
+                      <span className="nd-label">{collectionLabel(c, lang)}</span>
                       <span className="nd-desc">{lang === "bg" ? c.desc_bg.split("—")[0] : c.desc_en.split("—")[0]}</span>
                     </a>
                   ))}
@@ -159,7 +160,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
           </a>
           {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
             <a key={c.id} href={`/collection/${c.id}`} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(c.id); }}>
-              <span>{c.label}</span>
+              <span>{collectionLabel(c, lang)}</span>
             </a>
           ))}
           {/* Evening is a top-level nav item on desktop; add it to the mobile

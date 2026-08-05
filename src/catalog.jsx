@@ -6,7 +6,7 @@ import { Img } from './components';
 import { DressCard } from './home';
 import { useSeo, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
-import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle } from './seo-helpers';
+import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle, collectionLabel } from './seo-helpers';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -513,7 +513,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           <div className="t-eyebrow" style={{ marginBottom: 24 }}>{t.collection.crumb}</div>
           <h1>
             {silData ? (isBg ? silData.h1_bg : silData.h1_en)
-              : activeColData ? activeColData.label
+              : activeColData ? collectionLabel(activeColData, lang)
               : (isBg ? <>Булчински и сватбени рокли <em>София</em></> : <>Wedding Dresses in <em>Sofia</em></>)}
           </h1>
           {silData ? (
@@ -558,7 +558,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           </button>
           {COLLECTIONS.map(c => (
             <button key={c.id} className={`col-tab ${activeCol === c.id ? 'active' : ''}`} onClick={() => setActiveCol(c.id)}>
-              {c.label}
+              {collectionLabel(c, lang)}
             </button>
           ))}
         </div>
@@ -704,7 +704,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
                   </span>
                   {COLLECTIONS.map(c => (
                     <span key={c.id} className={`filter-pill ${activeCol === c.id ? "on" : ""}`} onClick={() => setActiveCol(c.id)}>
-                      {c.label}
+                      {collectionLabel(c, lang)}
                     </span>
                   ))}
                 </div>
@@ -767,7 +767,7 @@ function CollectionGrid({ items, lang, gridCols, goProduct, favorites, toggleFav
           <div className="col-divider-inner">
             <div style={{ height: 1, background: "var(--rule)", flex: 1 }} />
             <span style={{ fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: "clamp(14px, 1.5vw, 18px)", color: "var(--ink-soft)", whiteSpace: "nowrap", padding: "0 20px" }}>
-              {colData ? colData.label : d.collection}
+              {colData ? collectionLabel(colData, lang) : d.collection}
             </span>
             <div style={{ height: 1, background: "var(--rule)", flex: 1 }} />
           </div>
@@ -899,7 +899,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             ))}
             {galleryImgs.length > 4 && (
               <div className="thumb" style={{ background: "var(--bg-deep)", display: "grid", placeItems: "center", cursor: "pointer" }} onClick={() => setLightboxIdx(0)}>
-                <span style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--ink-soft)" }}>+ {galleryImgs.length - 4} снимки</span>
+                <span style={{ fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--ink-soft)" }}>+ {galleryImgs.length - 4} {isBg ? "снимки" : "photos"}</span>
               </div>
             )}
           </div>
@@ -946,6 +946,10 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         </section>
 
         {(() => {
+          // The blog is Bulgarian-only, so this block is hidden on /en pages —
+          // surfacing untranslated articles there would send English visitors
+          // to Bulgarian content and dilute the English locale.
+          if (!isBg) return null;
           const refLower = dress.ref.toLowerCase();
           const related = BLOG_POSTS.filter(p => p.relatedRefs && p.relatedRefs.some(r => r.toLowerCase() === refLower));
           if (!related.length) return null;
@@ -1026,7 +1030,7 @@ function AccessoriesPage({ lang, setRoute }) {
           <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 19, color: "var(--ink-soft)", marginTop: 24, maxWidth: 480 }}>{t.accessories.lede}</p>
         </div>
         <div className="meta-stack">
-          <div className="count">{items.length} продукта</div>
+          <div className="count">{items.length} {lang === "en" ? "products" : "продукта"}</div>
         </div>
       </div>
       <div style={{ display: "flex", gap: 4, padding: "32px var(--gutter)", maxWidth: "var(--maxw)", margin: "0 auto", flexWrap: "wrap" }}>

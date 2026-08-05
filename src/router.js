@@ -80,7 +80,43 @@ function normalize(pathname) {
   return p;
 }
 
+// -----------------------------------------------------------------------------
+//  Language prefix. Bulgarian is the default locale and keeps its bare URLs
+//  (they carry all current rankings — never move them). English lives under
+//  /en/*. The blog is deliberately excluded: none of the 14 posts are
+//  translated, and publishing untranslated locale pages is worse than not
+//  having them, so /en/blog* folds back to the Bulgarian blog.
+// -----------------------------------------------------------------------------
+export const LANGS = ['bg', 'en'];
+
+export function splitLang(pathname) {
+  const p = normalize(pathname);
+  if (p === '/en') return { lang: 'en', path: '/' };
+  if (p.startsWith('/en/')) return { lang: 'en', path: p.slice(3) };
+  return { lang: 'bg', path: p };
+}
+
+/** Prefix a Bulgarian path with the locale (no-op for bg). */
+export function withLang(path, lang) {
+  if (lang !== 'en') return path;
+  return path === '/' ? '/en' : `/en${path}`;
+}
+
+/** Routes that exist only in Bulgarian. */
+const BG_ONLY = (route) => route === 'blog' || route === 'blog-post';
+
 export function pathToState(pathname) {
+  const { lang, path } = splitLang(pathname);
+  const s = pathToStateInner(path);
+
+  if (s.redirect) return { ...s, redirect: withLang(s.redirect, lang), lang };
+  // English has no blog — send those URLs to the Bulgarian originals rather
+  // than serving an untranslated page.
+  if (lang === 'en' && BG_ONLY(s.route)) return { redirect: path, lang: 'bg' };
+  return { ...s, lang };
+}
+
+function pathToStateInner(pathname) {
   const p = normalize(pathname);
 
   if (WP_REDIRECTS[p] !== undefined) return { redirect: WP_REDIRECTS[p] };
@@ -153,7 +189,13 @@ export function pathToState(pathname) {
   return { route: 'not-found' };
 }
 
-export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId }) {
+export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId, lang = 'bg' }) {
+  const path = stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId });
+  // The blog is Bulgarian-only, so it never takes the /en prefix.
+  return BG_ONLY(route) ? path : withLang(path, lang);
+}
+
+function stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId }) {
   switch (route) {
     case 'home':        return '/';
     case 'collection':

@@ -63,7 +63,15 @@ function heading(d) {
   return `${kind} Style ${d.ref} — Demetrios | Арети София`;
 }
 
-function urlBlock(loc, meta, def, images = []) {
+/**
+ * One <url> block.
+ *
+ * `bgPath` (when given) means the page exists in both locales: we emit the
+ * Bulgarian and English <xhtml:link> alternates plus x-default, on BOTH the
+ * bg and en entries. Each URL must list itself as well, or Google discards
+ * the whole cluster.
+ */
+function urlBlock(loc, meta, def, images = [], bgPath = null) {
   const m = meta[loc] || {};
   const lastmod    = m.lastmod    || def.lastmod;
   const changefreq = m.changefreq || def.changefreq;
@@ -73,11 +81,20 @@ function urlBlock(loc, meta, def, images = []) {
     (im.caption ? `<image:caption>${esc(im.caption)}</image:caption>` : '') +
     `</image:image>`
   ).join('');
+  let altXml = '';
+  if (bgPath) {
+    const bgUrl = `${SITE}${bgPath}`;
+    const enUrl = `${SITE}${bgPath === '/' ? '/en' : `/en${bgPath}`}`;
+    altXml =
+      `\n    <xhtml:link rel="alternate" hreflang="bg" href="${bgUrl}"/>` +
+      `\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>` +
+      `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${bgUrl}"/>`;
+  }
   return `  <url>
     <loc>${loc}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>${imgXml}
+    <priority>${priority}</priority>${altXml}${imgXml}
   </url>`;
 }
 
@@ -88,23 +105,38 @@ async function run() {
   const today = new Date().toISOString().slice(0, 10);
   const out = [];
 
+  // Emits the Bulgarian URL and its English twin, each carrying the full
+  // hreflang set. Used for every page that exists in both locales.
+  const pair = (path, def, images = []) => {
+    out.push(urlBlock(`${SITE}${path}`, meta, def, images, path));
+    const enPath = path === '/' ? '/en' : `/en${path}`;
+    // English is the secondary locale — slightly lower priority than its
+    // Bulgarian twin so crawl budget favours the primary market. Images are
+    // listed once, on the Bulgarian entry: the same photo under two URLs
+    // would only double the file with no extra discovery.
+    const enPriority = String(Math.max(0.1, Number(def.priority) - 0.1).toFixed(1));
+    out.push(urlBlock(`${SITE}${enPath}`, meta, { ...def, priority: enPriority }, [], path));
+  };
+
   // --- Static pages -------------------------------------------------------
-  out.push(urlBlock(`${SITE}/`, meta, { lastmod: today, changefreq: 'weekly', priority: '1.0' }));
-  out.push(urlBlock(`${SITE}/collection`, meta, { lastmod: today, changefreq: 'weekly', priority: '0.9' }));
+  pair('/', { lastmod: today, changefreq: 'weekly', priority: '1.0' });
+  pair('/collection', { lastmod: today, changefreq: 'weekly', priority: '0.9' });
   for (const id of COLLECTION_IDS) {
-    out.push(urlBlock(`${SITE}/collection/${id}`, meta, { lastmod: today, changefreq: 'weekly', priority: '0.8' }));
+    pair(`/collection/${id}`, { lastmod: today, changefreq: 'weekly', priority: '0.8' });
   }
   for (const id of SILHOUETTE_IDS) {
-    out.push(urlBlock(`${SITE}/collection/silueti/${id}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }));
+    pair(`/collection/silueti/${id}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
   }
   // Free tool — high-intent landing page, worth a strong priority.
-  out.push(urlBlock(`${SITE}/kviz`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.8' }));
-  for (const p of ['/accessories', '/booking', '/about', '/demetrios', '/contact', '/blog']) {
-    out.push(urlBlock(`${SITE}${p}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }));
+  pair('/kviz', { lastmod: today, changefreq: 'monthly', priority: '0.8' });
+  for (const p of ['/accessories', '/booking', '/about', '/demetrios', '/contact']) {
+    pair(p, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
   }
   for (const p of ['/privacy', '/terms', '/cookies']) {
-    out.push(urlBlock(`${SITE}${p}`, meta, { lastmod: today, changefreq: 'yearly', priority: '0.3' }));
+    pair(p, { lastmod: today, changefreq: 'yearly', priority: '0.3' });
   }
+  // Blog is Bulgarian-only (no post is translated) — no /en twin, no hreflang.
+  out.push(urlBlock(`${SITE}/blog`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }));
 
   // --- Product pages (with image entries) ---------------------------------
   // No cap: every gallery photo is a distinct, indexable asset for Google Images.
@@ -115,10 +147,10 @@ async function run() {
       title: i === 0 ? heading(d) : `${heading(d)} — детайл ${i + 1}`,
       caption: `${heading(d)} — булчински салон Арети, София`,
     }));
-    out.push(urlBlock(`${SITE}/product/${d.ref}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, images));
+    pair(`/product/${d.ref}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, images);
   }
 
-  // --- Blog posts ---------------------------------------------------------
+  // --- Blog posts (Bulgarian only) ----------------------------------------
   for (const b of BLOG_POSTS) {
     const slug = b.slug ? `/blog/${b.slug}` : `/blog/${b.id}`;
     const images = b.image ? [{ loc: absImg(b.image), title: esc(b.title || 'Блог — Арети') }] : [];
@@ -126,7 +158,7 @@ async function run() {
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${out.join('\n')}
 </urlset>
 `;

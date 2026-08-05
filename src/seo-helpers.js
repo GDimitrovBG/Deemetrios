@@ -7,7 +7,9 @@
 import { COLLECTIONS, DRESSES } from './data';
 import { SITE_URL, SITE_NAME, DEFAULT_IMG, DEFAULT_DESC, REVIEW_RATING, REVIEW_COUNT } from './seo';
 
-const COLLECTION_LABEL = Object.fromEntries(COLLECTIONS.map(c => [c.id, c.label]));
+const COLLECTION_BY_ID = Object.fromEntries(COLLECTIONS.map(c => [c.id, c]));
+// Language-aware lookup — "Вечерни рокли" must not leak into English copy.
+const collLabelById = (id, lang) => collectionLabel(COLLECTION_BY_ID[id], lang);
 
 // Translation strings reused across SEO helpers
 const T = {
@@ -30,6 +32,18 @@ const T = {
 };
 
 const isEvening = p => p?.collection === 'evening';
+
+/**
+ * Display label for a collection in the current language.
+ * Most collections are brand names (Cosmobella, Demetrios Platinum…) and are
+ * identical in both languages; only "Вечерни рокли" needs a translation, via
+ * an optional label_en. Untranslated UI on the /en pages is exactly the
+ * "boilerplate-only translation" signal we want to avoid.
+ */
+export function collectionLabel(c, lang = 'bg') {
+  if (!c) return '';
+  return (lang === 'en' && c.label_en) ? c.label_en : c.label;
+}
 
 // -----------------------------------------------------
 //  Fabric localisation — the dress data stores fabric names in English
@@ -210,7 +224,7 @@ export function buildProductDescription(p, lang = 'bg') {
   const t = T[lang] || T.bg;
   const evening = isEvening(p);
   const kind = evening ? t.evening : t.bridal;
-  const coll = COLLECTION_LABEL[p.collection] || 'Demetrios';
+  const coll = collLabelById(p.collection, lang) || 'Demetrios';
   const silKey = (lang === 'bg' ? p.silhouette : p.silhouette_en) || '';
   const fabric = localizeFabric(p.fabric || '', lang).toLowerCase();
   const h = refHash(p.ref);
@@ -244,7 +258,7 @@ export function buildProductDescription(p, lang = 'bg') {
 export function buildProductSpecs(p, lang = 'bg') {
   if (!p) return [];
   const bg = lang === 'bg';
-  const collLabel = COLLECTION_LABEL[p.collection] || 'Demetrios';
+  const collLabel = collLabelById(p.collection, lang) || 'Demetrios';
   const silhouette = (bg ? p.silhouette : p.silhouette_en) || '';
   const fabric = localizeFabric(p.fabric || '', lang);
   const rows = [
@@ -333,7 +347,12 @@ export function getProductHeading(p, lang = 'bg') {
   const kind = isEvening(p) ? t.evening : t.bridal;
   const silRaw = (bg ? p.silhouette : p.silhouette_en) || '';
   const sil = (bg ? SIL_PHRASE_BG : SIL_PHRASE_EN)[silRaw] || silRaw.toLowerCase();
-  return sil ? `${kind} ${sil} — Style ${p.ref}` : `${kind} Style ${p.ref}`;
+  if (!sil) return `${kind} Style ${p.ref}`;
+  // Same word-order split as buildProductTitle: "Булчинска рокля русалка" vs
+  // "Mermaid Wedding Dress".
+  return bg
+    ? `${kind} ${sil} — Style ${p.ref}`
+    : `${cap(sil)} ${kind} — Style ${p.ref}`;
 }
 
 /** Short name for product cards in grids (clean visual) */
@@ -355,7 +374,7 @@ export function getProductAlt(p, lang = 'bg', idx = 0) {
   if (!p) return '';
   const t = T[lang] || T.bg;
   const kind = isEvening(p) ? t.evening : t.bridal;
-  const collLabel = COLLECTION_LABEL[p.collection] || '';
+  const collLabel = collLabelById(p.collection, lang) || '';
   const silhouette = (lang === 'bg' ? p.silhouette : p.silhouette_en) || '';
   const fabric = localizeFabric(p.fabric || '', lang);
 
@@ -389,7 +408,7 @@ export function getAccessoryAlt(a, lang = 'bg') {
  */
 export function enhancedProductSchema(p, lang = 'bg') {
   const t = T[lang] || T.bg;
-  const collLabel = COLLECTION_LABEL[p.collection] || 'Demetrios';
+  const collLabel = collLabelById(p.collection, lang) || 'Demetrios';
   const heading = getProductHeading(p, lang);
   // Use the unique generated description so each Product node differs —
   // identical schema descriptions are a thin-content signal.

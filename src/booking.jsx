@@ -555,10 +555,10 @@ function BookingPage({ lang, setRoute, dress = null }) {
     return m;
   }, [data]);
 
-  if (done) return <BookingShell t={t}><Confirmation t={t} data={data} setRoute={setRoute} lang={lang} dressRefs={dressRefs} /></BookingShell>;
+  if (done) return <BookingShell t={t} lang={lang}><Confirmation t={t} data={data} setRoute={setRoute} lang={lang} dressRefs={dressRefs} /></BookingShell>;
 
   return (
-    <BookingShell t={t}>
+    <BookingShell t={t} lang={lang}>
       <StepsBar steps={t.booking.steps} current={step} setCurrent={setStep} maxReached={maxReached} />
       <div className="booking-body">
         <div>
@@ -612,12 +612,12 @@ function BookingPage({ lang, setRoute, dress = null }) {
   );
 }
 
-function BookingShell({ t, children }) {
+function BookingShell({ t, children, lang }) {
   return (
     <div className="page-enter">
       <div className="booking">
         <div className="booking-head">
-          <div className="t-eyebrow" style={{ marginBottom: 24 }}>— Запазване</div>
+          <div className="t-eyebrow" style={{ marginBottom: 24 }}>{lang === "en" ? "— Booking" : "— Запазване"}</div>
           <h1>{t.booking.title} <em>{t.booking.title_em}</em></h1>
           <p className="lede">{t.booking.lede}</p>
         </div>

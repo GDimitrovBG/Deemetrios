@@ -56,7 +56,16 @@ async function loadRoutes() {
   const productRoutes = data.DRESSES.map(d => `/product/${d.ref}`);
   const blogRoutes = blog.BLOG_POSTS.map(b => b.slug ? `/blog/${b.slug}` : `/blog/${b.id}`);
 
-  return [...staticRoutes, ...productRoutes, ...blogRoutes];
+  const bgRoutes = [...staticRoutes, ...productRoutes, ...blogRoutes];
+
+  // English mirrors everything except the blog, which is not translated —
+  // /en/blog* redirects to the Bulgarian original, so there is nothing to
+  // snapshot for it.
+  const enRoutes = [...staticRoutes, ...productRoutes]
+    .filter(r => !r.startsWith('/blog'))
+    .map(r => (r === '/' ? '/en' : `/en${r}`));
+
+  return [...bgRoutes, ...enRoutes];
 }
 
 // ---- Local SPA server (always returns index.html for unknown paths) ------

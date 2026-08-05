@@ -402,7 +402,7 @@ function ContactPage({ lang, setRoute }) {
       <div className="contact">
         <div className="contact-head">
           <div>
-            <div className="t-eyebrow" style={{ marginBottom: 24 }}>— Намери ни</div>
+            <div className="t-eyebrow" style={{ marginBottom: 24 }}>{lang === "en" ? "— Find us" : "— Намери ни"}</div>
             <h1>{t.title} <em>{t.title_em}</em></h1>
           </div>
           <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 22, lineHeight: 1.4, color: "var(--ink-soft)" }}>{t.lede}</p>

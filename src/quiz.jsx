@@ -20,7 +20,12 @@ import { useSeo, breadcrumbSchema, faqSchema } from './seo';
 //  no storage, nothing to maintain.
 // =====================================================
 
-const SILHOUETTES = ['А-силует', 'Русалка', 'Принцеса'];
+// Bulgarian keys (they match the data), with English display labels.
+const SILHOUETTES = [
+  { key: 'А-силует', slug: 'a-siluet',  en: 'A-line' },
+  { key: 'Русалка',  slug: 'rusalka',   en: 'Mermaid' },
+  { key: 'Принцеса', slug: 'printsesa', en: 'Ball gown' },
+];
 
 // Each option carries the scoring weights it contributes. Keeping the weights
 // in the data (rather than in branching code) makes the quiz easy to retune.
@@ -261,8 +266,7 @@ function QuizPage({ lang, setRoute, goProduct, goSilhouette, favorites = [], tog
         <div className="quiz-seo">
           <h2>{isBg ? 'Силуетите накратко' : 'The silhouettes at a glance'}</h2>
           <div className="quiz-sil-grid">
-            {SILHOUETTES.map(s => {
-              const slug = s === 'Русалка' ? 'rusalka' : s === 'Принцеса' ? 'printsesa' : 'a-siluet';
+            {SILHOUETTES.map(({ key: s, slug, en }) => {
               const n = DRESSES.filter(d => d.silhouette === s).length;
               const text = {
                 'А-силует': isBg
@@ -279,7 +283,7 @@ function QuizPage({ lang, setRoute, goProduct, goSilhouette, favorites = [], tog
                 <div key={s} className="quiz-sil">
                   <h3>
                     <a href={`/collection/silueti/${slug}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }}>
-                      {isBg ? `Булчински рокли ${s.toLowerCase()}` : `${s} wedding dresses`}
+                      {isBg ? `Булчински рокли ${s.toLowerCase()}` : `${en} wedding dresses`}
                     </a>
                   </h3>
                   <p>{text}</p>

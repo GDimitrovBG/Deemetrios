@@ -47,7 +47,10 @@ export default function App() {
   const initial = useRef(readInitialState()).current;
   const [route, setRouteRaw] = useState(initial.route || "home");
   const [tweaks, setTweak] = useTweaks(TWEAKS);
-  const [lang, setLang] = useState(tweaks.lang || "bg");
+  // The URL is the source of truth for language (/en/* → English). The stored
+  // tweak is only a fallback for the prefix-less Bulgarian URLs, so a visitor
+  // landing on an /en link always gets English regardless of past preference.
+  const [lang, setLang] = useState(initial.lang === "en" ? "en" : (tweaks.lang || "bg"));
   useSeoInject();
 
   const setRoute = (r) => {
@@ -99,11 +102,11 @@ export default function App() {
   useEffect(() => {
     if (firstSync.current) { firstSync.current = false; return; }
     if (route === "admin" || route === "not-found") return;
-    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost, silhouetteId: activeSilhouette });
+    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost, silhouetteId: activeSilhouette, lang });
     if (window.location.pathname !== path) {
       window.history.pushState({}, "", path);
     }
-  }, [route, activeCollection, activeSilhouette, activeProduct, activeBlogPost]);
+  }, [route, activeCollection, activeSilhouette, activeProduct, activeBlogPost, lang]);
 
   // Sync URL → state on back/forward
   useEffect(() => {
@@ -122,6 +125,7 @@ export default function App() {
         }
       } else if (s.route) {
         setRouteRaw(s.route);
+        if (s.lang) setLang(s.lang);
         setActiveCollection(s.collectionId || null);
         setActiveSilhouette(s.silhouetteId || null);
         setActiveProduct(s.productRef || null);

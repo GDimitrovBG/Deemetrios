@@ -30,11 +30,28 @@ function setLink(rel, href) {
   }
   el.setAttribute('href', href);
 }
-function clearHreflangs() {
-  // The site is bilingual at a single URL (client-side language toggle), so there
-  // are no distinct language URLs to declare. Self-referential hreflang adds no
-  // value and Search Console flags it — a self-referencing canonical is enough.
+/**
+ * Declare the bg ↔ en pair for this page.
+ *
+ * `alternates` is { bg: '/path', en: '/en/path' }. Both entries must be
+ * present and each page must reference itself, otherwise Google discards the
+ * whole cluster. Pass null for pages that exist in one language only (the
+ * blog), which simply clears any stale tags.
+ */
+function setHreflangs(alternates) {
   document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+  if (!alternates) return;
+  const add = (hreflang, href) => {
+    const el = document.createElement('link');
+    el.setAttribute('rel', 'alternate');
+    el.setAttribute('hreflang', hreflang);
+    el.setAttribute('href', href.startsWith('http') ? href : `${SITE_URL}${href}`);
+    document.head.appendChild(el);
+  };
+  if (alternates.bg) add('bg', alternates.bg);
+  if (alternates.en) add('en', alternates.en);
+  // Bulgarian is the default/fallback locale for everyone else.
+  if (alternates.bg) add('x-default', alternates.bg);
 }
 function setJsonLd(id, data) {
   // remove existing
@@ -74,6 +91,7 @@ export function useSeo({
   jsonLdId = 'main',
   keywords,
   noindex = false,
+  alternates = null,
 } = {}) {
   useEffect(() => {
     // Only append the site name when the title doesn't already carry the brand.
@@ -90,9 +108,25 @@ export function useSeo({
     let finalImg = image || DEFAULT_IMG;
     if (finalImg.startsWith('/')) finalImg = `${SITE_URL}${finalImg}`;
     finalImg = finalImg.replace(/^https?:\/\/(www\.)?demetriosbride-bg\.com(\/wp-content\/[^?]*)\.jpe?g/i, `${SITE_URL}$2.webp`);
-    const finalUrl   = url
-      ? (url.startsWith('http') ? url : `${SITE_URL}${url.startsWith('/') ? '' : '/'}${url}`)
-      : SITE_URL;
+    // ---- Locale-aware canonical + hreflang -------------------------------
+    // Callers pass `url` as the BULGARIAN path (e.g. "/collection"); the /en
+    // prefix is applied here so no page component has to know about locales.
+    let bgPath = url && !url.startsWith('http')
+      ? (url.startsWith('/') ? url : `/${url}`)
+      : (url ? url.replace(/^https?:\/\/[^/]+/, '') || '/' : '/');
+    if (bgPath !== '/' && bgPath.endsWith('/')) bgPath = bgPath.slice(0, -1);
+
+    // The blog exists in Bulgarian only — no /en twin, so no hreflang pair.
+    const bgOnly = /^\/blog(\/|$)/.test(bgPath);
+    const enPath = bgPath === '/' ? '/en' : `/en${bgPath}`;
+    const localePath = (lang === 'en' && !bgOnly) ? enPath : bgPath;
+    const finalUrl = `${SITE_URL}${localePath === '/' ? '/' : localePath}`;
+
+    // Reciprocal, self-referencing pair (Google drops one-directional sets).
+    // Suppressed on noindex pages, which have nothing to cluster.
+    const finalAlternates = alternates !== null ? alternates
+      : (bgOnly || noindex) ? null
+      : { bg: bgPath, en: enPath };
     const finalLocale = lang === 'en' ? 'en_US' : DEFAULT_LOCALE;
 
     document.title = finalTitle;
@@ -122,15 +156,14 @@ export function useSeo({
     // Canonical
     setLink('canonical', finalUrl);
 
-    // Remove any stale hreflang tags (single-URL bilingual site — none needed)
-    clearHreflangs();
+    setHreflangs(finalAlternates);
 
     // JSON-LD
     setJsonLd(jsonLdId, jsonLd);
 
     // Prerender signal — tells the build-time crawler the head is fully set.
     document.documentElement.setAttribute('data-seo-ready', '1');
-  }, [title, description, image, url, type, lang, JSON.stringify(jsonLd), jsonLdId, keywords, noindex]);
+  }, [title, description, image, url, type, lang, JSON.stringify(jsonLd), jsonLdId, keywords, noindex, JSON.stringify(alternates)]);
 }
 
 // =====================================================

@@ -3,7 +3,7 @@ import i18n from './i18n';
 import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { useSeo, orgSchema, websiteSchema } from './seo';
-import { getProductCardName, getProductAlt, localizeFabric } from './seo-helpers';
+import { getProductCardName, getProductAlt, localizeFabric, collectionLabel } from './seo-helpers';
 import { cdnImage } from './cdn';
 
 // =====================================================
@@ -63,7 +63,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
         </div>
         <div className="meta-row fade-up delay-3">
           <div className="meta-stack">
-            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>Колекция Demetrios 2026</span>
+            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>{lang === "en" ? "Demetrios Collection 2026" : "Колекция Demetrios 2026"}</span>
             <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
@@ -115,7 +115,7 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
     : DRESSES.slice(0, 6);
 
   const activeColData = COLLECTIONS.find(c => c.id === activeCol);
-  const activeLabel = activeColData ? activeColData.label : (lang === "bg" ? "Всички колекции" : "All collections");
+  const activeLabel = activeColData ? collectionLabel(activeColData, lang) : (lang === "bg" ? "Всички колекции" : "All collections");
 
   const pick = (id) => { setActiveCol(id); setSelectorOpen(false); };
 
@@ -125,9 +125,9 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
         <div className="left">{t.home.collection_meta_left}</div>
         <h2>
           <span style={{ display: "block", fontSize: "0.42em", letterSpacing: "0.4em", color: "var(--ink-mute)", textTransform: "uppercase", marginBottom: 16 }}>
-            {activeColData ? activeColData.label : t.home.collection_eye}
+            {activeColData ? collectionLabel(activeColData, lang) : t.home.collection_eye}
           </span>
-          {t.home.collection_title} <em>{activeColData ? activeColData.label.split(" ")[0].toLowerCase() : t.home.collection_title_em}</em>
+          {t.home.collection_title} <em>{activeColData ? collectionLabel(activeColData, lang).split(" ")[0].toLowerCase() : t.home.collection_title_em}</em>
         </h2>
         <div className="right">{t.home.collection_meta_right}</div>
       </div>
@@ -140,7 +140,7 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
           </button>
           {COLLECTIONS.map(c => (
             <button key={c.id} className={`preview-tab ${activeCol === c.id ? "active" : ""}`} onClick={() => pick(c.id)}>
-              {c.label}
+              {collectionLabel(c, lang)}
             </button>
           ))}
         </div>
@@ -163,7 +163,7 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
             {COLLECTIONS.map(c => (
               <div key={c.id} className={`col-selector-opt ${activeCol === c.id ? "active" : ""}`} onClick={() => pick(c.id)}>
                 <div>
-                  <div className="col-sel-name">{c.label}</div>
+                  <div className="col-sel-name">{collectionLabel(c, lang)}</div>
                   <div className="col-sel-desc">{lang === "bg" ? c.desc_bg.split("—")[0] : c.desc_en.split(".")[0]}</div>
                 </div>
                 {activeCol === c.id && <span className="col-sel-check">✓</span>}
@@ -251,7 +251,7 @@ function StorySection({ t, setRoute }) {
   );
 }
 
-function ServicesSection({ t }) {
+function ServicesSection({ t, lang }) {
   const items = [
     { title: t.home.service_1_title, desc: t.home.service_1_desc, num: "01" },
     { title: t.home.service_2_title, desc: t.home.service_2_desc, num: "02" },
@@ -261,12 +261,12 @@ function ServicesSection({ t }) {
     <section className="section section-tight" style={{ background: "var(--bg-soft)", maxWidth: "100%" }}>
       <div style={{ maxWidth: "var(--maxw)", margin: "0 auto" }}>
         <div className="sec-head">
-          <div className="left">— Услугата</div>
+          <div className="left">{lang === "en" ? "— The service" : "— Услугата"}</div>
           <h2>
             <span className="t-eyebrow" style={{ display: "block", marginBottom: 14 }}>{t.home.services_eye}</span>
             {t.home.services_title} <em>{t.home.services_title_em}</em>
           </h2>
-          <div className="right">III · процеса</div>
+          <div className="right">{lang === "en" ? "III · the process" : "III · процеса"}</div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, borderTop: "1px solid var(--rule)" }}>
           {items.map((s, i) => (
@@ -282,8 +282,11 @@ function ServicesSection({ t }) {
   );
 }
 
-function MarqueeStrip() {
-  const items = ["Булчински рокли", "2026 Demetrios", "Ръчна изработка", "София", "Булчински рокли", "2026 Demetrios", "Ръчна изработка", "София"];
+function MarqueeStrip({ lang }) {
+  const base = lang === "en"
+    ? ["Wedding dresses", "2026 Demetrios", "Handcrafted", "Sofia"]
+    : ["Булчински рокли", "2026 Demetrios", "Ръчна изработка", "София"];
+  const items = [...base, ...base];
   return (
     <div className="marquee-strip">
       <div className="marquee-track">
@@ -396,11 +399,11 @@ function ReviewsSection({ t }) {
   );
 }
 
-function CtaBand({ t, setRoute }) {
+function CtaBand({ t, setRoute, lang }) {
   return (
     <section style={{ background: "var(--ink)", color: "var(--bg)", padding: "120px var(--gutter)" }}>
       <div style={{ maxWidth: 980, margin: "0 auto", textAlign: "center" }}>
-        <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 20 }}>— Запазване —</div>
+        <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 20 }}>{lang === "en" ? "— Booking —" : "— Запазване —"}</div>
         <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(56px, 7vw, 112px)", lineHeight: 0.95, marginBottom: 28 }}>
           {t.home.cta_band.split(" ").slice(0, 2).join(" ")}{" "}
           <em style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--champagne)" }}>
@@ -436,12 +439,12 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
     <div className="page-enter">
       <Hero t={t} lang={lang} setRoute={setRoute} />
       <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />
-      <MarqueeStrip />
+      <MarqueeStrip lang={lang} />
       <StorySection t={t} setRoute={setRoute} />
       <PriceRangesSection t={t} lang={lang} setRoute={setRoute} />
-      <ServicesSection t={t} />
+      <ServicesSection t={t} lang={lang} />
       <ReviewsSection t={t} />
-      <CtaBand t={t} setRoute={setRoute} />
+      <CtaBand t={t} setRoute={setRoute} lang={lang} />
     </div>
   );
 }
