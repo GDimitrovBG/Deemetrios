@@ -482,24 +482,31 @@ function Dashboard({ bookings, products, articles, user }) {
         ))}
       </div>
 
-      {withData > 0 && (
+      <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>
+      {withData === 0 ? (
+        <p className="adm-empty">
+          Все още няма запитвания с данни за източник. Появяват се автоматично от следващото ново запитване насам —
+          по-старите резервации ({bookings.length}) са отпреди включването на проследяването.
+        </p>
+      ) : (
         <>
-          <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>
           <div style={{ display:"flex", flexWrap:"wrap", gap:12 }}>
-            {sourceRows.map(([k,n]) => {
+            {/* Only bookings WITH source data feed the percentages, so the
+                figures aren't diluted by the pre-tracking backlog. */}
+            {sourceRows.filter(([k]) => k !== "unknown").map(([k,n]) => {
               const m = KIND_META[k] || KIND_META.unknown;
-              const pct = Math.round(n/bookings.length*100);
+              const pct = Math.round(n/withData*100);
               return (
                 <div key={k} className="adm-stat-card" style={{ minWidth:150, flex:"0 1 auto" }}>
                   <div className="adm-stat-value" style={{ color:m.color, fontSize:28 }}>{n}</div>
                   <div className="adm-stat-label">{m.label}</div>
-                  <div className="adm-stat-sub">{pct}% от всички</div>
+                  <div className="adm-stat-sub">{pct}% с данни</div>
                 </div>
               );
             })}
           </div>
           <p style={{ color:"#666", fontSize:12, marginTop:10 }}>
-            С данни за източник: {withData} от {bookings.length}. По-старите запитвания нямат — броят расте от вкл. на проследяването.
+            С данни за източник: {withData} от {bookings.length} запитвания. По-старите са отпреди проследяването.
           </p>
         </>
       )}
