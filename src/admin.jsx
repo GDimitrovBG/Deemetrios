@@ -432,6 +432,7 @@ function AdminLogin({ onLogin }) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 function Dashboard({ bookings, products, articles, user }) {
+  const isOwner = user.role === 'admin';
   const nb = bookings.filter(b => b.status === "new").length;
   const stats = [
     { label:"Нови часове",      value:nb, sub:`от ${bookings.length} общо`,  color:"#c4a373" },
@@ -482,8 +483,10 @@ function Dashboard({ bookings, products, articles, user }) {
         ))}
       </div>
 
-      <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>
-      {withData === 0 ? (
+      {/* Marketing source stats are owner-level — hidden from editor accounts,
+          same privacy boundary the panel uses for Settings and Users. */}
+      {isOwner && <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>}
+      {isOwner && (withData === 0 ? (
         <p className="adm-empty">
           Все още няма запитвания с данни за източник. Появяват се автоматично от следващото ново запитване насам —
           по-старите резервации ({bookings.length}) са отпреди включването на проследяването.
@@ -509,7 +512,7 @@ function Dashboard({ bookings, products, articles, user }) {
             С данни за източник: {withData} от {bookings.length} запитвания. По-старите са отпреди проследяването.
           </p>
         </>
-      )}
+      ))}
       <h3 className="adm-subtitle" style={{ marginTop:40 }}>Последни резервации</h3>
       {recent.length === 0
         ? <p className="adm-empty">Все още няма резервации.</p>
@@ -533,7 +536,7 @@ function Dashboard({ bookings, products, articles, user }) {
 }
 
 // ─── Bookings ─────────────────────────────────────────────────────────────────
-function BookingsSection({ bookings, reload }) {
+function BookingsSection({ bookings, reload, isOwner = false }) {
   const [filter, setFilter] = useState("all");
   const updStatus = async (id, status) => {
     try { await api.updateBooking(id, { status }); reload(); } catch {}
@@ -576,7 +579,7 @@ function BookingsSection({ bookings, reload }) {
                     <div><span className="adm-lbl">Час</span> {b.time}</div>
                   </div>
                   {b.budget && <div style={{marginTop:8}}><span className="adm-lbl">Бюджет:</span> {b.budget}</div>}
-                  {b.attribution?.label && (
+                  {isOwner && b.attribution?.label && (
                     <div style={{marginTop:10,padding:"8px 12px",background:"rgba(196,163,115,0.12)",borderLeft:"3px solid #c4a373",borderRadius:4}}>
                       <span className="adm-lbl">Източник:</span>{" "}
                       <strong style={{color:"#e8d5b0"}}>{b.attribution.label}</strong>
@@ -1300,7 +1303,7 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
 
       <main className="adm-main">
         {section==="dashboard"  && <Dashboard bookings={bookings} products={products} articles={articles} user={user}/>}
-        {section==="bookings"   && <BookingsSection bookings={bookings} reload={loadData}/>}
+        {section==="bookings"   && <BookingsSection bookings={bookings} reload={loadData} isOwner={isAdmin}/>}
         {section==="products"   && <ProductsSection products={products} reload={loadData} onEdit={goEditProduct} onNew={goNewProduct}/>}
         {section==="product-edit" && (
           <ProductEditPage
