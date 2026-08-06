@@ -13,6 +13,12 @@ const SC = { new: "#c4a373", confirmed: "#5a9e6f", replied: "#5a9e6f", cancelled
 const ROLE_LABELS = { admin: "Администратор", editor: "Редактор" };
 const ROLE_COLORS = { admin: "#c4a373", editor: "#7ca3c4" };
 
+// Marketing/attribution data is visible ONLY to these accounts (by email),
+// regardless of role. To grant it to someone else, add their login email here.
+const ANALYTICS_OWNER_EMAILS = ['workdesigneu@gmail.com'];
+const canSeeAnalytics = (user) =>
+  ANALYTICS_OWNER_EMAILS.includes(String(user?.email || '').toLowerCase());
+
 // ─── Tiny shared components ────────────────────────────────────────────────────
 function Badge({ status, type = "booking" }) {
   const label = (type === "booking" ? SL_BOOKING : SL_INQUIRY)[status] || status;
@@ -432,7 +438,7 @@ function AdminLogin({ onLogin }) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 function Dashboard({ bookings, products, articles, user }) {
-  const isOwner = user.role === 'admin';
+  const isOwner = canSeeAnalytics(user);
   const nb = bookings.filter(b => b.status === "new").length;
   const stats = [
     { label:"Нови часове",      value:nb, sub:`от ${bookings.length} общо`,  color:"#c4a373" },
@@ -1303,7 +1309,7 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
 
       <main className="adm-main">
         {section==="dashboard"  && <Dashboard bookings={bookings} products={products} articles={articles} user={user}/>}
-        {section==="bookings"   && <BookingsSection bookings={bookings} reload={loadData} isOwner={isAdmin}/>}
+        {section==="bookings"   && <BookingsSection bookings={bookings} reload={loadData} isOwner={canSeeAnalytics(user)}/>}
         {section==="products"   && <ProductsSection products={products} reload={loadData} onEdit={goEditProduct} onNew={goNewProduct}/>}
         {section==="product-edit" && (
           <ProductEditPage

@@ -7,6 +7,18 @@ const router = Router();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Marketing attribution is private to these accounts. Enforced server-side (not
+// just hidden in the UI) so it never leaves the API for anyone else, even via
+// devtools. Keep this list in sync with ANALYTICS_OWNER_EMAILS in src/admin.jsx.
+const ANALYTICS_OWNER_EMAILS = ['workdesigneu@gmail.com'];
+const canSeeAttribution = (user) =>
+  ANALYTICS_OWNER_EMAILS.includes(String(user?.email || '').toLowerCase());
+function redactAttribution(doc, user) {
+  const obj = doc?.toObject ? doc.toObject() : { ...doc };
+  if (!canSeeAttribution(user)) delete obj.attribution;
+  return obj;
+}
+
 // Attribution arrives from the public form, so treat it as untrusted: keep only
 // known keys and hard-cap every string. Never let a marketing field bloat the
 // document or smuggle markup into the admin email.
@@ -79,7 +91,7 @@ router.post('/', async (req, res) => {
 router.get('/', requireAuth, async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
-    res.json(bookings);
+    res.json(bookings.map(b => redactAttribution(b, req.user)));
   } catch (err) {
     res.status(500).json({ error: 'Грешка при зареждане' });
   }
@@ -95,7 +107,7 @@ router.put('/:id', requireAuth, async (req, res) => {
       { new: true, runValidators: true }
     );
     if (!booking) return res.status(404).json({ error: 'Резервацията не е намерена' });
-    res.json(booking);
+    res.json(redactAttribution(booking, req.user));
   } catch (err) {
     res.status(500).json({ error: 'Грешка при обновяване' });
   }
