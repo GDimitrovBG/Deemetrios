@@ -53,16 +53,18 @@ function esc(s) {
 }
 
 /** Admin notification email for a newly created booking. */
-export function bookingAdminEmail(b) {
+export function bookingAdminEmail(b, { includeSource = true } = {}) {
   const row = (label, value) =>
     `<tr><td style="width:130px;font-weight:600;padding:2px 0;">${label}</td><td>${value}</td></tr>`;
   const dresses = Array.isArray(b.dressRefs) && b.dressRefs.length
     ? esc(b.dressRefs.join(', ')) : '—';
 
   // Lead source banner — the single most useful thing to see at a glance.
+  // Only rendered for the analytics owner (includeSource); other recipients on
+  // ADMIN_EMAILS get the same email without it.
   const attr = b.attribution || {};
   let sourceBanner = '';
-  if (attr.label) {
+  if (includeSource && attr.label) {
     const extra = attr.lastLabel ? `<div style="font-size:12px;opacity:0.8;margin-top:2px;">Преди заявката: ${esc(attr.lastLabel)}</div>` : '';
     const f = attr.first || {};
     const detail = [f.campaign && `кампания: ${f.campaign}`, f.content && `реклама: ${f.content}`, f.landing && `вход: ${f.landing}`]

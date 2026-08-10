@@ -76,11 +76,20 @@ router.post('/', async (req, res) => {
     // endpoint — and gating it behind real booking creation (which is rate
     // limited) prevents the spam abuse that endpoint's auth was guarding against.
     if (emailConfigured()) {
-      sendEmailToMany({
-        emails:  getAdminEmails(),
-        subject: `Нова консултация: ${booking.name} — ${booking.type || 'заявка'}${booking.date ? ' — ' + booking.date : ''}`,
-        html:    bookingAdminEmail(booking),
-      }).catch(err => console.error('[bookings] admin notify failed:', err?.message || err));
+      const subject = `Нова консултация: ${booking.name} — ${booking.type || 'заявка'}${booking.date ? ' — ' + booking.date : ''}`;
+      const admins = getAdminEmails();
+      // The lead-source banner is private to the analytics owner(s): they get
+      // the email with it, everyone else on ADMIN_EMAILS gets the same email
+      // without it.
+      const owners = admins.filter(e => canSeeAttribution({ email: e }));
+      const others = admins.filter(e => !canSeeAttribution({ email: e }));
+      const onErr = err => console.error('[bookings] admin notify failed:', err?.message || err);
+      if (owners.length) {
+        sendEmailToMany({ emails: owners, subject, html: bookingAdminEmail(booking, { includeSource: true }) }).catch(onErr);
+      }
+      if (others.length) {
+        sendEmailToMany({ emails: others, subject, html: bookingAdminEmail(booking, { includeSource: false }) }).catch(onErr);
+      }
     }
   } catch (err) {
     res.status(500).json({ error: 'Грешка при записване' });
