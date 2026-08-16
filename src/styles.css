@@ -4063,3 +4063,30 @@ body.drawer-open .float-dial .fd-main { pointer-events: none; }
   .quiz-opt { font-size: 16px; padding: 16px 18px; }
   .quiz-cta .btn { width: 100%; }
 }
+
+/* Blog body tables (e.g. rent-vs-buy comparison) — match the editorial look */
+.blog-post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 28px 0;
+  font-size: 15px;
+}
+.blog-post-body th,
+.blog-post-body td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: left;
+  vertical-align: top;
+}
+.blog-post-body thead th {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  border-bottom: 1px solid var(--rule);
+}
+.blog-post-body td:first-child { font-weight: 600; }
+@media (max-width: 600px) {
+  .blog-post-body table { font-size: 13px; }
+  .blog-post-body th, .blog-post-body td { padding: 9px 8px; }
+}
