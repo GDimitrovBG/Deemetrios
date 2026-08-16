@@ -102,17 +102,25 @@ export function withLang(path, lang) {
   return path === '/' ? '/en' : `/en${path}`;
 }
 
-/** Routes that exist only in Bulgarian. */
-const BG_ONLY = (route) => route === 'blog' || route === 'blog-post';
+/** Does this blog post have an English translation? */
+const hasEnPost = (id) => {
+  const p = BLOG_POSTS.find(b => b.id === id || String(b.id) === String(id));
+  return !!p?.title_en;
+};
+
+/** Routes that exist only in Bulgarian. The blog LISTING is bilingual;
+ *  individual posts are Bulgarian-only unless translated. */
+const BG_ONLY = (route, blogPostId) =>
+  route === 'blog-post' && !hasEnPost(blogPostId);
 
 export function pathToState(pathname) {
   const { lang, path } = splitLang(pathname);
   const s = pathToStateInner(path);
 
   if (s.redirect) return { ...s, redirect: withLang(s.redirect, lang), lang };
-  // English has no blog — send those URLs to the Bulgarian originals rather
-  // than serving an untranslated page.
-  if (lang === 'en' && BG_ONLY(s.route)) return { redirect: path, lang: 'bg' };
+  // Untranslated blog posts have no /en twin — send those URLs to the
+  // Bulgarian original rather than serving an untranslated page.
+  if (lang === 'en' && BG_ONLY(s.route, s.blogPostId)) return { redirect: path, lang: 'bg' };
   return { ...s, lang };
 }
 
@@ -191,8 +199,8 @@ function pathToStateInner(pathname) {
 
 export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId, lang = 'bg' }) {
   const path = stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId });
-  // The blog is Bulgarian-only, so it never takes the /en prefix.
-  return BG_ONLY(route) ? path : withLang(path, lang);
+  // Untranslated posts never take the /en prefix; everything else localizes.
+  return BG_ONLY(route, blogPostId) ? path : withLang(path, lang);
 }
 
 function stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId }) {

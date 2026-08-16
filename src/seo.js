@@ -116,10 +116,12 @@ export function useSeo({
       : (url ? url.replace(/^https?:\/\/[^/]+/, '') || '/' : '/');
     if (bgPath !== '/' && bgPath.endsWith('/')) bgPath = bgPath.slice(0, -1);
 
-    // The blog exists in Bulgarian only — no /en twin, so no hreflang pair.
-    const bgOnly = /^\/blog(\/|$)/.test(bgPath);
+    // Blog POSTS default to Bulgarian-only (translated ones opt in by passing
+    // explicit `alternates`). The /blog LISTING is bilingual — /en/blog lists
+    // the translated posts.
+    const bgOnly = /^\/blog\//.test(bgPath);
     const enPath = bgPath === '/' ? '/en' : `/en${bgPath}`;
-    const localePath = (lang === 'en' && !bgOnly) ? enPath : bgPath;
+    const localePath = (lang === 'en' && (!bgOnly || alternates)) ? enPath : bgPath;
     const finalUrl = `${SITE_URL}${localePath === '/' ? '/' : localePath}`;
 
     // Reciprocal, self-referencing pair (Google drops one-directional sets).
@@ -274,7 +276,8 @@ export function blogPostPath(post) {
 
 /** Article schema (used on blog post page) */
 export function articleSchema(post, lang = 'bg') {
-  const url = `${SITE_URL}${blogPostPath(post)}`;
+  const path = blogPostPath(post);
+  const url = `${SITE_URL}${lang === 'en' && post.title_en ? `/en${path}` : path}`;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",

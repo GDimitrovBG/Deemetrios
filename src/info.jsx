@@ -49,6 +49,13 @@ function getActivePosts(lang) {
           relatedRefs: (a.relatedRefs && a.relatedRefs.length) ? a.relatedRefs : (orig.relatedRefs || []),
           seo_title: a.seo_title || '',
           seo_description: a.seo_description || '',
+          // Static-only fields the admin editor doesn't manage — carry them
+          // through so slug URLs and the English versions survive admin edits.
+          slug: orig.slug || '',
+          faq: orig.faq || [],
+          title_en: orig.title_en, seo_title_en: orig.seo_title_en,
+          seo_description_en: orig.seo_description_en, excerpt_en: orig.excerpt_en,
+          category_en: orig.category_en, date_en: orig.date_en, faq_en: orig.faq_en,
         };
       });
   } catch {
@@ -428,12 +435,33 @@ function ContactPage({ lang, setRoute }) {
   );
 }
 
+// English view of a post: swaps in the *_en fields when a translation exists.
+// Posts without title_en simply have no English version (router redirects
+// /en/blog/<slug> to the Bulgarian original for those).
+function localizePost(post, lang) {
+  if (lang !== 'en' || !post?.title_en) return post;
+  return {
+    ...post,
+    title: post.title_en,
+    seo_title: post.seo_title_en || post.title_en,
+    seo_description: post.seo_description_en || post.excerpt_en || post.seo_description,
+    excerpt: post.excerpt_en || post.excerpt,
+    category: post.category_en || post.category,
+    date: post.date_en || post.date,
+    faq: post.faq_en || [],
+  };
+}
+
 function BlogPage({ lang, setRoute, goBlogPost }) {
   const isBg = lang === "bg";
-  const posts = getActivePosts(lang);
+  // English blog lists only translated posts — publishing untranslated pages
+  // under /en would be worse than not having them.
+  const posts = getActivePosts(lang)
+    .filter(p => isBg || p.title_en)
+    .map(p => localizePost(p, lang));
   const [featured, ...rest] = posts;
   useSeo({
-    title: isBg ? "Блог — статии за булчински рокли и сватбен стил" : "Blog — Wedding Dress & Style Articles",
+    title: isBg ? "Блог — статии за булчински рокли и сватбен стил" : "Blog — Wedding Dress & Style Articles | Areti Sofia",
     description: isBg
       ? "Блогът на Арети — съвети за избор на булчинска рокля, силуети, материи, тенденции и истории зад марката Demetrios. Полезни статии за всяка булка."
       : "The Areti blog — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
@@ -464,7 +492,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
             </div>
             <div>
               <div className="meta">{featured.category} · {featured.date}</div>
-              <h2><a href={featured.slug ? `/blog/${featured.slug}` : `/blog/${featured.id}`} onClick={(e) => e.preventDefault()}>{featured.title}</a></h2>
+              <h2><a href={`${isBg ? "" : "/en"}${featured.slug ? `/blog/${featured.slug}` : `/blog/${featured.id}`}`} onClick={(e) => e.preventDefault()}>{featured.title}</a></h2>
               <p>{featured.excerpt}</p>
               <button className="btn" onClick={e => { e.stopPropagation(); goBlogPost(featured.id); }}>
                 {isBg ? "Прочети →" : "Read →"}
@@ -489,7 +517,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
                 }
               </div>
               <div className="meta">{post.category} · {post.date}</div>
-              <h3><a href={post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`} onClick={(e) => e.preventDefault()}>{post.title}</a></h3>
+              <h3><a href={`${isBg ? "" : "/en"}${post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`}`} onClick={(e) => e.preventDefault()}>{post.title}</a></h3>
               <p>{post.excerpt}</p>
             </article>
           ))}
@@ -501,9 +529,13 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
 
 function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking }) {
   const isBg = lang === "bg";
-  const posts = getActivePosts(lang);
-  const post = posts.find(p => p.id === postId || String(p.id) === String(postId)) || posts[0];
-  const others = posts.filter(p => p.id !== post.id).slice(0, 3);
+  const allPosts = getActivePosts(lang);
+  const rawPost = allPosts.find(p => p.id === postId || String(p.id) === String(postId)) || allPosts[0];
+  const post = localizePost(rawPost, lang);
+  const others = allPosts
+    .filter(p => p.id !== post.id && (isBg || p.title_en))
+    .map(p => localizePost(p, lang))
+    .slice(0, 3);
 
   // Article body is split into blog_content.js (106KB) and loaded on demand so
   // it never ships on non-blog routes. Admin-authored posts carry their own
@@ -515,10 +547,11 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
     if (post.content) { setBodyHtml(post.content); return; }
     let alive = true;
     import('./blog_content.js').then(m => {
-      if (alive) setBodyHtml(m.BLOG_CONTENT[String(post.id)] || '');
+      const key = (lang === 'en' && rawPost?.title_en) ? `${post.id}-en` : String(post.id);
+      if (alive) setBodyHtml(m.BLOG_CONTENT[key] || m.BLOG_CONTENT[String(post.id)] || '');
     });
     return () => { alive = false; };
-  }, [post.id, post.content]);
+  }, [post.id, post.content, lang]);
   // Resolve related products by ref
   const relatedProducts = (post.relatedRefs || [])
     .map(ref => DRESSES.find(d => d.ref === ref))
@@ -534,10 +567,13 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
     title: post.seo_title || post.title,
     description: post.seo_description || post.excerpt,
     image: post.image, url: postPath, type: "article", lang,
+    // Translated posts declare the bg↔en pair from BOTH sides (Google drops
+    // one-directional hreflang). Untranslated posts keep the default (none).
+    alternates: rawPost?.title_en ? { bg: postPath, en: `/en${postPath}` } : null,
     keywords: `${post.title}, ${post.category}, блог Арети, булчински рокли`,
     jsonLd: {
       "@graph": [
-        articleSchema(post),
+        articleSchema(post, lang),
         breadcrumbSchema([
           { name: "Арети",     url: "/" },
           { name: "Блог",      url: "/blog" },
@@ -588,8 +624,8 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
                   <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                     <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                     <div className="blog-sidebar-card-info">
-                      <h4><a href={`/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
-                      <span>{p.silhouette}</span>
+                      <h4><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
+                      <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
                     </div>
                   </article>
                 ))}
@@ -626,8 +662,8 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
                 <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                   <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                   <div className="blog-sidebar-card-info">
-                    <h4><a href={`/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
-                    <span>{p.silhouette}</span>
+                    <h4><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
+                    <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
                   </div>
                 </article>
               ))}

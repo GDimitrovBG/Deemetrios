@@ -58,11 +58,11 @@ async function loadRoutes() {
 
   const bgRoutes = [...staticRoutes, ...productRoutes, ...blogRoutes];
 
-  // English mirrors everything except the blog, which is not translated —
-  // /en/blog* redirects to the Bulgarian original, so there is nothing to
-  // snapshot for it.
-  const enRoutes = [...staticRoutes, ...productRoutes]
-    .filter(r => !r.startsWith('/blog'))
+  // English mirrors everything except untranslated blog posts. The /en/blog
+  // listing exists (it lists only translated posts), and posts carrying
+  // title_en get their /en twin; the rest redirect to the Bulgarian original.
+  const enBlogRoutes = ['/blog', ...blog.BLOG_POSTS.filter(b => b.title_en).map(b => `/blog/${b.slug}`)];
+  const enRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog')), ...productRoutes, ...enBlogRoutes]
     .map(r => (r === '/' ? '/en' : `/en${r}`));
 
   return [...bgRoutes, ...enRoutes];

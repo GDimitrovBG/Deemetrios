@@ -135,8 +135,8 @@ async function run() {
   for (const p of ['/privacy', '/terms', '/cookies']) {
     pair(p, { lastmod: today, changefreq: 'yearly', priority: '0.3' });
   }
-  // Blog is Bulgarian-only (no post is translated) — no /en twin, no hreflang.
-  out.push(urlBlock(`${SITE}/blog`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }));
+  // Blog listing is bilingual (/en/blog lists the translated posts).
+  pair('/blog', { lastmod: today, changefreq: 'monthly', priority: '0.7' });
 
   // --- Product pages (with image entries) ---------------------------------
   // No cap: every gallery photo is a distinct, indexable asset for Google Images.
@@ -150,11 +150,12 @@ async function run() {
     pair(`/product/${d.ref}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, images);
   }
 
-  // --- Blog posts (Bulgarian only) ----------------------------------------
+  // --- Blog posts (translated ones get their /en twin + hreflang) ----------
   for (const b of BLOG_POSTS) {
     const slug = b.slug ? `/blog/${b.slug}` : `/blog/${b.id}`;
     const images = b.image ? [{ loc: absImg(b.image), title: esc(b.title || 'Блог — Арети') }] : [];
-    out.push(urlBlock(`${SITE}${slug}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images));
+    if (b.title_en) pair(slug, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images);
+    else out.push(urlBlock(`${SITE}${slug}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images));
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
