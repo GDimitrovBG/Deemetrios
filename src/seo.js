@@ -21,6 +21,11 @@ function setMeta(attr, name, content) {
   el.setAttribute('content', content);
 }
 function setLink(rel, href) {
+  if (href === null) {
+    const el = document.head.querySelector(`link[rel="${rel}"]`);
+    if (el) el.remove();
+    return;
+  }
   if (!href) return;
   let el = document.head.querySelector(`link[rel="${rel}"]`);
   if (!el) {
@@ -155,8 +160,10 @@ export function useSeo({
     setMeta('name', 'twitter:description', finalDesc);
     setMeta('name', 'twitter:image',       finalImg);
 
-    // Canonical
-    setLink('canonical', finalUrl);
+    // Canonical. Omitted on noindex pages: the 404 shell (dist/404.html) is
+    // served under many different URLs, so a baked-in canonical there would
+    // point every unknown URL at the home page.
+    setLink('canonical', noindex ? null : finalUrl);
 
     setHreflangs(finalAlternates);
 

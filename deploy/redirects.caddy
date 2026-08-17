@@ -7,7 +7,14 @@
 #  (SPA shell) and only redirect client-side via JS, which is weaker for SEO.
 #
 #  HOW TO USE: paste this block INSIDE your site block in /etc/caddy/Caddyfile,
-#  BEFORE the SPA fallback (try_files {path} /index.html). Then:
+#  BEFORE the SPA fallback. Also change the fallback itself to 404.html:
+#
+#      try_files {path} {path}/index.html /404.html      # was: /index.html
+#
+#  Why: dist/404.html is the prerendered noindex 404 shell. With /index.html as
+#  the fallback, every unmatched URL answered 200 with the HOME page's content
+#  and <link rel=canonical href="/"> — Google crawled removed products and old
+#  WP taxonomies as duplicates of the home page. Then:
 #     caddy validate --config /etc/caddy/Caddyfile
 #     systemctl reload caddy
 #  Verify:  curl -I https://demetriosbride-bg.com/za-nas        → 301 → /about
@@ -56,6 +63,10 @@ redir @r_page_vecherni   /collection/evening 301
 @r_page_blog       path_regexp ^/blog/page/\d+/?$
 redir @r_page_blog       /blog 301
 
+# --- Old Cyrillic brand taxonomy (/марка/demetrios/page/5/ etc.) ---
+@r_marka path_regexp ^/марка/.*$
+redir @r_marka /collection 301
+
 # --- Old product-category pages → matching collection (specific first) ---
 @r_cat_demetrios  path_regexp ^/product-category/.*demetrios.*$
 redir @r_cat_demetrios  /collection/demetrios 301
@@ -68,12 +79,111 @@ redir @r_cat_evening    /collection/evening 301
 @r_cat_rest       path_regexp ^/product-category/.*$
 redir @r_cat_rest       /collection 301
 
+# >>> GENERATED: product ref case canonicalisation — do not edit by hand
+# 40 lettered product refs — regenerate with:
+#   node scripts/generate-caddy-redirects.mjs
+# Must sit BEFORE the generic "-style-" rule so it wins the one-hop redirect.
+@pc0 path_regexp ^/product/(?:[a-z0-9-]*style-)?r180_73(?:-\d{1,2})?/?$
+redir @pc0 /product/R180_73 301
+@pc1 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp430(?:-\d{1,2})?/?$
+redir @pc1 /product/DP430 301
+@pc2 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp480(?:-\d{1,2})?/?$
+redir @pc2 /product/DP480 301
+@pc3 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp485(?:-\d{1,2})?/?$
+redir @pc3 /product/DP485 301
+@pc4 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp491(?:-\d{1,2})?/?$
+redir @pc4 /product/DP491 301
+@pc5 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp523(?:-\d{1,2})?/?$
+redir @pc5 /product/DP523 301
+@pc6 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp527(?:-\d{1,2})?/?$
+redir @pc6 /product/DP527 301
+@pc7 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp529(?:-\d{1,2})?/?$
+redir @pc7 /product/DP529 301
+@pc8 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp548(?:-\d{1,2})?/?$
+redir @pc8 /product/DP548 301
+@pc9 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr319(?:-\d{1,2})?/?$
+redir @pc9 /product/DR319 301
+@pc10 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr371(?:-\d{1,2})?/?$
+redir @pc10 /product/DR371 301
+@pc11 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr392(?:-\d{1,2})?/?$
+redir @pc11 /product/DR392 301
+@pc12 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr405(?:-\d{1,2})?/?$
+redir @pc12 /product/DR405 301
+@pc13 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr414(?:-\d{1,2})?/?$
+redir @pc13 /product/DR414 301
+@pc14 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr436(?:-\d{1,2})?/?$
+redir @pc14 /product/DR436 301
+@pc15 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr437(?:-\d{1,2})?/?$
+redir @pc15 /product/DR437 301
+@pc16 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1046(?:-\d{1,2})?/?$
+redir @pc16 /product/L1046 301
+@pc17 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1054(?:-\d{1,2})?/?$
+redir @pc17 /product/L1054 301
+@pc18 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1071(?:-\d{1,2})?/?$
+redir @pc18 /product/L1071 301
+@pc19 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1106(?:-\d{1,2})?/?$
+redir @pc19 /product/L1106 301
+@pc20 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1145(?:-\d{1,2})?/?$
+redir @pc20 /product/L1145 301
+@pc21 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1152(?:-\d{1,2})?/?$
+redir @pc21 /product/L1152 301
+@pc22 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1159(?:-\d{1,2})?/?$
+redir @pc22 /product/L1159 301
+@pc23 path_regexp ^/product/(?:[a-z0-9-]*style-)?d291(?:-\d{1,2})?/?$
+redir @pc23 /product/D291 301
+@pc24 path_regexp ^/product/(?:[a-z0-9-]*style-)?d296(?:-\d{1,2})?/?$
+redir @pc24 /product/D296 301
+@pc25 path_regexp ^/product/(?:[a-z0-9-]*style-)?d298(?:-\d{1,2})?/?$
+redir @pc25 /product/D298 301
+@pc26 path_regexp ^/product/(?:[a-z0-9-]*style-)?r141(?:-\d{1,2})?/?$
+redir @pc26 /product/R141 301
+@pc27 path_regexp ^/product/(?:[a-z0-9-]*style-)?r148(?:-\d{1,2})?/?$
+redir @pc27 /product/R148 301
+@pc28 path_regexp ^/product/(?:[a-z0-9-]*style-)?r149(?:-\d{1,2})?/?$
+redir @pc28 /product/R149 301
+@pc29 path_regexp ^/product/(?:[a-z0-9-]*style-)?r156(?:-\d{1,2})?/?$
+redir @pc29 /product/R156 301
+@pc30 path_regexp ^/product/(?:[a-z0-9-]*style-)?r157(?:-\d{1,2})?/?$
+redir @pc30 /product/R157 301
+@pc31 path_regexp ^/product/(?:[a-z0-9-]*style-)?r161(?:-\d{1,2})?/?$
+redir @pc31 /product/R161 301
+@pc32 path_regexp ^/product/(?:[a-z0-9-]*style-)?r163(?:-\d{1,2})?/?$
+redir @pc32 /product/R163 301
+@pc33 path_regexp ^/product/(?:[a-z0-9-]*style-)?r165(?:-\d{1,2})?/?$
+redir @pc33 /product/R165 301
+@pc34 path_regexp ^/product/(?:[a-z0-9-]*style-)?r168(?:-\d{1,2})?/?$
+redir @pc34 /product/R168 301
+@pc35 path_regexp ^/product/(?:[a-z0-9-]*style-)?r170(?:-\d{1,2})?/?$
+redir @pc35 /product/R170 301
+@pc36 path_regexp ^/product/(?:[a-z0-9-]*style-)?r173(?:-\d{1,2})?/?$
+redir @pc36 /product/R173 301
+@pc37 path_regexp ^/product/(?:[a-z0-9-]*style-)?r177(?:-\d{1,2})?/?$
+redir @pc37 /product/R177 301
+@pc38 path_regexp ^/product/(?:[a-z0-9-]*style-)?r180(?:-\d{1,2})?/?$
+redir @pc38 /product/R180 301
+@pc39 path_regexp ^/product/(?:[a-z0-9-]*style-)?t238(?:-\d{1,2})?/?$
+redir @pc39 /product/T238 301
+# <<< END GENERATED
+
 # --- Old WP product slugs → canonical ref URL ---
 # e.g. /product/mermaid-wedding-dress-style-1537/ → /product/1537
 # Code is lower-cased by WP; the SPA router canonicalises case
 # (/product/dr436 → /product/DR436), so a lower-cased target is safe.
 @wp_product path_regexp wpprod ^/product/.+-style-([A-Za-z0-9]+)/?$
 redir @wp_product /product/{re.wpprod.1} 301
+
+# --- Discontinued products → collection (301, one hop) ---
+# Some old WP product URLs point at refs no longer in the catalogue (AM*,
+# T238SK30 …). Their prerendered directory does not exist, so without this they
+# fell through to the SPA fallback. Anything under /product/ with no prerendered
+# index.html is, by definition, not a current product. This MUST come after the
+# case-canonicalisation block above, or valid lower-cased refs would land here
+# instead of on their exact-case page.
+@prod_gone {
+	path_regexp ^/product/.+
+	not file {path}/index.html
+}
+redir @prod_gone /collection 301
 
 # --- Old WP content archives with no SPA equivalent → nearest page (301) ---
 # Author/tag/date archives from the old WordPress site. Redirecting (not 410)

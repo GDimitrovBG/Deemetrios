@@ -25,6 +25,13 @@ const CONCURRENCY = 4;
 const NAV_TIMEOUT = 30_000;
 const SEO_SETTLE_MS = 400;
 
+// A deliberately non-existent path: the SPA renders its noindex 404 page for it.
+// The snapshot becomes dist/404.html, which Caddy serves as the fallback for
+// unknown URLs — previously that fallback was dist/index.html, so any unmatched
+// URL (a removed product, an old WP taxonomy) answered 200 with the HOME page's
+// content and canonical. A noindex 404 shell is the correct answer instead.
+const NOT_FOUND_ROUTE = '/__not-found__';
+
 // ---- Routes ---------------------------------------------------------------
 async function loadRoutes() {
   const data = await import(pathToFileURL(path.join(ROOT, 'src/data.js')).href);
@@ -65,7 +72,7 @@ async function loadRoutes() {
   const enRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog')), ...productRoutes, ...enBlogRoutes]
     .map(r => (r === '/' ? '/en' : `/en${r}`));
 
-  return [...bgRoutes, ...enRoutes];
+  return [...bgRoutes, ...enRoutes, NOT_FOUND_ROUTE];
 }
 
 // ---- Local SPA server (always returns index.html for unknown paths) ------
@@ -121,7 +128,11 @@ async function renderRoute(browser, route) {
 
 // ---- Write output --------------------------------------------------------
 async function writeRoute(route, html) {
-  const target = route === '/'
+  // The 404 shell is written to dist/404.html (not a directory) so Caddy can
+  // use it as the SPA fallback for unknown URLs. See NOT_FOUND_ROUTE below.
+  const target = route === NOT_FOUND_ROUTE
+    ? path.join(DIST, '404.html')
+    : route === '/'
     ? path.join(DIST, 'index.html')
     : path.join(DIST, route, 'index.html');
   await fs.mkdir(path.dirname(target), { recursive: true });
