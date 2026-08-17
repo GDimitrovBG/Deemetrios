@@ -23,6 +23,35 @@
 #
 #  Caddy keeps source order for repeated `redir` directives, so the specific
 #  rules below run before the catch-alls. `redir ... permanent` issues a 301.
+#
+#  ---------------------------------------------------------------------------
+#  ⚠ `respond` LOSES TO THE SPA FALLBACK — WRAP IT IN `handle`
+#  ---------------------------------------------------------------------------
+#  Learned the hard way in production (2026-08-17): the 410 rules at the bottom
+#  of this file silently did nothing. `redir` worked fine, but a bare
+#      respond @wp_dead 410
+#  at site-block scope sits lower in Caddy's directive order than the `route`
+#  block holding the SPA fallback, so the fallback answered first and every
+#  dead WP URL returned 200 with the SPA shell.
+#
+#  When the site block wraps its file_server/try_files in a `route` block, the
+#  410s must live INSIDE that route, before the fallback, wrapped in `handle`:
+#
+#      route {
+#          handle @wp_dead     { respond 410 }
+#          handle @wp_feed_any { respond 410 }
+#          # … redirects …
+#          try_files {path} {path}/index.html /404.html
+#          file_server
+#      }
+#
+#  `handle` is mutually exclusive and order-preserving, so the first matching
+#  block wins. Verify after every Caddyfile change — a rule that parses and
+#  validates can still be dead:
+#      curl -I https://demetriosbride-bg.com/xmlrpc.php        → 410
+#      curl -I https://demetriosbride-bg.com/product/1500/feed/ → 410
+#      curl -I https://demetriosbride-bg.com/author/x/          → 301 → /
+#  ---------------------------------------------------------------------------
 # =============================================================================
 
 # --- 1:1 static redirects (Latin slugs, with/without trailing slash) ---
@@ -167,8 +196,13 @@ redir @pc39 /product/T238 301
 
 # --- Old WP product slugs → canonical ref URL ---
 # e.g. /product/mermaid-wedding-dress-style-1537/ → /product/1537
-# Code is lower-cased by WP; the SPA router canonicalises case
-# (/product/dr436 → /product/DR436), so a lower-cased target is safe.
+#
+# NOTE: this rule alone is only safe for NUMERIC refs. For lettered refs it
+# emits a lower-cased target (/product/dr436), which has no prerendered
+# directory — the SPA fallback then served the HOME page's HTML and canonical
+# under a product URL, and only client-side JS corrected it. That is why the
+# GENERATED case block above must come first: it 301s straight to the
+# exact-case URL in one hop. Do not reorder them.
 @wp_product path_regexp wpprod ^/product/.+-style-([A-Za-z0-9]+)/?$
 redir @wp_product /product/{re.wpprod.1} 301
 
@@ -179,6 +213,15 @@ redir @wp_product /product/{re.wpprod.1} 301
 # index.html is, by definition, not a current product. This MUST come after the
 # case-canonicalisation block above, or valid lower-cased refs would land here
 # instead of on their exact-case page.
+#
+# ⚠ VERIFY THIS ONE AFTER RELOAD. The `file` matcher resolves against the
+#   active `root`; inside a `route` block that root may differ from what you
+#   expect, and if the lookup fails the matcher inverts to "matches everything"
+#   — sending EVERY /product/* URL to /collection. Check immediately:
+#       curl -I https://demetriosbride-bg.com/product/1500   → must be 200
+#   If it 301s, drop this block. It is an optimisation, not a requirement: the
+#   /404.html fallback already answers discontinued products with a noindex
+#   404; this rule only upgrades that to a 301 that passes link equity.
 @prod_gone {
 	path_regexp ^/product/.+
 	not file {path}/index.html
