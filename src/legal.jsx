@@ -226,8 +226,18 @@ function CookieConsent({ lang, setRoute }) {
           )}
         </div>
         <div className="cookie-bottom-links">
-          {!expanded && <a onClick={() => setExpanded(true)} className="cookie-link">{t.manage}</a>}
-          <a onClick={() => setRoute("cookies")} className="cookie-link">{t.link}</a>
+          {/* These were <a> elements with no href: not focusable, not
+              keyboard-operable, and reported by Lighthouse as uncrawlable
+              links. "Manage" only changes local state, so it is a button; the
+              policy link is a real destination, so it gets a real href. */}
+          {!expanded && (
+            <button type="button" onClick={() => setExpanded(true)} className="cookie-link">{t.manage}</button>
+          )}
+          <a
+            href={lang === "en" ? "/en/cookies" : "/cookies"}
+            onClick={(e) => { e.preventDefault(); setRoute("cookies"); }}
+            className="cookie-link"
+          >{t.link}</a>
         </div>
         <div className="cookie-credit">
           {lang === "bg" ? "направено от" : "made by"}{" "}

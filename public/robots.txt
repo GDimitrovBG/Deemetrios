@@ -1,10 +1,52 @@
+# =============================================================================
+#  robots.txt — demetriosbride-bg.com
+#
+#  NOTE: this file is deployed with dist/ and OVERWRITES whatever is on the
+#  server. The AI-crawler rules below were added directly on the server at one
+#  point; they live here now so a deploy can never wipe them again.
+# =============================================================================
+
 User-agent: *
 Allow: /
 
-# Don't index admin or wishlist
+# Not useful in an index: the admin panel and a per-visitor wishlist.
 Disallow: /admin
-Disallow: /#admin
 Disallow: /wishlist
 
-# Sitemap
+# --- AI crawlers -------------------------------------------------------------
+# Explicitly allowed so ChatGPT, Perplexity, Gemini and Claude can read and
+# cite the salon. /llms.txt holds the plain-language summary they use; it is
+# discoverable at its conventional path, so it needs no directive here — the
+# "LLMs:" line that used to sit below is not part of the robots.txt grammar and
+# made the whole file report as invalid.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 Sitemap: https://demetriosbride-bg.com/sitemap.xml

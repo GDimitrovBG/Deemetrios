@@ -43,7 +43,7 @@ function Step1Type({ t, data, setData, dressRefs, setDressRefs }) {
   return (
     <div className="booking-form">
       <div className="step-tag">{t.booking.step1_eye}</div>
-      <h3>{t.booking.step1_title} <em>{t.booking.step1_title_em || "среща"}</em></h3>
+      <h2>{t.booking.step1_title} <em>{t.booking.step1_title_em || "среща"}</em></h2>
       <p className="help">{t.booking.step1_help}</p>
       {t.booking.step1_note && (
         <div className="booking-note">
@@ -62,7 +62,7 @@ function Step1Type({ t, data, setData, dressRefs, setDressRefs }) {
           >
             {typ.recommended && <div className="oc-badge">★ {typ.tag}</div>}
             {!typ.recommended && <div className="oc-eyebrow">{typ.tag}</div>}
-            <h4>{typ.title}</h4>
+            <h3>{typ.title}</h3>
             <p className="oc-desc">{typ.desc}</p>
             {typ.note && (
               <div className={`oc-note ${typ.recommended ? "is-positive" : "is-requirement"}`}>
@@ -163,7 +163,7 @@ function Step3Date({ t, data, setData, lang }) {
   return (
     <div className="booking-form">
       <div className="step-tag">{t.booking.step3_eye}</div>
-      <h3>{t.booking.step3_title} <em>{t.booking.step3_title_em}</em></h3>
+      <h2>{t.booking.step3_title} <em>{t.booking.step3_title_em}</em></h2>
       <p className="help">{t.booking.step3_help}</p>
       <div className="date-picker">
         <div className="dp-head">
@@ -242,7 +242,7 @@ function Step4Details({ t, data, setData }) {
   return (
     <div className="booking-form">
       <div className="step-tag">{t.booking.step4_eye}</div>
-      <h3>{t.booking.step4_title} <em>{t.booking.step4_title_em}</em></h3>
+      <h2>{t.booking.step4_title} <em>{t.booking.step4_title_em}</em></h2>
       <p className="help">{t.booking.step4_help}</p>
       <div className="fields-row">
         <div className="field">
@@ -359,7 +359,7 @@ function Summary({ t, data, lang, dressRefs, setDressRefs, dressRequired = false
   return (
     <aside className="summary">
       <div className="s-eyebrow">{t.booking.summary_eye}</div>
-      <h4>{t.booking.summary_title} <em>·</em></h4>
+      <h3>{t.booking.summary_title} <em>·</em></h3>
 
       <div className={`summary-refs-section ${dressRequired && dressRefs.length === 0 ? 'is-required-empty' : ''}`}>
         <div className="summary-refs-label">

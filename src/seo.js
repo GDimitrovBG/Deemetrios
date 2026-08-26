@@ -4,6 +4,12 @@
 import { useEffect } from 'react';
 
 const SITE_NAME    = 'Арети — Bridal Couture';
+// The brand token appended to page titles that don't already carry one.
+// SITE_NAME is 22 characters, which pushed 23 pages past the ~60 Google
+// renders before truncating — the tail was the brand, so the salon's own name
+// was what got cut. "Арети София" keeps the brand AND the city (a term people
+// actually search) in 11 characters.
+const TITLE_BRAND  = 'Арети София';
 const SITE_URL     = 'https://demetriosbride-bg.com';
 const DEFAULT_DESC = 'Арети е официален представител на Demetrios в България. Луксозни булчински рокли, ръчно везане и елитни колекции в сватбения салон в София. Запазете час за проба.';
 const DEFAULT_IMG  = 'https://demetriosbride-bg.com/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.webp';
@@ -105,7 +111,7 @@ export function useSeo({
     // brand token (any case/locale) and skip the suffix in that case.
     const hasBrand = title && /Арети|Areti/i.test(title);
     const finalTitle = title
-      ? (hasBrand ? title : `${title} | ${SITE_NAME}`)
+      ? (hasBrand ? title : `${title} | ${TITLE_BRAND}`)
       : SITE_NAME;
     const finalDesc  = description || DEFAULT_DESC;
     // og:image / twitter:image must be ABSOLUTE URLs (Facebook & Twitter reject

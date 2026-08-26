@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { DRESSES, COLLECTIONS } from './data';
 import { DressCard } from './home';
 import { useSeo, breadcrumbSchema, faqSchema } from './seo';
+import { withLang } from './router';
 
 // =====================================================
 //  DRESS FINDER QUIZ — "Открий своята рокля"
@@ -154,7 +155,7 @@ function QuizPage({ lang, setRoute, goProduct, goSilhouette, favorites = [], tog
       ? 'Коя булчинска рокля ти отива? — тест за силует | Арети'
       : 'Which Wedding Dress Suits You? — Silhouette Quiz | Areti',
     description: isBg
-      ? 'Безплатен тест: отговорете на 5 въпроса и вижте кои булчински рокли Demetrios подхождат на вашата фигура, стил и бюджет. Резултатът показва реални модели от салон Арети, София.'
+      ? 'Безплатен тест: 5 въпроса и виждате кои булчински рокли Demetrios подхождат на вашата фигура и бюджет — с реални модели от салон Арети, София.'
       : 'Free quiz: answer 5 questions and see which Demetrios wedding dresses suit your figure, style and budget. Results show real styles from Areti salon in Sofia.',
     url: '/kviz',
     lang,
@@ -282,7 +283,7 @@ function QuizPage({ lang, setRoute, goProduct, goSilhouette, favorites = [], tog
               return (
                 <div key={s} className="quiz-sil">
                   <h3>
-                    <a href={`/collection/silueti/${slug}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }}>
+                    <a href={withLang(`/collection/silueti/${slug}`, lang)} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }}>
                       {isBg ? `Булчински рокли ${s.toLowerCase()}` : `${en} wedding dresses`}
                     </a>
                   </h3>
@@ -297,7 +298,7 @@ function QuizPage({ lang, setRoute, goProduct, goSilhouette, favorites = [], tog
           <ul className="quiz-coll-links">
             {COLLECTIONS.filter(c => c.id !== 'evening').map(c => (
               <li key={c.id}>
-                <a href={`/collection/${c.id}`} onClick={(e) => { e.preventDefault(); setRoute('collection'); }}>
+                <a href={withLang(`/collection/${c.id}`, lang)} onClick={(e) => { e.preventDefault(); setRoute('collection'); }}>
                   {isBg ? `Булчински рокли ${c.label}` : `${c.label} wedding dresses`}
                 </a>
               </li>

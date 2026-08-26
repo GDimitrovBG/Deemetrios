@@ -37,12 +37,22 @@
 
   --ink: #1a1612;
   --ink-soft: #4a3f33;
-  --ink-mute: #8a7d6c;
+  /* Darkened from #8a7d6c (3.57:1 on --bg, below the 4.5:1 AA threshold).
+     This token is used almost exclusively for 10–11px uppercase meta text —
+     dress silhouette, refs, breadcrumbs, spec labels — which is exactly the
+     size that needs the full ratio. #6b6151 clears 4.5:1 on BOTH surfaces this
+     text appears on — 5.40:1 on --bg and 4.85:1 on the darker --bg-deep cards
+     in the blog sidebar — and is visually within a hair of the old value. */
+  --ink-mute: #6b6151;
   --rule: #d9cfb8;
   --rule-soft: #e8dfc9;
 
   --champagne: #c4a373;
   --champagne-deep: #a08555;
+  /* --champagne-deep is 3.12:1 — fine for the large italic display text it
+     normally carries, but it also appears on 10px eyebrows and the hero
+     keyword line. Those use this darker variant (4.56:1). */
+  --champagne-text: #836a3b;
   --nude: #d9c5a8;
   --blush: #e8d5c4;
 
@@ -499,7 +509,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: var(--champagne-deep);
+  color: var(--champagne-text);
   margin-top: 20px;
   display: block;
 }
@@ -709,7 +719,8 @@ a { color: inherit; text-decoration: none; }
 .reviews-inner { max-width: var(--maxw); margin: 0 auto; }
 .reviews-head { text-align: center; margin-bottom: 56px; }
 .reviews-head .reviews-eye {
-  color: var(--champagne-deep);
+  /* 11px uppercase — small text, so it needs the AA-safe champagne. */
+  color: var(--champagne-text);
   margin-bottom: 18px;
 }
 .reviews-title {
@@ -851,7 +862,7 @@ a { color: inherit; text-decoration: none; }
   padding-bottom: var(--s-8);
   border-bottom: 1px solid rgba(255,253,248,0.12);
 }
-.footer h4 {
+.footer h2 {
   font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
   color: var(--champagne);
   margin-bottom: 22px;
@@ -1356,16 +1367,17 @@ a { color: inherit; text-decoration: none; }
   align-items: start;
 }
 .booking-form { min-height: 480px; }
-.booking-form h3 {
+.booking-form h2 {
   font-family: var(--f-display);
   font-size: 56px;
   line-height: 0.98;
   margin-bottom: 8px;
 }
-.booking-form h3 em { font-family: var(--f-serif); font-style: italic; }
+.booking-form h2 em { font-family: var(--f-serif); font-style: italic; }
 .booking-form .step-tag {
   font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--champagne-deep); margin-bottom: 16px;
+  /* 10px uppercase — needs the AA-safe champagne, see --champagne-text. */
+  color: var(--champagne-text); margin-bottom: 16px;
 }
 .booking-form .help {
   font-family: var(--f-serif); font-size: 17px; font-style: italic;
@@ -1427,7 +1439,7 @@ a { color: inherit; text-decoration: none; }
 .option-card:hover { border-color: var(--ink); }
 .option-card.on { border-color: var(--ink); background: var(--ink); color: var(--bg); }
 .option-card .oc-eyebrow { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px; }
-.option-card h4 { font-family: var(--f-serif); font-size: 22px; font-weight: 400; margin-bottom: 4px; }
+.option-card h3 { font-family: var(--f-serif); font-size: 22px; font-weight: 400; margin-bottom: 4px; }
 .option-card .oc-desc { font-size: 13px; opacity: 0.7; line-height: 1.4; }
 .option-card .oc-price { font-family: var(--f-serif); font-style: italic; font-size: 16px; margin-top: 12px; }
 
@@ -1438,7 +1450,8 @@ a { color: inherit; text-decoration: none; }
 }
 .option-card .oc-badge {
   display: inline-block;
-  background: var(--champagne-deep, #c4a373);
+  /* White on --champagne-deep is 3.51:1; on --champagne-text it is 5.13:1. */
+  background: var(--champagne-text);
   color: #fff;
   font-size: 10px;
   letter-spacing: 0.18em;
@@ -1463,11 +1476,13 @@ a { color: inherit; text-decoration: none; }
 }
 .option-card .oc-note.is-positive {
   background: rgba(90, 158, 111, 0.1);
-  color: #4a8559;
+  /* was #4a8559 — 4.31:1 on the card, just under AA at 12.5px */
+  color: #3d7049;
 }
 .option-card .oc-note.is-requirement {
   background: rgba(196, 163, 115, 0.15);
-  color: #8a6a3d;
+  /* was #8a6a3d — 4.17:1 against the tinted panel behind it */
+  color: #7a5c31;
 }
 .option-card.on .oc-note.is-positive {
   background: rgba(255, 255, 255, 0.15);
@@ -1676,14 +1691,14 @@ a { color: inherit; text-decoration: none; }
   position: sticky;
   top: 100px;
 }
-.summary h4 {
+.summary h3 {
   font-family: var(--f-display);
   font-size: 32px;
   line-height: 1;
   margin-bottom: 8px;
 }
-.summary h4 em { font-family: var(--f-serif); font-style: italic; }
-.summary .s-eyebrow { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--champagne-deep); margin-bottom: 16px;}
+.summary h3 em { font-family: var(--f-serif); font-style: italic; }
+.summary .s-eyebrow { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--champagne-text); margin-bottom: 16px;}
 .summary .s-row {
   display: flex; justify-content: space-between; padding: 14px 0;
   border-top: 1px solid var(--rule);
@@ -1899,7 +1914,7 @@ a { color: inherit; text-decoration: none; }
 }
 .blog-feature .img { width: 100%; aspect-ratio: 4/5; object-fit: cover; object-position: top center; display: block; border-radius: 2px; background: linear-gradient(160deg, #d9c5a8, #8a7556); }
 .blog-feature .img-wrap { overflow: hidden; border-radius: 2px; }
-.blog-feature .meta { font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne-deep); margin-bottom: 16px;}
+.blog-feature .meta { font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne-text); margin-bottom: 16px;}
 .blog-feature h2 { font-family: var(--f-display); font-size: clamp(48px, 6vw, 88px); line-height: 0.98; margin-bottom: 24px; }
 .blog-feature h2 em { font-family: var(--f-serif); font-style: italic; }
 .blog-feature p { font-family: var(--f-serif); font-size: 19px; line-height: 1.55; color: var(--ink-soft); margin-bottom: 28px; max-width: 480px; }
@@ -1985,6 +2000,8 @@ a { color: inherit; text-decoration: none; }
 .blog-sidebar-sticky::-webkit-scrollbar { width: 3px; }
 .blog-sidebar-sticky::-webkit-scrollbar-thumb { background: var(--champagne-deep); border-radius: 2px; }
 .blog-sidebar-label {
+  /* now an <h2> — reset the browser default so it stays a quiet label */
+  font-weight: 500;
   font-family: var(--f-sans);
   font-size: 10px;
   font-weight: 600;
@@ -2017,7 +2034,7 @@ a { color: inherit; text-decoration: none; }
 .blog-sidebar-card-info {
   min-width: 0;
 }
-.blog-sidebar-card-info h4 {
+.blog-sidebar-card-info h3 {
   font-family: var(--f-serif);
   font-size: 15px;
   font-weight: 400;
@@ -2067,7 +2084,7 @@ a { color: inherit; text-decoration: none; }
 .blog-sidebar-mobile .blog-sidebar-card-info {
   padding: 10px 10px 12px;
 }
-.blog-sidebar-mobile .blog-sidebar-card-info h4 {
+.blog-sidebar-mobile .blog-sidebar-card-info h3 {
   font-size: 13px;
   margin-bottom: 2px;
 }
@@ -2132,6 +2149,21 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--champagne-deep);
   text-decoration: none;
 }
+
+
+/* Section heading above the product grid. Quiet by design — its job is the
+   document outline and the keyword, not visual weight. */
+.grid-heading {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--gutter) 20px;
+  font-family: var(--f-serif);
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+.grid-heading-count { color: var(--ink-mute); font-style: normal; font-size: 0.8em; }
 
 /* ============================================
    MOBILE NAV (burger + drawer)
@@ -2480,11 +2512,11 @@ a { color: inherit; text-decoration: none; }
     padding: 36px 20px;
     gap: 36px;
   }
-  .booking-form h3 { font-size: 40px; }
+  .booking-form h2 { font-size: 40px; }
   .booking-form .help { font-size: 15px; margin-bottom: 28px; }
   .option-cards { grid-template-columns: 1fr; }
   .option-card { padding: 20px; }
-  .option-card h4 { font-size: 19px; }
+  .option-card h3 { font-size: 19px; }
   .fields-row { grid-template-columns: 1fr; gap: 0; }
   .field input, .field textarea, .field select { font-size: 16px; } /* avoid iOS zoom */
   .date-picker { padding: 16px; }
@@ -2493,7 +2525,7 @@ a { color: inherit; text-decoration: none; }
   .dp-head .filter-chip { padding: 6px 10px; }
   .times-grid { grid-template-columns: repeat(3, 1fr); }
   .summary { position: static; padding: 24px; }
-  .summary h4 { font-size: 26px; }
+  .summary h3 { font-size: 26px; }
   .step-nav {
     margin-top: 32px; gap: 10px;
     flex-direction: column-reverse; /* Напред first, Назад below */
@@ -3218,7 +3250,7 @@ body.drawer-open .float-dial .fd-main { pointer-events: none; }
   font-size: 9px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--champagne-deep);
+  color: var(--champagne-text);
   margin-bottom: 10px;
 }
 .summary-refs-pills {
@@ -3856,24 +3888,35 @@ body.drawer-open .float-dial .fd-main { pointer-events: none; }
 .cookie-banner { position: fixed; bottom: 24px; left: 24px; z-index: 9999; max-width: 380px; background: var(--ink); color: var(--bg); padding: 28px 28px 24px; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.3); }
 .cookie-inner { display: flex; flex-direction: column; gap: 18px; }
 .cookie-inner p { font-family: var(--f-serif); font-size: 14px; line-height: 1.65; margin: 0; color: rgba(255,253,248,0.85); }
-.cookie-link { color: var(--champagne); text-decoration: underline; cursor: pointer; text-underline-offset: 2px; }
+/* Works for both the <a> and the <button> in the banner — the "manage"
+   control is a button because it only toggles local state. */
+.cookie-link {
+  color: var(--champagne); text-decoration: underline; cursor: pointer;
+  text-underline-offset: 2px;
+  background: none; border: 0; padding: 0;
+  font: inherit; letter-spacing: inherit;
+}
 .cookie-actions { display: flex; gap: 8px; }
 .cookie-actions .btn-small { flex: 1; text-align: center; color: var(--bg); border-color: rgba(255,253,248,0.3); }
 .cookie-actions .btn-small:hover { border-color: var(--bg); }
 .cookie-actions .btn-small.btn-solid { background: var(--champagne); color: var(--ink); border-color: var(--champagne); }
 .btn-small { font-size: 10px; padding: 11px 16px; letter-spacing: 0.18em; }
 .cookie-bottom-links { display: flex; gap: 16px; margin-top: -6px; }
-.cookie-bottom-links .cookie-link { font-size: 12px; opacity: 0.5; }
-.cookie-bottom-links .cookie-link:hover { opacity: 0.8; }
+/* Was opacity .5 → 2.81:1 against the banner's dark background. The banner is
+   a consent control, so its own text failing WCAG is the worst place for it. */
+.cookie-bottom-links .cookie-link { font-size: 12px; opacity: 0.85; }
+.cookie-bottom-links .cookie-link:hover { opacity: 1; }
 .cookie-credit {
   font-family: var(--f-sans);
   font-size: 10px;
   letter-spacing: 0.04em;
-  opacity: 0.35;
+  /* Was .35 → 3.01:1 on the dark banner. .55 reads as the same quiet credit
+     line and clears AA at 5.54:1. */
+  opacity: 0.55;
   margin-top: 6px;
 }
 .cookie-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
-.cookie-credit:hover { opacity: 0.55; }
+.cookie-credit:hover { opacity: 0.8; }
 
 /* Expanded toggles */
 .cookie-expanded { max-width: 400px; }

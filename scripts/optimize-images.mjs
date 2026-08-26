@@ -17,10 +17,31 @@
  *   tar czf ~/uploads-backup.tar.gz -C /path/to wp-content/uploads
  *   node scripts/optimize-images.mjs /path/to/wp-content/uploads
  *
+ * RESPONSIVE VARIANTS (--variants)
+ *
+ *   The single biggest thing left on this site's Core Web Vitals is that one
+ *   file size serves every slot. The home hero is 1600x2400 / 155 KB, and the
+ *   same file is what a 2-column phone grid pulls into a 180 CSS-px card —
+ *   roughly 4.4x more pixels than the screen can show, ~850 KB wasted on the
+ *   first screen alone. There is no image CDN to resize on the fly, so the
+ *   variants have to exist as files.
+ *
+ *   With --variants each image also gets `<name>-480w.webp`, `-960w.webp` and
+ *   `-1440w.webp` next to it, and the list is written to
+ *   public/image-variants.json. The app reads that manifest and only emits a
+ *   srcset for images it actually lists, so a page can never point at a
+ *   variant that was not generated.
+ *
+ *   Run it from the repo checkout on the server, so the manifest lands where
+ *   the next `npm run build` will pick it up:
+ *       node scripts/optimize-images.mjs /path/to/wp-content/uploads --variants
+ *       npm run build
+ *
  * Flags:
  *   --dry        report what would change, write nothing
- *   --width=NNN  max width (default 1600)
+ *   --width=NNN  max width for the original (default 1600)
  *   --quality=NN JPEG/WebP quality (default 82)
+ *   --variants   also write -480w / -960w / -1440w twins + the manifest
  */
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -31,6 +52,16 @@ const dir = args.find(a => !a.startsWith('--'));
 const DRY = args.includes('--dry');
 const MAX_WIDTH = Number((args.find(a => a.startsWith('--width=')) || '').split('=')[1]) || 1600;
 const QUALITY   = Number((args.find(a => a.startsWith('--quality=')) || '').split('=')[1]) || 82;
+const VARIANTS = args.includes('--variants');
+
+// Widths chosen from what the layout actually asks for:
+//   480  — 2-up phone grid at DPR 2 (180 CSS px slot)
+//   960  — 1-up phone / small tablet, and 4-up desktop cards
+//  1440  — the product-page hero on a retina desktop
+const VARIANT_WIDTHS = [480, 960, 1440];
+const MANIFEST = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', 'public', 'image-variants.json');
+const manifest = {};   // "/wp-content/…/name.webp" -> [480, 960]
+let variantsWritten = 0, variantBytes = 0;
 
 if (!dir) {
   console.error('Usage: node optimize-images.mjs <folder> [--dry] [--width=1600] [--quality=82]');
@@ -84,10 +115,49 @@ async function optimize(file) {
       await fs.writeFile(tmp, buf);
       await fs.rename(tmp, file);
     }
+
+    if (VARIANTS) await writeVariants(file, buf, meta.width || 0);
   } catch (e) {
     errors++;
     console.error(`  ! error: ${path.basename(file)} — ${e.message}`);
   }
+}
+
+
+/**
+ * Write the smaller twins for one image and record them in the manifest.
+ *
+ * Only widths genuinely narrower than the source are produced — upscaling
+ * would be bytes spent to lose quality. A width whose file we do not write is
+ * never listed, which is what keeps the srcset in the app honest.
+ */
+async function writeVariants(file, sourceBuf, sourceWidth) {
+  const ext = path.extname(file);
+  const stem = file.slice(0, -ext.length);
+  const rel = '/' + path.relative(dir, file).split(path.sep).join('/');
+  const key = ('/wp-content/uploads' + rel).replace(/\/+/g, '/');
+  const made = [];
+
+  for (const w of VARIANT_WIDTHS) {
+    if (sourceWidth && w >= sourceWidth) continue;   // never upscale
+    const out = `${stem}-${w}w${ext}`;
+    try {
+      const buf = await sharp(sourceBuf, { failOn: 'none' })
+        .resize({ width: w, withoutEnlargement: true })
+        .webp({ quality: QUALITY })
+        .toBuffer();
+      if (!DRY) {
+        const tmp = out + '.tmp';
+        await fs.writeFile(tmp, buf);
+        await fs.rename(tmp, out);
+      }
+      made.push(w);
+      variantsWritten++; variantBytes += buf.length;
+    } catch (e) {
+      console.error(`  ! variant ${w}w failed: ${path.basename(file)} — ${e.message}`);
+    }
+  }
+  if (made.length) manifest[key] = made;
 }
 
 const kb = b => (b / 1024).toFixed(0) + 'KB';
@@ -96,6 +166,12 @@ console.log(`\nOptimising images in: ${dir}`);
 console.log(`Max width: ${MAX_WIDTH}px · quality: ${QUALITY}${DRY ? ' · DRY RUN (no writes)' : ''}\n`);
 
 await walk(dir);
+
+if (VARIANTS && !DRY) {
+  await fs.writeFile(MANIFEST, JSON.stringify(manifest, null, 0) + '\n', 'utf8');
+  console.log(`\n[variants] ${variantsWritten} files (${kb(variantBytes)}) · manifest: ${MANIFEST}`);
+  console.log('           run `npm run build` next so the pages pick up the srcset.');
+}
 
 console.log('\n──────────────────────────────────────────');
 console.log(`Scanned:  ${scanned}`);

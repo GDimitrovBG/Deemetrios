@@ -5,6 +5,7 @@ import { Img } from './components';
 import { useSeo, orgSchema, websiteSchema } from './seo';
 import { getProductCardName, getProductAlt, localizeFabric, collectionLabel } from './seo-helpers';
 import { cdnImage } from './cdn';
+import { withLang } from './router';
 
 // =====================================================
 //  HOME — 3 hero variations + shared sections
@@ -213,7 +214,7 @@ function DressCardBase({ d, lang, onClick, isFav = false, toggleFavorite }) {
         <div>
           {/* Real <a href> — the only crawlable path from grids to product pages.
               Click is handled by the card's onClick; preventDefault stops full reload. */}
-          <h3><a href={`/product/${d.ref}`} onClick={(e) => e.preventDefault()}>{name}</a></h3>
+          <h3><a href={withLang(`/product/${d.ref}`, lang)} onClick={(e) => e.preventDefault()}>{name}</a></h3>
           <div className="meta">{sil}{d.fabric ? ` · ${localizeFabric(d.fabric, lang)}` : ""}</div>
         </div>
         {d.price > 0 && <div className="price">{t.common.from} {d.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</div>}
@@ -272,7 +273,7 @@ function ServicesSection({ t, lang }) {
           {items.map((s, i) => (
             <div key={i} style={{ padding: "48px 28px", borderRight: i < 2 ? "1px solid var(--rule)" : "0", display: "flex", flexDirection: "column", gap: 18 }}>
               <div style={{ fontFamily: "var(--f-display)", fontSize: 56, color: "var(--champagne-deep)", lineHeight: 0.9 }}>{s.num}</div>
-              <h4 style={{ fontFamily: "var(--f-serif)", fontSize: 28, fontWeight: 400, lineHeight: 1.15 }}>{s.title}</h4>
+              <h3 style={{ fontFamily: "var(--f-serif)", fontSize: 28, fontWeight: 400, lineHeight: 1.15 }}>{s.title}</h3>
               <p style={{ fontFamily: "var(--f-serif)", fontSize: 16, lineHeight: 1.5, color: "var(--ink-soft)" }}>{s.desc}</p>
             </div>
           ))}
@@ -426,8 +427,8 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       ? "Арети — Булчински салон Demetrios в София | От 1992 г."
       : "Areti — Demetrios Bridal Salon in Sofia | Since 1992",
     description: lang === "bg"
-      ? "Арети е официален представител на Demetrios в България от 1992 г. Луксозен булчински и сватбен салон в Лозенец, София — над 100 булчински и сватбени рокли, консултация и корекции. Запазете час."
-      : "Areti is the official Demetrios representative in Bulgaria since 1992. Luxury bridal salon in Sofia — over 100 wedding dresses, consultation and alterations. Book a fitting.",
+      ? "Официален представител на Demetrios в България от 1992 г. Булчински салон в Лозенец, София — над 100 рокли, консултация и корекции. Запазете час."
+      : "Official Demetrios representative in Bulgaria since 1992. Bridal salon in Sofia — over 100 dresses, consultation and alterations. Book a fitting.",
     image: IMG.hero1,
     url: "/",
     lang,

@@ -1,12 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
 import i18n from './i18n';
 import { COLLECTIONS } from './data';
-import { cdnImage } from './cdn';
+import { cdnImage, srcsetFor } from './cdn';
 import { collectionLabel } from './seo-helpers';
+import { stateToPath, withLang } from './router';
 
 // =====================================================
 //  Shared components: Nav, Footer, Image placeholders
 // =====================================================
+
+/**
+ * The URL for a route name.
+ *
+ * These links used to be built as `/${routeName}`, which quietly assumed the
+ * route name and the path are the same string. They are for nine of the ten
+ * routes — and not for `quiz`, whose path is `/kviz`. The result was an
+ * `<a href="/quiz">` in the footer of all 279 pages, pointing at a URL that
+ * answers with the noindex 404 shell: 279 crawlable links to a dead page, and
+ * almost none to the real one. Clicking worked, so nothing looked wrong.
+ *
+ * stateToPath() is the router's own mapping, so this can no longer drift.
+ */
+const routeHref = (route, lang) => stateToPath({ route, lang });
+// Every internal href goes through withLang(). Without it an /en/* page emitted
+// only Bulgarian links: the English section had ZERO internal links pointing
+// into it, so Google could reach those 128 pages via the sitemap and hreflang
+// alone, and any crawler that entered the English site walked straight back out
+// into Bulgarian on the first click.
+
 
 // ----- Image system (mix of stock URL + elegant fallback) -----
 function useImageBg(src) {
@@ -15,7 +36,7 @@ function useImageBg(src) {
   return { backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 }
 
-function Img({ src, label, alt, className = "", style = {}, priority = false, width, height }) {
+function Img({ src, label, alt, className = "", style = {}, priority = false, width, height, sizes }) {
   const [errored, setErrored] = useState(false);
   const a = alt ?? label ?? "";
   if (!src || errored) {
@@ -28,10 +49,14 @@ function Img({ src, label, alt, className = "", style = {}, priority = false, wi
       ></div>
     );
   }
+  // Empty until scripts/optimize-images.mjs --variants has been run against the
+  // uploads folder; see cdn.js. Without it the browser just uses `src`.
+  const srcSet = srcsetFor(src, width);
   return (
     <div className={`ph ph-img ${className}`} style={style}>
       <img
         src={cdnImage(src)}
+        {...(srcSet ? { srcSet, sizes: sizes || "(max-width: 768px) 50vw, 25vw" } : {})}
         alt={a}
         width={width}
         height={height}
@@ -85,18 +110,18 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
       <nav className={cls}>
         <div className="nav-inner">
           <div className="nav-left">
-            <a href="/" className={`nav-link ${route === "home" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setDrawerOpen(false); setRoute("home"); }}>{t.nav.home}</a>
+            <a href={withLang("/", lang)} className={`nav-link ${route === "home" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setDrawerOpen(false); setRoute("home"); }}>{t.nav.home}</a>
             <div className="nav-has-drop" onMouseEnter={showDrop} onMouseLeave={hideDrop}>
-              <a href="/collection" className={`nav-link ${route === "collection" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); goCollection(null); }}>
+              <a href={withLang("/collection", lang)} className={`nav-link ${route === "collection" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); goCollection(null); }}>
                 {t.nav.collection}
               </a>
               {colHover && (
                 <div className="nav-drop" onMouseEnter={showDrop} onMouseLeave={hideDrop}>
-                  <a href="/collection" className="nd-item nd-all" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(null); }}>
+                  <a href={withLang("/collection", lang)} className="nd-item nd-all" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(null); }}>
                     {lang === "bg" ? "Всички колекции" : "All Collections"}
                   </a>
                   {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
-                    <a key={c.id} href={`/collection/${c.id}`} className="nd-item" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(c.id); }}>
+                    <a key={c.id} href={withLang(`/collection/${c.id}`, lang)} className="nd-item" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(c.id); }}>
                       <span className="nd-label">{collectionLabel(c, lang)}</span>
                       <span className="nd-desc">{lang === "bg" ? c.desc_bg.split("—")[0] : c.desc_en.split("—")[0]}</span>
                     </a>
@@ -104,26 +129,26 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
                 </div>
               )}
             </div>
-            <a href="/collection/evening" className={`nav-link`} onClick={(e) => { e.preventDefault(); goCollection("evening"); }}>{t.nav.evening}</a>
-            <a href="/about" className={`nav-link ${route === "about" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("about"); }}>{t.nav.about}</a>
+            <a href={withLang("/collection/evening", lang)} className={`nav-link`} onClick={(e) => { e.preventDefault(); goCollection("evening"); }}>{t.nav.evening}</a>
+            <a href={withLang("/about", lang)} className={`nav-link ${route === "about" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("about"); }}>{t.nav.about}</a>
           </div>
           <div className={`burger ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(!drawerOpen)}>
             <span></span><span></span><span></span>
           </div>
-          <a href="/" className="brand-mark" onClick={(e) => { e.preventDefault(); setDrawerOpen(false); setRoute("home"); }}>
+          <a href={withLang("/", lang)} className="brand-mark" onClick={(e) => { e.preventDefault(); setDrawerOpen(false); setRoute("home"); }}>
             АРЕТИ
             <span className="sub">— {lang === "bg" ? "БУЛЧИНСКИ САЛОН · СОФИЯ" : "WEDDING SALON · SOFIA"} —</span>
           </a>
           <div className="nav-right">
-            <a href="/blog" className={`nav-link ${route === "blog" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("blog"); }}>{t.nav.blog}</a>
-            <a href="/contact" className={`nav-link ${route === "contact" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("contact"); }}>{t.nav.contact}</a>
+            <a href={withLang("/blog", lang)} className={`nav-link ${route === "blog" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("blog"); }}>{t.nav.blog}</a>
+            <a href={withLang("/contact", lang)} className={`nav-link ${route === "contact" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("contact"); }}>{t.nav.contact}</a>
             <button className={`nav-fav ${route === "wishlist" ? "active" : ""}`} onClick={() => setRoute("wishlist")} aria-label={t.nav.wishlist}>
               <svg viewBox="0 0 24 24" fill={favorites.length > 0 ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" width="18" height="18">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
               {favorites.length > 0 && <span className="nav-fav-count">{favorites.length}</span>}
             </button>
-            <a href="/booking" className={`nav-link nav-link--cta ${route === "booking" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("booking"); }}>{t.nav.bookings}</a>
+            <a href={withLang("/booking", lang)} className={`nav-link nav-link--cta ${route === "booking" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("booking"); }}>{t.nav.bookings}</a>
             <div className="lang-toggle">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}><span>BG</span></button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}><span>EN</span></button>
@@ -137,41 +162,41 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
           <button className="m-close" onClick={() => setDrawerOpen(false)}>✕</button>
         </div>
         <nav className="m-nav">
-          <a href="/" className={`m-link ${route === "home" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("home"); }}>
+          <a href={withLang("/", lang)} className={`m-link ${route === "home" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("home"); }}>
             <span>{t.nav.home}</span>
             <span className="arr">→</span>
           </a>
-          <a href="/collection" className={`m-link ${route === "collection" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(null); }}>
+          <a href={withLang("/collection", lang)} className={`m-link ${route === "collection" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(null); }}>
             <span>{t.nav.collection}</span>
             <span className="arr">→</span>
           </a>
           {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
-            <a key={c.id} href={`/collection/${c.id}`} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(c.id); }}>
+            <a key={c.id} href={withLang(`/collection/${c.id}`, lang)} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(c.id); }}>
               <span>{collectionLabel(c, lang)}</span>
             </a>
           ))}
           {/* Evening is a top-level nav item on desktop; add it to the mobile
               drawer too — it was missing, so вечерни рокли were unreachable on phones. */}
-          <a href="/collection/evening" className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection("evening"); }}>
+          <a href={withLang("/collection/evening", lang)} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection("evening"); }}>
             <span>{t.nav.evening}</span>
           </a>
           <div className="m-divider" />
-          <a href="/about" className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("about"); }}>
+          <a href={withLang("/about", lang)} className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("about"); }}>
             <span>{t.nav.about}</span>
             <span className="arr">→</span>
           </a>
-          <a href="/demetrios" className={`m-link m-link-sub ${route === "demetrios" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("demetrios"); }}>
+          <a href={withLang("/demetrios", lang)} className={`m-link m-link-sub ${route === "demetrios" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("demetrios"); }}>
             <span style={{ fontStyle: "italic" }}>{t.nav.demetrios}</span>
           </a>
-          <a href="/blog" className={`m-link ${route === "blog" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("blog"); }}>
+          <a href={withLang("/blog", lang)} className={`m-link ${route === "blog" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("blog"); }}>
             <span>{t.nav.blog}</span>
             <span className="arr">→</span>
           </a>
-          <a href="/contact" className={`m-link ${route === "contact" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("contact"); }}>
+          <a href={withLang("/contact", lang)} className={`m-link ${route === "contact" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("contact"); }}>
             <span>{t.nav.contact}</span>
             <span className="arr">→</span>
           </a>
-          <a href="/wishlist" className={`m-link ${route === "wishlist" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("wishlist"); }}>
+          <a href={withLang("/wishlist", lang)} className={`m-link ${route === "wishlist" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("wishlist"); }}>
             <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {t.nav.wishlist}
               {favorites.length > 0 && (
@@ -208,26 +233,26 @@ function Footer({ lang, setRoute, goCollection }) {
             {t.tagline ? <p className="brand-tag">{t.tagline}</p> : null}
             <div className="footer-social">
               <a href="https://www.facebook.com/areti.bg/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                   <path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07c0 6.02 4.39 11.01 10.12 11.93v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8v8.44C19.61 23.08 24 18.09 24 12.07z"/>
                 </svg>
               </a>
               <a href="https://www.instagram.com/aretiweddingsalon/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
                 </svg>
               </a>
               <a href="https://www.tiktok.com/@aretiwedding" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                   <path d="M16.6 5.82a4.28 4.28 0 0 1-1-2.79h-3.4v13.67a2.46 2.46 0 0 1-2.45 2.34 2.48 2.48 0 0 1-2.46-2.47 2.47 2.47 0 0 1 3.2-2.36V8.78a5.88 5.88 0 0 0-.74-.05A5.86 5.86 0 0 0 4 14.6a5.86 5.86 0 0 0 11.72 0V8.42a7.6 7.6 0 0 0 4.45 1.42V6.44a4.29 4.29 0 0 1-3.57-.62z"/>
                 </svg>
               </a>
             </div>
             {t.newsletter ? (
               <div style={{ marginTop: 32, maxWidth: 320 }}>
-                <h4>{t.newsletter}</h4>
+                <h2>{t.newsletter}</h2>
                 <p style={{ fontFamily: "var(--f-serif)", fontSize: 14, opacity: 0.7, marginBottom: 16 }}>{t.newsletter_p}</p>
                 <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,253,248,0.3)", paddingBottom: 8 }}>
                   <input
@@ -243,13 +268,13 @@ function Footer({ lang, setRoute, goCollection }) {
             ) : null}
           </div>
           <div>
-            <h4>{t.shop}</h4>
+            <h2>{t.shop}</h2>
             {/* Paths line up with shop_links by index. Evening dresses point at
                 the real collection route — they used to point at /accessories,
                 which duplicated it under a page titled "bridal accessories". */}
             <ul>{["/collection", "/collection/evening", "/kviz", "/contact"].map((href, i) => (
               <li key={i}>
-                <a href={href} onClick={(e) => {
+                <a href={withLang(href, lang)} onClick={(e) => {
                   e.preventDefault();
                   if (href === "/collection/evening") goCollection("evening");
                   else setRoute(href === "/kviz" ? "quiz" : href.slice(1));
@@ -258,18 +283,17 @@ function Footer({ lang, setRoute, goCollection }) {
             ))}</ul>
           </div>
           <div>
-            <h4>{t.atelier}</h4>
+            <h2>{t.atelier}</h2>
             <ul>{t.atelier_links.map((x, i) => {
-              const r = i === 0 ? "about" : i === 1 ? "demetrios" : i === 2 ? "blog" : "contact";
-              return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
+              const r = ["about", "demetrios", "blog", "contact"][i] || "contact";
+              return <li key={i}><a href={routeHref(r, lang)} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
             })}</ul>
           </div>
           <div>
-            <h4>{t.help}</h4>
+            <h2>{t.help}</h2>
             <ul>{t.help_links.map((x, i) => {
-              const routes = ["booking", "quiz", "contact", "terms", "privacy", "cookies"];
-              const r = routes[i] || "contact";
-              return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
+              const r = ["booking", "quiz", "contact", "terms", "privacy", "cookies"][i] || "contact";
+              return <li key={i}><a href={routeHref(r, lang)} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
             })}</ul>
           </div>
         </div>
@@ -307,7 +331,7 @@ function FloatDial({ setRoute, lang }) {
   const actions = [
     {
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
           <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
           <circle cx="12" cy="10" r="3"/>
         </svg>
@@ -315,20 +339,22 @@ function FloatDial({ setRoute, lang }) {
       label: lang === "bg" ? "Намери ни" : "Find us",
       onClick: () => { setPhoneOpen(false); setAddrOpen(v => !v); },
       active: addrOpen,
+      expandable: true,
     },
     {
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12 19.79 19.79 0 0 1 1 3.18 2 2 0 0 1 2.96 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.98 5.98l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/>
         </svg>
       ),
       label: lang === "bg" ? "Обади се" : "Call us",
       onClick: () => { setAddrOpen(false); setPhoneOpen(v => !v); },
       active: phoneOpen,
+      expandable: true,
     },
     {
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
@@ -338,7 +364,7 @@ function FloatDial({ setRoute, lang }) {
     },
     {
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
           <line x1="16" y1="2" x2="16" y2="6"/>
           <line x1="8" y1="2" x2="8" y2="6"/>
@@ -372,19 +398,19 @@ function FloatDial({ setRoute, lang }) {
           <div className="fd-addr-text">{SALON_PHONE}</div>
           <div className="fd-phone-opts">
             <a className="fd-phone-opt" href={`tel:${SALON_PHONE}`}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 12 19.79 19.79 0 0 1 1 3.18 2 2 0 0 1 2.96 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.98 5.98l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/>
               </svg>
               <span>{lang === "bg" ? "Телефон" : "Phone"}</span>
             </a>
             <a className="fd-phone-opt" href={`viber://chat?number=${SALON_PHONE.replace('+','%2B')}`}>
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                 <path d="M11.4 0C5.5.3.8 4.8.5 10.7c-.1 2.4.4 4.7 1.6 6.7L.5 23l5.8-1.5c1.8.9 3.8 1.4 5.9 1.4h.1C18 22.9 23 17.9 23 11.5 23 5.2 17.8 0 11.4 0zm0 20.8c-1.9 0-3.7-.5-5.3-1.4l-.4-.2-3.5.9.9-3.3-.3-.4C1.8 14.8 1.4 13 1.5 11c.3-5 4.3-8.7 9.4-8.7 5 0 9.1 4.1 9.1 9.2-.1 5-4.2 9.3-9.6 9.3zm5-6.9c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.5-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.4.1-.6l.4-.5c.1-.1.2-.3.2-.4 0-.2 0-.3-.1-.5l-.9-2.1c-.2-.5-.5-.5-.6-.5H7c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3.9 2.5 1 2.7.1.2 1.8 2.8 4.4 3.8 2.6 1 2.6.7 3.1.6.4 0 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1-.1-.1-.3-.2-.5-.3z"/>
               </svg>
               <span>Viber</span>
             </a>
             <a className="fd-phone-opt" href={`https://wa.me/${SALON_PHONE.replace('+','')}`} target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                 <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.66.15s-.77.97-.94 1.17c-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.91-2.2-.24-.57-.48-.49-.66-.5l-.56-.01c-.2 0-.52.07-.79.37-.27.3-1.03 1-1.03 2.45 0 1.44 1.05 2.84 1.2 3.04.15.2 2.07 3.15 5 4.42.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.76-.72 2-1.41.25-.7.25-1.3.18-1.41-.07-.12-.27-.19-.56-.34zm-5.4 7.37h-.02c-1.5 0-2.97-.4-4.27-1.16l-.3-.18-3.16.83.84-3.08-.2-.32C3.86 16.2 3 13.85 3 11.4 3.01 5.7 7.74 1 13.48 1c2.77 0 5.37 1.08 7.33 3.04 1.96 1.96 3.03 4.56 3.03 7.33-.01 5.7-4.74 10.38-10.47 10.38z"/>
               </svg>
               <span>WhatsApp</span>
@@ -398,20 +424,33 @@ function FloatDial({ setRoute, lang }) {
           className="fd-item"
           style={{ transitionDelay: open ? `${i * 55}ms` : `${(actions.length - 1 - i) * 40}ms` }}
         >
-          <span className="fd-label">{a.label}</span>
-          <button className={`fd-btn${a.active ? " fd-btn--active" : ""}`} onClick={a.onClick}>
+          <span className="fd-label" aria-hidden="true">{a.label}</span>
+          {/* The visible label is a SIBLING of the button, so it gives the
+              button no accessible name — a screen reader announced all four of
+              these as just "button". */}
+          <button
+            className={`fd-btn${a.active ? " fd-btn--active" : ""}`}
+            onClick={a.onClick}
+            aria-label={a.label}
+            {...(a.expandable ? { "aria-expanded": !!a.active } : {})}
+          >
             {a.icon}
           </button>
         </div>
       ))}
-      <button className="fd-main" onClick={() => { setOpen(o => !o); closeAll(); }} aria-label="menu">
+      <button
+        className="fd-main"
+        onClick={() => { setOpen(o => !o); closeAll(); }}
+        aria-label={open ? (lang === "bg" ? "Затвори менюто" : "Close menu") : (lang === "bg" ? "Отвори менюто" : "Open menu")}
+        aria-expanded={open}
+      >
         <span className="fd-x">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" width="22" height="22">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" width="22" height="22">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </span>
         <span className="fd-plus">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
             <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.57 21 3 13.43 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.58.11.35.03.74-.25 1.02L6.6 10.8z"/>
           </svg>
         </span>

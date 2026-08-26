@@ -13,9 +13,19 @@
 //  scripts/optimize-images.mjs), and WebP is roughly half the bytes at the
 //  same quality. Point every <img> at the twin.
 //
+//  It is also where responsive sizes are resolved. There is no CDN to resize
+//  on the fly, so the smaller copies are real files written by
+//  scripts/optimize-images.mjs --variants, and public/image-variants.json
+//  records exactly which ones exist. srcsetFor() reads that manifest and stays
+//  silent for anything not listed — so a page can never point the browser at a
+//  variant that was never generated. Until the script is run on the server the
+//  manifest is `{}` and every image behaves exactly as it does today.
+//
 //  If a CDN is ever revisited, this is the one seam to change — every image
 //  in the app already goes through it.
 // =====================================================
+
+import VARIANTS from '../public/image-variants.json';
 
 const ORIGIN_RE = /^https?:\/\/(www\.)?demetriosbride-bg\.com/i;
 
@@ -38,4 +48,22 @@ export function cdnImage(src) {
   if (!path.startsWith('/wp-content/')) return src;
 
   return path.replace(/\.jpe?g$/i, '.webp');
+}
+
+/**
+ * A srcset for one of our uploads, or '' when no variants exist for it.
+ *
+ * The full-size file stays in the list at its own width so a wide desktop
+ * still gets the sharp original; the smaller widths are what a phone picks.
+ */
+export function srcsetFor(src, fullWidth) {
+  const path = cdnImage(src);
+  if (typeof path !== 'string' || !path.startsWith('/wp-content/')) return '';
+  const widths = VARIANTS[path];
+  if (!widths || !widths.length) return '';
+  const ext = path.slice(path.lastIndexOf('.'));
+  const stem = path.slice(0, -ext.length);
+  const parts = widths.map(w => `${stem}-${w}w${ext} ${w}w`);
+  if (fullWidth) parts.push(`${path} ${fullWidth}w`);
+  return parts.join(', ');
 }

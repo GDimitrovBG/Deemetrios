@@ -7,6 +7,7 @@ import { CookieConsent, PrivacyPage, TermsPage, CookiePolicyPage, NotFoundPage }
 import { useTweaks } from './tweaks';
 import { useSeoInject } from './seo-inject';
 import { pathToState, stateToPath, readInitialState } from './router';
+import { pageFor } from './pages';
 import { captureAttribution } from './attribution';
 
 // Record where this visit came from (UTM / ad-click / referrer) as early as
@@ -14,23 +15,9 @@ import { captureAttribution } from './attribution';
 // drops the query string. First-touch is kept for the whole session.
 captureAttribution();
 
-// -----------------------------------------------------------------------------
-// Route pages are code-split so a visitor landing on the home page never
-// downloads the (large) catalog / booking / info bundles up front. Each page
-// file becomes its own chunk; Vite dedupes the dynamic import() so all exports
-// from the same file share one chunk. Big mobile Core-Web-Vitals win.
-// -----------------------------------------------------------------------------
-const HomePage        = lazy(() => import('./home').then(m => ({ default: m.HomePage })));
-const CollectionPage  = lazy(() => import('./catalog').then(m => ({ default: m.CollectionPage })));
-const ProductPage     = lazy(() => import('./catalog').then(m => ({ default: m.ProductPage })));
-const WishlistPage    = lazy(() => import('./catalog').then(m => ({ default: m.WishlistPage })));
-const BookingPage     = lazy(() => import('./booking').then(m => ({ default: m.BookingPage })));
-const QuizPage        = lazy(() => import('./quiz').then(m => ({ default: m.QuizPage })));
-const AboutPage       = lazy(() => import('./info').then(m => ({ default: m.AboutPage })));
-const ContactPage     = lazy(() => import('./info').then(m => ({ default: m.ContactPage })));
-const BlogPage        = lazy(() => import('./info').then(m => ({ default: m.BlogPage })));
-const BlogPostPage    = lazy(() => import('./info').then(m => ({ default: m.BlogPostPage })));
-const DemetriosPage   = lazy(() => import('./info').then(m => ({ default: m.DemetriosPage })));
+// Route pages come from ./pages, which code-splits them exactly as React.lazy
+// did but lets main.jsx resolve the LANDING route before the first render — see
+// the note there for why that matters on a prerendered page.
 
 // Admin panel — lazy loaded, only when #admin hash is used
 const AdminPanel = lazy(() => import('./admin'));
@@ -204,24 +191,31 @@ export default function App() {
 
   const transparent = route === "home" && tweaks.heroVariant !== "split";
 
+  // The component comes from the registry; the switch only decides its props.
+  const Page = pageFor(route);
   let page = null;
   switch (route) {
-    case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
-    case "product": page = <ProductPage lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
-    case "booking": page = <BookingPage lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
-    case "quiz": page = <QuizPage lang={lang} setRoute={setRoute} goProduct={goProduct} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
-    case "wishlist": page = <WishlistPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
-    case "about": page = <AboutPage lang={lang} setRoute={setRoute} />; break;
-    case "demetrios": page = <DemetriosPage lang={lang} setRoute={setRoute} />; break;
-    case "contact": page = <ContactPage lang={lang} setRoute={setRoute} />; break;
-    case "blog": page = <BlogPage lang={lang} setRoute={setRoute} goBlogPost={goBlogPost} />; break;
-    case "blog-post": page = <BlogPostPage lang={lang} setRoute={setRoute} postId={activeBlogPost} goBlogPost={goBlogPost} goProduct={goProduct} goBooking={goBooking} />; break;
+    case "collection": page = <Page lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
+    case "product": page = <Page lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
+    case "booking": page = <Page lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
+    case "quiz": page = <Page lang={lang} setRoute={setRoute} goProduct={goProduct} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
+    case "wishlist": page = <Page lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
+    case "about":
+    case "demetrios":
+    case "contact": page = <Page lang={lang} setRoute={setRoute} />; break;
+    case "blog": page = <Page lang={lang} setRoute={setRoute} goBlogPost={goBlogPost} />; break;
+    case "blog-post": page = <Page lang={lang} setRoute={setRoute} postId={activeBlogPost} goBlogPost={goBlogPost} goProduct={goProduct} goBooking={goBooking} />; break;
+    // Legal pages and the 404 shell are small and statically imported.
     case "privacy": page = <PrivacyPage lang={lang} setRoute={setRoute} />; break;
     case "terms": page = <TermsPage lang={lang} setRoute={setRoute} />; break;
     case "cookies": page = <CookiePolicyPage lang={lang} setRoute={setRoute} />; break;
     case "not-found": page = <NotFoundPage lang={lang} setRoute={setRoute} />; break;
     case "admin": page = null; break;
-    default: page = <HomePage lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
+    default: {
+      const Home = pageFor("home");
+      page = <Home lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
+      break;
+    }
   }
 
   if (route === "admin") return (

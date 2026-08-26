@@ -7,6 +7,7 @@ import { DressCard } from './home';
 import { useSeo, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
 import { getProductHeading, getProductAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle, collectionLabel } from './seo-helpers';
+import { withLang, blogHref } from './router';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -148,14 +149,14 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
               <h3 style={{ fontFamily: "var(--f-display)", fontSize: 20, fontWeight: 400 }}>
                 {hasPage
-                  ? <a href={`/collection/silueti/${slug}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }} style={{ color: "inherit" }}>{name}</a>
+                  ? <a href={withLang(`/collection/silueti/${slug}`, lang)} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }} style={{ color: "inherit" }}>{name}</a>
                   : name}
               </h3>
               <span style={{ fontSize: 13, color: "var(--ink-mute)" }}>{silCounts[key] || 0} {isBg ? "модела" : "styles"}</span>
             </div>
             <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{desc}</p>
             {hasPage && (
-              <a href={`/collection/silueti/${slug}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }} style={{ fontSize: 13, color: "var(--ink-soft)", textDecoration: "underline" }}>
+              <a href={withLang(`/collection/silueti/${slug}`, lang)} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(slug); }} style={{ fontSize: 13, color: "var(--ink-soft)", textDecoration: "underline" }}>
                 {isBg ? `Вижте роклите ${name.toLowerCase()} →` : `See ${name.toLowerCase()} dresses →`}
               </a>
             )}
@@ -167,7 +168,7 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
           still deciding, and a useful internal link into the product pages. */}
       <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 40 }}>
         {isBg ? "Не сте сигурна кой силует ви отива? " : "Not sure which silhouette suits you? "}
-        <a href="/kviz" onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
+        <a href={withLang("/kviz", lang)} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
           {isBg ? "Направете безплатния тест за булчинска рокля →" : "Take the free wedding dress quiz →"}
         </a>
       </p>
@@ -213,13 +214,13 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
         </button>
       </div>
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 48, fontSize: 14 }}>
-        <a href="/blog/svatbeni-rokli-kak-da-namerite-perfektnata" onClick={e => { e.preventDefault(); setRoute("blog/svatbeni-rokli-kak-da-namerite-perfektnata"); }} style={{ color: "var(--ink-soft)" }}>
+        <a href={blogHref("svatbeni-rokli-kak-da-namerite-perfektnata", lang)} onClick={e => { e.preventDefault(); setRoute("blog/svatbeni-rokli-kak-da-namerite-perfektnata"); }} style={{ color: "var(--ink-soft)" }}>
           {isBg ? "Пълен наръчник за избор →" : "Full buying guide →"}
         </a>
-        <a href="/blog/bulchinski-rokli-tseni-2026" onClick={e => { e.preventDefault(); setRoute("blog/bulchinski-rokli-tseni-2026"); }} style={{ color: "var(--ink-soft)" }}>
+        <a href={blogHref("bulchinski-rokli-tseni-2026", lang)} onClick={e => { e.preventDefault(); setRoute("blog/bulchinski-rokli-tseni-2026"); }} style={{ color: "var(--ink-soft)" }}>
           {isBg ? "Цени 2026 →" : "Prices 2026 →"}
         </a>
-        <a href="/blog/bulchinska-roklia-silueti-narachnik" onClick={e => { e.preventDefault(); setRoute("blog/bulchinska-roklia-silueti-narachnik"); }} style={{ color: "var(--ink-soft)" }}>
+        <a href={blogHref("bulchinska-roklia-silueti-narachnik", lang)} onClick={e => { e.preventDefault(); setRoute("blog/bulchinska-roklia-silueti-narachnik"); }} style={{ color: "var(--ink-soft)" }}>
           {isBg ? "Наръчник по силуети →" : "Silhouette guide →"}
         </a>
       </div>
@@ -295,7 +296,7 @@ function SubCollectionSeo({ lang, setRoute, colId }) {
       </div>
       {info.blogSlug && (
         <div style={{ marginTop: 16, fontSize: 14 }}>
-          <a href={`/blog/${info.blogSlug}`} onClick={e => { e.preventDefault(); setRoute(`blog/${info.blogSlug}`); }} style={{ color: "var(--ink-soft)" }}>
+          <a href={blogHref(info.blogSlug, lang)} onClick={e => { e.preventDefault(); setRoute(`blog/${info.blogSlug}`); }} style={{ color: "var(--ink-soft)" }}>
             {info.blogLabel}
           </a>
         </div>
@@ -313,18 +314,24 @@ const SILHOUETTE_PAGES = {
     h1_bg: "Булчински рокли русалка", h1_en: "Mermaid Wedding Dresses",
     intro_bg: "Булчинската рокля тип русалка приляга плътно по тялото от бюста до коляното, след което се разширява във фина пола. Силуетът подчертава извивките и е идеален за булки, които искат чувствена, драматична визия. В Арети предлагаме оригинални модели Demetrios с този силует.",
     intro_en: "A mermaid wedding dress fits closely from the bust to the knee, then flares into a dramatic skirt. The silhouette accentuates the curves and suits brides who want a sensual, striking look. Areti offers original Demetrios mermaid gowns in Sofia.",
+    meta_bg: "Булчински рокли русалка в София — прилепнал силует, който подчертава извивките. Оригинални модели Demetrios, цени от 1 000 €.",
+    meta_en: "Mermaid wedding dresses in Sofia — a fitted silhouette that accentuates the curves. Original Demetrios styles from €1,000.",
   },
   printsesa: {
     bg: "Принцеса", en: "Ball gown",
-    h1_bg: "Булчински рокли принцеса", h1_en: "Princess (Ball Gown) Wedding Dresses",
+    h1_bg: "Булчински рокли принцеса", h1_en: "Princess Ball Gown Wedding Dresses",
     intro_bg: "Булчинската рокля тип принцеса има прилепнал корсет и обемна пола, която създава класическа, приказна визия. Този силует е сред най-желаните за традиционни сватби и подхожда на почти всяка фигура. Разгледайте оригиналните модели принцеса на Demetrios в салон Арети, София.",
     intro_en: "A princess (ball gown) wedding dress pairs a fitted bodice with a full skirt for a classic, fairy-tale look. It is one of the most requested silhouettes for traditional weddings and flatters almost every body type. Explore original Demetrios ball gowns at Areti, Sofia.",
+    meta_bg: "Булчински рокли принцеса в София — корсет и обемна пола за класическа визия. Оригинални модели Demetrios, цени от 1 000 €.",
+    meta_en: "Princess ball gown wedding dresses in Sofia — fitted bodice, full skirt, classic look. Original Demetrios styles from €1,000.",
   },
   "a-siluet": {
     bg: "А-силует", en: "A-line",
     h1_bg: "Булчински рокли А-силует", h1_en: "A-Line Wedding Dresses",
     intro_bg: "Булчинската рокля с А-силует е прилепнала в горната част и плавно се разширява от талията надолу, оформяйки буквата „А“. Това е най-универсалният силует — балансиран, елегантен и ласкав за всяка фигура. В Арети това е най-голямата ни група модели Demetrios.",
     intro_en: "An A-line wedding dress is fitted through the top and flows out gently from the waist, forming an “A” shape. It is the most versatile silhouette — balanced, elegant and flattering on every body type. It is our largest group of Demetrios styles at Areti.",
+    meta_bg: "Булчински рокли А-силует в София — най-универсалната кройка, ласкава за всяка фигура. Оригинални модели Demetrios, цени от 1 000 €.",
+    meta_en: "A-line wedding dresses in Sofia — the most versatile cut, flattering on every figure. Original Demetrios styles from €1,000.",
   },
 };
 
@@ -358,7 +365,7 @@ function SilhouetteSeo({ lang, setRoute, goSilhouette, slug, count }) {
         <strong>{isBg ? "Други силуети:" : "Other silhouettes:"}</strong>{" "}
         {others.map(([s, d], i) => (
           <span key={s}>
-            <a href={`/collection/silueti/${s}`} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(s); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+            <a href={withLang(`/collection/silueti/${s}`, lang)} onClick={(e) => { e.preventDefault(); goSilhouette && goSilhouette(s); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
               {isBg ? d.h1_bg : d.h1_en}
             </a>{i < others.length - 1 ? " · " : ""}
           </span>
@@ -497,18 +504,16 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
         : (isBg ? "Булчински рокли София — 100+ модела, цени от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
     description: silData
-      ? (isBg
-          ? `${silData.intro_bg} ${silCount} модела, цени от 1 000 €. Проба по предварителен час в салон Арети, Лозенец.`
-          : `${silData.intro_en} ${silCount} styles, prices from €1,000. Fittings by appointment at Areti, Sofia.`)
+      ? (isBg ? silData.meta_bg : silData.meta_en)
       : isEvening
       ? (isBg
-          ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Елегантни вечерни рокли за бал, сватба или коктейл. Проба по предварителен час, корекции на място.`
-          : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Elegant evening gowns for proms, weddings and cocktails. Fitting by appointment, in-house alterations.`)
+          ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Проба по предварителен час, корекции на място.`
+          : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Fitting by appointment, in-house alterations.`)
       : colData
         ? (isBg ? (colData.seo_desc_bg || colData.desc_bg) : (colData.seo_desc_en || colData.desc_en))
         : (isBg
-            ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Колекции Demetrios, Cosmobella, Platinum и Destination Romance. 5 силуета, проба по час, безплатна корекция. Арети — от 1992 г."
-            : "Over 100 wedding and bridal dresses in Sofia — prices from €1,000 to €4,000. Demetrios, Cosmobella, Platinum and Destination Romance collections. 5 silhouettes, fittings and alterations. Areti — since 1992."),
+            ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Проба по час в Арети."
+            : "Over 100 wedding dresses in Sofia — from €1,000 to €4,000. Demetrios, Cosmobella, Platinum, Destination Romance. Fittings at Areti."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
@@ -571,6 +576,15 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
     return applyFiltersAndSort(ordered, filters, sortBy);
   }, [activeCol, filters, sortBy, initSilhouette]);
 
+  // How many dresses the heading is actually talking about. NOT displayList —
+  // that intentionally continues into the following collections so "Виж още"
+  // flows on, which would have the Demetrios page claim 99 styles instead of 53.
+  const headingCount = silData
+    ? DRESSES.filter(d => d.silhouette === silData.bg).length
+    : activeCol
+      ? DRESSES.filter(d => d.collection === activeCol).length
+      : DRESSES.length;
+
   // What's currently visible in the grid
   const visibleItems = displayList.slice(0, visibleCount);
   const remaining = displayList.length - visibleCount;
@@ -615,7 +629,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           {silData ? (
             <p className="collection-intro">
               {isBg ? silData.intro_bg : silData.intro_en}{' '}
-              <a href="/collection" onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+              <a href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
                 {isBg ? "Вижте всички булчински рокли →" : "See all wedding dresses →"}
               </a>
             </p>
@@ -694,6 +708,22 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           </button>
         </div>
       </div>
+
+      {/* Section heading for the grid.
+          The page went <h1> straight to the <h3> of each dress card, skipping a
+          level — an outline that assistive tech reads as broken, and a page
+          with no <h2> at all on the site's most important commercial URL. This
+          is also the natural place for the "N модела" count and the collection
+          or silhouette name. */}
+      <h2 className="grid-heading">
+        {silData ? (isBg ? silData.h1_bg : silData.h1_en)
+          : activeCol === "evening" ? (isBg ? "Вечерни, бални и абитуриентски рокли" : "Evening, prom and formal dresses")
+          : activeColData ? (isBg ? `Булчински рокли ${collectionLabel(activeColData, lang)}` : `${collectionLabel(activeColData, lang)} wedding dresses`)
+          : (isBg ? "Всички булчински рокли" : "All wedding dresses")}
+        <span className="grid-heading-count">
+          {isBg ? ` — ${headingCount} модела` : ` — ${headingCount} styles`}
+        </span>
+      </h2>
 
       {/* Grid — render visible items with collection dividers */}
       <CollectionGrid
@@ -862,11 +892,13 @@ function CollectionGrid({ items, lang, gridCols, goProduct, favorites, toggleFav
       rows.push(
         <div key={`divider-${d.collection}`} className="col-divider">
           <div className="col-divider-inner">
-            <div style={{ height: 1, background: "var(--rule)", flex: 1 }} />
-            <span style={{ fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: "clamp(14px, 1.5vw, 18px)", color: "var(--ink-soft)", whiteSpace: "nowrap", padding: "0 20px" }}>
+            <div style={{ height: 1, background: "var(--rule)", flex: 1 }} aria-hidden="true" />
+            {/* Was a <span>: it looked like a heading and read like one, but
+                gave the outline nothing between the page h1 and the card h3s. */}
+            <h2 style={{ fontFamily: "var(--f-display)", fontStyle: "italic", fontSize: "clamp(14px, 1.5vw, 18px)", fontWeight: 400, color: "var(--ink-soft)", whiteSpace: "nowrap", padding: "0 20px", margin: 0 }}>
               {colData ? collectionLabel(colData, lang) : d.collection}
-            </span>
-            <div style={{ height: 1, background: "var(--rule)", flex: 1 }} />
+            </h2>
+            <div style={{ height: 1, background: "var(--rule)", flex: 1 }} aria-hidden="true" />
           </div>
         </div>
       );
@@ -984,13 +1016,13 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
     <div className="page-enter">
       <div className="product">
         <div className="product-crumb">
-          <a href="/" onClick={(e) => { e.preventDefault(); setRoute("home"); }} style={{ cursor: "pointer" }}>Areti</a>
-          <a href="/collection" onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ cursor: "pointer" }}>{t.product.crumb_back}</a>
+          <a href={withLang("/", lang)} onClick={(e) => { e.preventDefault(); setRoute("home"); }} style={{ cursor: "pointer" }}>Areti</a>
+          <a href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ cursor: "pointer" }}>{t.product.crumb_back}</a>
           <span style={{ color: "var(--ink)" }}>{cardName}</span>
         </div>
         <div className="product-main">
           <div className="product-gallery">
-            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} />
+            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} sizes="(max-width: 768px) 100vw, 55vw" />
             {galleryImgs.slice(1, 4).map((imgSrc, i) => (
               <Img key={i} src={imgSrc} alt={getProductAlt(dress, lang, i + 1)} className="thumb" style={{ cursor: "zoom-in" }} width={600} height={800} />
             ))}

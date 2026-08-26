@@ -270,7 +270,7 @@ function DemetriosPage({ lang, setRoute }) {
   const t = i18n[lang].demetrios;
   const isBg = lang === "bg";
   useSeo({
-    title: isBg ? "Деметриос Джеймс Елиас — историята на марката Demetrios" : "Demetrios James Elias — The Story of the Demetrios Brand",
+    title: isBg ? "Кой е Demetrios — историята на марката" : "Demetrios James Elias — the story of the brand",
     description: isBg
       ? "Деметриос Джеймс Елиас — гръцки дизайнер, основал Demetrios Bridal през 1982 г. Колекциите му в Арети — официален представител на Demetrios в България."
       : "Demetrios James Elias — Greek-American designer who founded Demetrios Bridal in 1982. His collections at Areti, official Demetrios representative in Bulgaria.",
@@ -667,13 +667,13 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
           {/* Mobile sidebar — horizontal scroll strip */}
           {relatedProducts.length > 0 && (
             <div className="blog-sidebar-mobile">
-              <div className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</div>
+              <h2 className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</h2>
               <div className="blog-sidebar-scroll">
                 {relatedProducts.map(p => (
                   <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                     <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                     <div className="blog-sidebar-card-info">
-                      <h4><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
+                      <h3><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
                       <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
                     </div>
                   </article>
@@ -699,12 +699,12 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
         {relatedProducts.length > 0 && (
           <aside className="blog-sidebar">
             <div className="blog-sidebar-sticky">
-              <div className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</div>
+              <h2 className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</h2>
               {relatedProducts.map(p => (
                 <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                   <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
                   <div className="blog-sidebar-card-info">
-                    <h4><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h4>
+                    <h3><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
                     <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
                   </div>
                 </article>

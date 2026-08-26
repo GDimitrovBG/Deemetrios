@@ -5,8 +5,8 @@ import { DRESSES } from './data';
 import { BLOG_POSTS } from './blog_data';
 
 // Old WordPress paths → new SPA paths.
-// Hosting-level configs (_redirects, vercel.json) issue real 301s for crawlers;
-// this map is the in-app fallback so direct hits also resolve correctly.
+// deploy/redirects.caddy issues the real 301s for crawlers; this map is the
+// in-app fallback so a client-side navigation resolves the same way.
 const WP_REDIRECTS = {
   '/za-nas':              '/about',
   '/kontakti':            '/contact',
@@ -83,9 +83,10 @@ function normalize(pathname) {
 // -----------------------------------------------------------------------------
 //  Language prefix. Bulgarian is the default locale and keeps its bare URLs
 //  (they carry all current rankings — never move them). English lives under
-//  /en/*. The blog is deliberately excluded: none of the 14 posts are
-//  translated, and publishing untranslated locale pages is worse than not
-//  having them, so /en/blog* folds back to the Bulgarian blog.
+//  /en/*. The blog LISTING is bilingual; individual posts get an /en twin only
+//  once they carry a title_en. Publishing an untranslated locale page is worse
+//  than not having one, so /en/blog/<untranslated> folds back to the Bulgarian
+//  original — see blogHref() for the link-side counterpart.
 // -----------------------------------------------------------------------------
 export const LANGS = ['bg', 'en'];
 
@@ -94,6 +95,21 @@ export function splitLang(pathname) {
   if (p === '/en') return { lang: 'en', path: '/' };
   if (p.startsWith('/en/')) return { lang: 'en', path: p.slice(3) };
   return { lang: 'bg', path: p };
+}
+
+/**
+ * URL for a blog post, by slug, in the given language.
+ *
+ * Only translated posts have an /en twin — `/en/blog/<untranslated>` redirects
+ * back to the Bulgarian original, so linking there from an English page spends
+ * a 301 hop and hands Google a redirecting internal link. Cross-links inside
+ * the catalogue point at fixed slugs, so they need this check rather than a
+ * blanket withLang().
+ */
+export function blogHref(slug, lang) {
+  const path = `/blog/${slug}`;
+  const post = BLOG_POSTS.find(b => b.slug === slug);
+  return post?.title_en ? withLang(path, lang) : path;
 }
 
 /** Prefix a Bulgarian path with the locale (no-op for bg). */
