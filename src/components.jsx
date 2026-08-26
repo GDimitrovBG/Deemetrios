@@ -210,7 +210,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
 }
 
 // ----- Footer -----
-function Footer({ lang, setRoute }) {
+function Footer({ lang, setRoute, goCollection }) {
   const t = i18n[lang].footer;
   return (
     <footer className="footer">
@@ -257,10 +257,18 @@ function Footer({ lang, setRoute }) {
           </div>
           <div>
             <h4>{t.shop}</h4>
-            <ul>{t.shop_links.map((x, i) => {
-              const r = i === 0 ? "collection" : i === 2 ? "accessories" : "collection";
-              return <li key={i}><a href={`/${r}`} onClick={(e) => { e.preventDefault(); setRoute(r); }}>{x}</a></li>;
-            })}</ul>
+            {/* Paths line up with shop_links by index. Evening dresses point at
+                the real collection route — they used to point at /accessories,
+                which duplicated it under a page titled "bridal accessories". */}
+            <ul>{["/collection", "/collection/evening", "/kviz", "/contact"].map((href, i) => (
+              <li key={i}>
+                <a href={href} onClick={(e) => {
+                  e.preventDefault();
+                  if (href === "/collection/evening") goCollection("evening");
+                  else setRoute(href === "/kviz" ? "quiz" : href.slice(1));
+                }}>{t.shop_links[i]}</a>
+              </li>
+            ))}</ul>
           </div>
           <div>
             <h4>{t.atelier}</h4>

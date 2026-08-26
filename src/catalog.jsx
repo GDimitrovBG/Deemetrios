@@ -368,6 +368,100 @@ function SilhouetteSeo({ lang, setRoute, goSilhouette, slug, count }) {
   );
 }
 
+
+// -----------------------------------------------------------------------------
+//  Evening / prom SEO content — only rendered on /collection/evening.
+//  CollectionSeoContent covers the bridal hub, but the evening collection had
+//  just its intro paragraph (~430 words total) while ranking for a cluster with
+//  300+ monthly impressions and a weak CTR: "бална рокля" (singular — 161
+//  impressions at ~1%), "официални рокли софия", "абитуриентски рокли".
+//  The copy below deliberately uses BOTH the singular and plural forms, which
+//  the plural-only headings never matched.
+// -----------------------------------------------------------------------------
+const EVENING_FAQ = {
+  bg: [
+    { q: "Колко струва бална рокля в София?", a: "Цените на балните и абитуриентските рокли в Арети зависят от модела и изработката — попитайте при запазване на час, тъй като наличностите се сменят всеки сезон. В цената влизат консултация със стилист и проба без ограничение в броя модели." },
+    { q: "Кога да си избера абитуриентска рокля?", a: "Препоръчваме 3–4 месеца преди бала. Най-желаните модели и размери се изчерпват първи, а за корекции по фигурата трябват още 1–2 седмици. За балове през май–юни най-спокойно е да дойдете през февруари." },
+    { q: "Каква бална рокля отива на фигурата ми?", a: "А-силуетът е универсален и ласкае почти всяка фигура. Русалката подчертава извивките и е за тези, които искат по-смела визия. Принцесата акцентира талията и създава обем. Най-добре е да пробвате и трите на живо — разликата се усеща веднага." },
+    { q: "Правите ли корекции на официалните рокли?", a: "Да — корекциите се извършват в ателието на място, от същата шивачка, която работи по булчинските рокли. Скъсяване, стесняване или промяна на презрамките отнемат 1–2 седмици." },
+    { q: "Подходящи ли са роклите за сватба като гостенка?", a: "Да. Голяма част от вечерната колекция е подходяща за сватба като гостенка, кръщене или официална вечеря — по-дискретни цветове и кройки, които не конкурират булката." },
+  ],
+  en: [
+    { q: "How much does a prom dress cost in Sofia?", a: "Prices for prom and evening dresses at Areti depend on the style and craftsmanship — ask when booking, as stock changes each season. Every price includes a stylist consultation and unlimited try-ons." },
+    { q: "When should I choose my prom dress?", a: "We recommend 3–4 months before the ball. The most popular styles and sizes go first, and alterations need another 1–2 weeks. For May–June proms, February is the comfortable time to come in." },
+    { q: "Which evening dress suits my figure?", a: "The A-line is universal and flatters almost every figure. The mermaid accentuates curves for a bolder look. The ball gown emphasises the waist and adds volume. Trying all three in person is the fastest way to tell." },
+    { q: "Do you alter evening dresses?", a: "Yes — alterations are done in our own atelier by the same seamstress who works on the bridal gowns. Shortening, taking in or adjusting straps takes 1–2 weeks." },
+    { q: "Are these dresses suitable as a wedding guest?", a: "Yes. Much of the evening collection works for weddings as a guest, christenings or formal dinners — more discreet colours and cuts that never compete with the bride." },
+  ],
+};
+
+function EveningSeoContent({ lang, setRoute }) {
+  const isBg = lang === "bg";
+  const [faqOpen, setFaqOpen] = useState({});
+  const isPrerender = typeof window !== 'undefined' && window.__PRERENDER__;
+  const faq = EVENING_FAQ[isBg ? "bg" : "en"];
+
+  const occasions = isBg ? [
+    { t: "Абитуриентски бал", d: "Най-снимания ден от гимназията. Дълга бална рокля с ефектен гръб или деколте — визия, която ще гледате на снимките години напред." },
+    { t: "Сватба като гостенка", d: "Официална рокля в по-дискретен цвят, която изглежда празнично, без да конкурира булката." },
+    { t: "Кръщене и семеен празник", d: "Елегантна, по-сдържана кройка, удобна за цял ден сред близките." },
+    { t: "Коктейл и корпоративно събитие", d: "По-къса или права рокля с чист силует — официална, но не тържествена." },
+  ] : [
+    { t: "Prom night", d: "The most photographed evening of school. A long gown with a striking back or neckline — a look you will be seeing in photos for years." },
+    { t: "Wedding guest", d: "A formal dress in a discreet colour that feels celebratory without competing with the bride." },
+    { t: "Christening or family celebration", d: "An elegant, more restrained cut that stays comfortable through a long day." },
+    { t: "Cocktail and corporate events", d: "A shorter or column dress with a clean silhouette — formal, but not ceremonial." },
+  ];
+
+  return (
+    <section className="collection-seo">
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? "Как да изберете бална рокля" : "How to choose an evening dress"}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
+        {isBg
+          ? "Изборът на бална рокля започва от силуета, а не от цвета. А-силуетът е най-универсален и ласкае почти всяка фигура; русалката подчертава извивките; принцесата акцентира талията и създава обем. След това идват тъканта и детайлите — сатенът изглежда по-плътен и структуриран, тюлът с мъниста улавя светлината, дантелата придава мекота. В салона можете да пробвате неограничен брой модели, а корекциите се правят на място в ателието."
+          : "Choosing an evening dress starts with the silhouette, not the colour. The A-line is the most universal and flatters almost every figure; the mermaid accentuates curves; the ball gown emphasises the waist and adds volume. Fabric and detail come next — satin reads denser and more structured, beaded tulle catches the light, lace softens the line. You can try on as many styles as you like, and alterations happen in our own atelier."}
+      </p>
+
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 40 }}>
+        {isBg ? "За какви поводи" : "For which occasions"}
+      </h2>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 16 }}>
+        {occasions.map(o => (
+          <div key={o.t} style={{ background: "var(--surface)", padding: "18px 20px", borderRadius: 8 }}>
+            <h3 style={{ fontFamily: "var(--f-serif)", fontSize: 18, fontWeight: 400, marginBottom: 8 }}>{o.t}</h3>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{o.d}</p>
+          </div>
+        ))}
+      </div>
+
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginTop: 24 }}>
+        {isBg ? "Търсите булчинска, а не официална рокля? " : "Looking for a wedding dress rather than a formal one? "}
+        <a href={isBg ? "/collection" : "/en/collection"} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
+          {isBg ? "Вижте булчинската колекция →" : "See the bridal collection →"}
+        </a>
+        {isBg ? " Или направете " : " Or take the "}
+        <a href={isBg ? "/kviz" : "/en/kviz"} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
+          {isBg ? "безплатния тест за силует →" : "free silhouette quiz →"}
+        </a>
+      </p>
+
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 48 }}>
+        {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
+      </h2>
+      <div className="collection-faq">
+        {faq.map(({ q, a }, i) => (
+          <details key={q} open={isPrerender || !!faqOpen[i]} onToggle={(e) => { const isOpen = e.currentTarget?.open ?? e.target?.open ?? false; setFaqOpen(o => ({ ...o, [i]: isOpen })); }}>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, goSilhouette, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
@@ -435,6 +529,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         lang,
       ),
       ...(!initCollection && !silData ? [faqSchema(COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg)] : []),
+      // Evening collection has its own FAQ block on the page — declare it too.
+      ...(initCollection === "evening" ? [faqSchema(EVENING_FAQ[lang] || EVENING_FAQ.bg)] : []),
     ]},
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -669,6 +765,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       </div>
 
       {!initCollection && !silData && <CollectionSeoContent lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} />}
+      {initCollection === "evening" && <EveningSeoContent lang={lang} setRoute={setRoute} />}
       {initCollection && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
       {silData && <SilhouetteSeo lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} slug={initSilhouette} count={silCount} />}
 

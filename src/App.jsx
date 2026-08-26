@@ -23,7 +23,6 @@ captureAttribution();
 const HomePage        = lazy(() => import('./home').then(m => ({ default: m.HomePage })));
 const CollectionPage  = lazy(() => import('./catalog').then(m => ({ default: m.CollectionPage })));
 const ProductPage     = lazy(() => import('./catalog').then(m => ({ default: m.ProductPage })));
-const AccessoriesPage = lazy(() => import('./catalog').then(m => ({ default: m.AccessoriesPage })));
 const WishlistPage    = lazy(() => import('./catalog').then(m => ({ default: m.WishlistPage })));
 const BookingPage     = lazy(() => import('./booking').then(m => ({ default: m.BookingPage })));
 const QuizPage        = lazy(() => import('./quiz').then(m => ({ default: m.QuizPage })));
@@ -180,7 +179,6 @@ export default function App() {
   switch (route) {
     case "collection": page = <CollectionPage lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
     case "product": page = <ProductPage lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
-    case "accessories": page = <AccessoriesPage lang={lang} setRoute={setRoute} />; break;
     case "booking": page = <BookingPage lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
     case "quiz": page = <QuizPage lang={lang} setRoute={setRoute} goProduct={goProduct} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
     case "wishlist": page = <WishlistPage lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;
@@ -211,7 +209,7 @@ export default function App() {
           {page}
         </Suspense>
       </main>
-      <Footer lang={lang} setRoute={setRoute} />
+      <Footer lang={lang} setRoute={setRoute} goCollection={goCollection} />
       <FloatDial setRoute={setRoute} lang={lang} />
       <CookieConsent lang={lang} setRoute={setRoute} />
       <TweaksPanel title="Tweaks">

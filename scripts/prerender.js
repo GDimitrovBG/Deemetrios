@@ -49,7 +49,6 @@ async function loadRoutes() {
     '/collection/silueti/printsesa',
     '/collection/silueti/a-siluet',
     '/kviz',
-    '/accessories',
     '/booking',
     '/about',
     '/demetrios',
@@ -119,6 +118,23 @@ async function renderRoute(browser, route) {
   // Brief grace period for trailing micro-tasks (JSON-LD insertion, hreflang loop).
   await page.evaluate(ms => new Promise(r => setTimeout(r, ms)), SEO_SETTLE_MS);
 
+  // Guard against snapshotting an empty shell. Under load the React tree can
+  // still be mounting when the SEO-ready wait times out, and the .catch above
+  // would happily serialise `<div id="app"></div>` — a page that looks fine to
+  // the build but is blank to a crawler. Wait for actual rendered children.
+  const mounted = await page.waitForFunction(
+    () => {
+      const app = document.getElementById('app');
+      return !!app && app.children.length > 0;
+    },
+    { timeout: 10_000 }
+  ).then(() => true).catch(() => false);
+
+  if (!mounted) {
+    await page.close();
+    throw new Error('rendered an empty #app (React never mounted)');
+  }
+
   // Strip the Vite dev runtime + serialize.
   const html = await page.evaluate(() => '<!doctype html>\n' + document.documentElement.outerHTML);
 
@@ -160,15 +176,26 @@ async function run() {
       const idx = i++;
       const route = routes[idx];
       const tStart = Date.now();
-      try {
-        const html = await renderRoute(browser, route);
+      // Retry transient failures: at concurrency 4 a slow page can exceed the
+      // navigation timeout purely from contention, and a silent miss would ship
+      // a blank page. Two extra attempts with a short backoff clears those.
+      let html = null, lastErr = null;
+      for (let attempt = 1; attempt <= 3 && html === null; attempt++) {
+        try {
+          html = await renderRoute(browser, route);
+        } catch (err) {
+          lastErr = err;
+          if (attempt < 3) await new Promise(r => setTimeout(r, 500 * attempt));
+        }
+      }
+      if (html !== null) {
         await writeRoute(route, html);
         const ms = Date.now() - tStart;
         ok.push({ route, ms });
         console.log(`  ✓ [${String(idx + 1).padStart(3)}/${routes.length}] ${route}  (${ms}ms)`);
-      } catch (err) {
-        failed.push({ route, err: err.message });
-        console.error(`  ✗ [${String(idx + 1).padStart(3)}/${routes.length}] ${route}  → ${err.message}`);
+      } else {
+        failed.push({ route, err: lastErr.message });
+        console.error(`  ✗ [${String(idx + 1).padStart(3)}/${routes.length}] ${route}  → ${lastErr.message}`);
       }
     }
   }

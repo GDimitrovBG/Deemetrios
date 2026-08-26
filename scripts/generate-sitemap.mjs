@@ -131,7 +131,7 @@ async function run() {
   }
   // Free tool — high-intent landing page, worth a strong priority.
   pair('/kviz', { lastmod: today, changefreq: 'monthly', priority: '0.8' });
-  for (const p of ['/accessories', '/booking', '/about', '/demetrios', '/contact']) {
+  for (const p of ['/booking', '/about', '/demetrios', '/contact']) {
     pair(p, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
   }
   for (const p of ['/privacy', '/terms', '/cookies']) {

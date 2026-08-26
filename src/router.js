@@ -160,7 +160,10 @@ function pathToStateInner(pathname) {
   }
 
   if (p === '/kviz')        return { route: 'quiz' };
-  if (p === '/accessories') return { route: 'accessories' };
+  // /accessories retired: the salon does not sell accessories separately. The
+  // page carried stock photos and invented prices under a title that contradicted
+  // its own H1. Redirect rather than 404 — it has been indexed for a while.
+  if (p === '/accessories') return { redirect: '/collection' };
   if (p === '/booking')     return { route: 'booking' };
   if (p === '/wishlist')    return { route: 'wishlist' };
   if (p === '/about')       return { route: 'about' };
@@ -211,7 +214,6 @@ function stateToPathInner({ route, collectionId, productRef, blogPostId, silhoue
       return collectionId ? `/collection/${collectionId}` : '/collection';
     case 'product':     return productRef ? `/product/${productRef}` : '/collection';
     case 'quiz':        return '/kviz';
-    case 'accessories': return '/accessories';
     case 'booking':     return '/booking';
     case 'wishlist':    return '/wishlist';
     case 'about':       return '/about';

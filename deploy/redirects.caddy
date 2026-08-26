@@ -92,6 +92,12 @@ redir @r_page_vecherni   /collection/evening 301
 @r_page_blog       path_regexp ^/blog/page/\d+/?$
 redir @r_page_blog       /blog 301
 
+# --- Retired /accessories page ---
+# The salon does not sell accessories separately; the page shipped stock photos
+# and invented prices under a title that contradicted its own H1.
+@r_accessories path /accessories /accessories/
+redir @r_accessories /collection 301
+
 # --- Old Cyrillic brand taxonomy (/марка/demetrios/page/5/ etc.) ---
 @r_marka path_regexp ^/марка/.*$
 redir @r_marka /collection 301
