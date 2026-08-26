@@ -217,14 +217,29 @@ router.get('/robots.txt', async (req, res) => {
     const doc = await Setting.findOne({ key: 'site' });
     const settings = doc?.value || {};
 
+    // THIS is the robots.txt the site actually serves: Caddy proxies /robots.txt
+    // to the API, so public/robots.txt in the repo is only the fallback if the
+    // backend is down. Keep the two identical — they drifted once already, and
+    // the served copy was the stale one.
     let txt = `User-agent: *
 Allow: /
 
-# AI crawlers — explicitly allowed so ChatGPT, Perplexity, Gemini, Claude can cite us
+# Not useful in an index: the admin panel and a per-visitor wishlist.
+Disallow: /admin
+Disallow: /wishlist
+
+# AI crawlers — explicitly allowed so ChatGPT, Perplexity, Gemini and Claude
+# can read and cite the salon. /llms.txt holds the plain-language summary they
+# use; it is discoverable at its conventional path, so it needs no directive
+# here. A "LLMs:" line used to sit below — it is not part of the robots.txt
+# grammar, and Lighthouse reported the whole file as invalid because of it.
 User-agent: GPTBot
 Allow: /
 
 User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: PerplexityBot
@@ -233,17 +248,20 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
+User-agent: Claude-User
+Allow: /
+
 User-agent: anthropic-ai
 Allow: /
 
 User-agent: Google-Extended
 Allow: /
 
-User-agent: Bingbot
+User-agent: Applebot-Extended
 Allow: /
 
-# Context file for AI systems
-LLMs: ${SITE_URL}/llms.txt
+User-agent: Bingbot
+Allow: /
 
 Sitemap: ${SITE_URL}/sitemap.xml
 `;

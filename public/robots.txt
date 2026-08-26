@@ -1,9 +1,10 @@
 # =============================================================================
 #  robots.txt — demetriosbride-bg.com
 #
-#  NOTE: this file is deployed with dist/ and OVERWRITES whatever is on the
-#  server. The AI-crawler rules below were added directly on the server at one
-#  point; they live here now so a deploy can never wipe them again.
+#  NOTE: this file is NOT what visitors get. Caddy proxies /robots.txt to the
+#  API, which builds its own copy in server/routes/seo.js (so the admin panel's
+#  `robots_extra` setting can append to it). This file is the fallback for when
+#  the backend is down — keep the two in sync.
 # =============================================================================
 
 User-agent: *

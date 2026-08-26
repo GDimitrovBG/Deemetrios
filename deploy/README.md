@@ -170,3 +170,54 @@ header @fonts Cache-Control "public, max-age=31536000, immutable"
 ```
 
 `/fonts/*` е ново: шрифтовете вече се хостват от нас, а не от Google.
+
+---
+
+## 7. CSP — Caddy е истинският източник
+
+Caddy изпраща собствена `Content-Security-Policy` заглавка, а `index.html`
+съдържа втора в `<meta>`. Браузърът налага **всяка** получена политика: ресурсът
+трябва да е разрешен от **всички**, тоест реалната политика е сечението, не
+обединението.
+
+Затова разхлабване само в `index.html` не разрешава нищо, а затягане може да
+счупи. **Всяка промяна трябва да се направи и на двете места.**
+
+Това вече ни удари веднъж: при преместването на шрифтовете при нас `font-src` в
+`<meta>` стана `'self'`, а заглавката на Caddy още казваше
+`https://fonts.gstatic.com`. Сечението е празно → всеки woff2 беше блокиран, 36
+CSP нарушения на зареждане, а страниците тихо падаха на Georgia и Arial.
+
+### Какво трябва да се смени в Caddyfile
+
+```
+font-src https://fonts.gstatic.com;                       ← старо
+font-src 'self';                                          ← ново
+
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;   ← старо
+style-src 'self' 'unsafe-inline';                                ← ново
+```
+
+Шрифтовете вече се сервират от `/fonts/` на нашия домейн, така че препратките
+към Google не са нужни. Проверка след `systemctl reload caddy`:
+
+```bash
+curl -sI https://demetriosbride-bg.com/ | grep -io "font-src[^;]*"   # → font-src 'self'
+```
+
+И в браузъра (DevTools → Console) не трябва да има нито едно
+`violates the following Content Security Policy directive`.
+
+---
+
+## 8. robots.txt се сервира от backend-а, не от dist/
+
+`/robots.txt` се проксира към API-то и се генерира в `server/routes/seo.js`
+(за да може настройката `robots_extra` от админ панела да се долепя). Файлът
+`public/robots.txt` в репото е само резервен вариант, ако backend-ът е спрял.
+
+Двата са синхронизирани сега. При промяна — **и двата**, иначе се сервира
+старият. Точно това се случи с реда `LLMs:`, който не е валидна директива и
+заради който Lighthouse отчиташе целия файл като невалиден.
+
+Промяната е в `server/`, значи изисква `systemctl restart demetrios-backend`.

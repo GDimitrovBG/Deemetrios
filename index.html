@@ -4,6 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1a1612" />
+  <!--
+    CSP.
+
+    ⚠ Caddy ALSO sends a Content-Security-Policy header, and the browser
+    enforces every policy it receives — a resource must be allowed by ALL of
+    them, so the effective policy is the INTERSECTION, not the union. Loosening
+    this meta tag therefore cannot enable anything; tightening it can break
+    things, and a change here must be mirrored in the Caddyfile or it does
+    nothing at all.
+
+    This bit once: self-hosting the fonts changed `font-src` here to 'self'
+    while the Caddy header still said `https://fonts.gstatic.com`. The
+    intersection was empty and every woff2 on the site was blocked — 36 CSP
+    violations per page load, with the pages silently falling back to Georgia
+    and Arial. See deploy/README.md §7.
+  -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://www.google.com https://googleads.g.doubleclick.net https://connect.facebook.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' https://demetriosbride-bg.com https://*.googletagmanager.com https://*.google-analytics.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.facebook.com https://*.google.com https://*.google.bg https://*.doubleclick.net data: blob:; connect-src 'self' https://api.brevo.com https://*.googletagmanager.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://*.doubleclick.net https://*.google.com https://*.google.bg https://www.facebook.com https://connect.facebook.net; frame-src 'self' https://www.googletagmanager.com https://td.doubleclick.net https://*.doubleclick.net" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>" />
   <link rel="manifest" href="/manifest.json" />
