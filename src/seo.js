@@ -125,7 +125,11 @@ export function useSeo({
     // explicit `alternates`). The /blog LISTING is bilingual — /en/blog lists
     // the translated posts.
     const bgOnly = /^\/blog\//.test(bgPath);
-    const enPath = bgPath === '/' ? '/en' : `/en${bgPath}`;
+    // The English home is '/en/' WITH the trailing slash: the server issues a
+    // 301 from /en to /en/, and an hreflang target or sitemap entry that
+    // redirects is discarded by Google (it wants a 200 that self-canonicalises).
+    // Every other path stays slash-less, matching the rest of the site.
+    const enPath = bgPath === '/' ? '/en/' : `/en${bgPath}`;
     const localePath = (lang === 'en' && (!bgOnly || alternates)) ? enPath : bgPath;
     const finalUrl = `${SITE_URL}${localePath === '/' ? '/' : localePath}`;
 

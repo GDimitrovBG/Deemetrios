@@ -84,7 +84,7 @@ function urlBlock(loc, meta, def, images = [], bgPath = null) {
   let altXml = '';
   if (bgPath) {
     const bgUrl = `${SITE}${bgPath}`;
-    const enUrl = `${SITE}${bgPath === '/' ? '/en' : `/en${bgPath}`}`;
+    const enUrl = `${SITE}${bgPath === '/' ? '/en/' : `/en${bgPath}`}`;
     altXml =
       `\n    <xhtml:link rel="alternate" hreflang="bg" href="${bgUrl}"/>` +
       `\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>` +
@@ -109,7 +109,9 @@ async function run() {
   // hreflang set. Used for every page that exists in both locales.
   const pair = (path, def, images = []) => {
     out.push(urlBlock(`${SITE}${path}`, meta, def, images, path));
-    const enPath = path === '/' ? '/en' : `/en${path}`;
+    // '/en/' keeps its trailing slash — the server 301s /en to /en/, and a
+    // sitemap entry that redirects is reported as "Page with redirect".
+    const enPath = path === '/' ? '/en/' : `/en${path}`;
     // English is the secondary locale — slightly lower priority than its
     // Bulgarian twin so crawl budget favours the primary market. Images are
     // listed once, on the Bulgarian entry: the same photo under two URLs
