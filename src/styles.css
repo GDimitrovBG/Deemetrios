@@ -2284,6 +2284,48 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase; color: rgba(255,253,248,0.35);
 }
 
+
+/* ============================================
+   NAV — fitting the desktop bar as it narrows
+   ============================================
+   The bar is `1fr auto 1fr`, and at its full typography the two link groups
+   need 1141px of viewport before the columns stop squeezing. Below that the
+   pressure landed entirely on one element: "РЕЗЕРВИРАЙ ЧАС" broke onto two
+   lines and the button grew from 31px to 47px tall. That happened on every
+   width from 721px to about 1280px — the whole laptop and tablet range.
+
+   Two things fix it. Nav items never wrap, full stop. And the bar tightens in
+   two measured steps before handing over to the drawer at the width where it
+   genuinely stops fitting (880px), rather than clinging on down to 720px. */
+
+.nav-link, .nav-fav, .lang-toggle { white-space: nowrap; }
+
+/* Step 1 — needs 1005px. Loses letter-spacing and gap, keeps the type size. */
+@media (max-width: 1140px) {
+  .nav-left, .nav-right { gap: 20px; }
+  .nav-link { letter-spacing: 0.16em; }
+  .nav-link--cta { padding: 6px 12px !important; letter-spacing: 0.14em; }
+}
+
+/* Step 2 — needs 880px. One point smaller, tighter still. */
+@media (max-width: 1004px) {
+  .nav-inner { gap: 12px; }
+  .nav-left, .nav-right { gap: 14px; }
+  .nav-link { font-size: 10px; letter-spacing: 0.10em; }
+  .nav-link--cta { padding: 5px 10px !important; letter-spacing: 0.10em; }
+}
+
+/* Below 880px the desktop bar cannot fit however it is tuned — the drawer is
+   the better answer on a tablet anyway. Only the NAV switches here; the rest
+   of the mobile layout still starts at 720px. */
+@media (max-width: 880px) {
+  .nav-left, .nav-right { display: none; }
+  .burger { display: flex; }
+  .nav-bar.scrolled .burger,
+  .nav-bar.transparent .burger { color: inherit; }
+  .nav-inner { grid-template-columns: auto 1fr auto; gap: 12px; }
+}
+
 /* ============================================
    RESPONSIVE — TABLET
    ============================================ */
