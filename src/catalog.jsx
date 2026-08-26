@@ -621,9 +621,17 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       <div className="collection-head">
         <div>
           <div className="t-eyebrow" style={{ marginBottom: 24 }}>{t.collection.crumb}</div>
+          {/* The H1 used to be the bare collection name — "Demetrios",
+              "Cosmobella", "Вечерни рокли" — on all five collection pages. The
+              title carried the keywords and the strongest heading on the page
+              carried none of them. */}
           <h1>
             {silData ? (isBg ? silData.h1_bg : silData.h1_en)
-              : activeColData ? collectionLabel(activeColData, lang)
+              : activeCol === "evening"
+                ? (isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
+              : activeColData
+                ? (isBg ? <>Булчински рокли <em>{collectionLabel(activeColData, lang)}</em></>
+                        : <><em>{collectionLabel(activeColData, lang)}</em> wedding dresses</>)
               : (isBg ? <>Булчински и сватбени рокли <em>София</em></> : <>Wedding Dresses in <em>Sofia</em></>)}
           </h1>
           {silData ? (
@@ -715,13 +723,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           with no <h2> at all on the site's most important commercial URL. This
           is also the natural place for the "N модела" count and the collection
           or silhouette name. */}
+      {/* The H1 above now names the collection, so this says something the H1
+          does not: how many, and where. */}
       <h2 className="grid-heading">
-        {silData ? (isBg ? silData.h1_bg : silData.h1_en)
-          : activeCol === "evening" ? (isBg ? "Вечерни, бални и абитуриентски рокли" : "Evening, prom and formal dresses")
-          : activeColData ? (isBg ? `Булчински рокли ${collectionLabel(activeColData, lang)}` : `${collectionLabel(activeColData, lang)} wedding dresses`)
-          : (isBg ? "Всички булчински рокли" : "All wedding dresses")}
+        {isBg ? `${headingCount} модела` : `${headingCount} styles`}
         <span className="grid-heading-count">
-          {isBg ? ` — ${headingCount} модела` : ` — ${headingCount} styles`}
+          {isBg ? " в салона в София" : " at the Sofia showroom"}
         </span>
       </h2>
 
