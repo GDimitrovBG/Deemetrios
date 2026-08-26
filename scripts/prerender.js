@@ -49,6 +49,12 @@ async function loadRoutes() {
     '/collection/silueti/printsesa',
     '/collection/silueti/a-siluet',
     '/kviz',
+    // Reachable from the nav heart and the mobile menu, and deliberately kept
+    // out of the sitemap (noindex + robots Disallow). It still needs a snapshot:
+    // without one the SPA fallback answered a direct hit or a reload with
+    // dist/404.html, so the visitor saw "Страницата не е намерена" flash before
+    // React re-routed. Prerendered here, not indexed anywhere.
+    '/wishlist',
     '/booking',
     '/about',
     '/demetrios',

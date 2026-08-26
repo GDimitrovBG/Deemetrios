@@ -248,38 +248,6 @@ export function orgSchema() {
   return schema;
 }
 
-/** Product schema (used on product page) */
-export function productSchema(p, lang = 'bg') {
-  const name = lang === 'bg' ? (p.name_bg || p.name_en) : (p.name_en || p.name_bg);
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": name,
-    "sku":  p.ref,
-    "image": p.imgs && p.imgs.length ? p.imgs : [p.img],
-    "description": (lang === 'bg' ? p.seo_description_bg : p.seo_description_en) || p.description_bg || DEFAULT_DESC,
-    "brand": { "@type": "Brand", "name": "Demetrios" },
-    "category": "Булчинска рокля",
-    "offers": {
-      "@type": "AggregateOffer",
-      "lowPrice": "1000",
-      "highPrice": "4000",
-      "priceCurrency": "EUR",
-      "availability": "https://schema.org/InStoreOnly",
-    },
-  };
-  if (REVIEW_COUNT > 0) {
-    schema.aggregateRating = {
-      "@type": "AggregateRating",
-      "ratingValue": REVIEW_RATING,
-      "reviewCount": REVIEW_COUNT,
-      "bestRating": "5",
-      "worstRating": "1",
-    };
-  }
-  return schema;
-}
-
 /** Canonical path for a blog post — prefers SEO slug, falls back to numeric id */
 export function blogPostPath(post) {
   return post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`;
@@ -293,7 +261,10 @@ export function articleSchema(post, lang = 'bg') {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": post.title,
-    "image": post.image ? [post.image.startsWith('/') ? `${SITE_URL}${post.image}` : post.image] : [DEFAULT_IMG],
+    // Point at the WebP twin the page actually renders, matching the sitemap.
+    "image": post.image
+      ? [(u => u.startsWith('/') ? `${SITE_URL}${u}` : u)(post.image.replace(/\.jpe?g$/i, '.webp'))]
+      : [DEFAULT_IMG],
     "datePublished": post.isoDate || post.date,
     "dateModified":  post.isoDate || post.date,
     "author": {

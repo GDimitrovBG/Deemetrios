@@ -6,7 +6,22 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const router = Router();
 
-// Send booking notification to a single recipient (customer confirmation)
+// ─────────────────────────────────────────────────────────────────────────────
+//  EVERY route in this file requires authentication.
+//
+//  /send-customer used to be public: the booking form built the confirmation
+//  email in the browser and POSTed `to`, `subject` and `html` here. That let
+//  anyone send arbitrary HTML to any address, signed with our SPF/DKIM, from
+//  info@areti.bg — an open relay pointed at our own sending reputation. The
+//  customer confirmation is now built and sent inside POST /api/bookings,
+//  where the recipient can only be the address on the booking itself.
+//
+//  What remains here are admin utilities, so they are gated like admin
+//  utilities. Nothing on the public site calls them.
+// ─────────────────────────────────────────────────────────────────────────────
+router.use(requireAuth);
+
+// Send a notification to a single admin recipient
 router.post('/send-booking', async (req, res) => {
   if (!emailConfigured()) return res.status(503).json({ error: 'Email not configured' });
   const { to, toName, subject, html } = req.body;
@@ -27,7 +42,7 @@ router.post('/send-booking', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Send booking confirmation to customer (called from public booking form)
+// Send a one-off email to an arbitrary recipient (admin-composed follow-ups).
 router.post('/send-customer', async (req, res) => {
   if (!emailConfigured()) return res.status(503).json({ error: 'Email not configured' });
   const { to, toName, subject, html } = req.body;
@@ -43,8 +58,8 @@ router.post('/send-customer', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Send notification to ALL admin emails — requires auth (prevents spam/phishing abuse)
-router.post('/notify-admins', requireAuth, async (req, res) => {
+// Send notification to ALL admin emails
+router.post('/notify-admins', async (req, res) => {
   if (!emailConfigured()) return res.status(503).json({ error: 'Email not configured' });
   const { subject, html } = req.body;
   if (!subject) return res.status(400).json({ error: 'Missing subject' });

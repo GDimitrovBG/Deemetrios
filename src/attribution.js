@@ -15,6 +15,10 @@
 //   • getAttributionPayload() hands both to the booking form; the server
 //     stores them and the admin panel / email show a plain-language label.
 //
+//  CONSENT — nothing is captured or sent until the visitor has accepted
+//  analytics or marketing storage in the cookie banner. A lead from someone
+//  who chose "essential only" arrives with no source attached, by design.
+//
 //  IMPORTANT — fbclid alone does NOT mean "ad". Facebook appends fbclid to
 //  EVERY outbound link, organic posts included. Only utm_medium=paid_social
 //  (which the ad account must set in the ad's URL parameters) reliably marks
@@ -125,10 +129,33 @@ export function classifyTouch(touch) {
   return { kind: 'direct', platform: '', campaign: '', content: '', label: 'Директно / запазен линк' };
 }
 
+/**
+ * Has the visitor allowed marketing/analytics storage?
+ *
+ * Attribution is marketing data kept in localStorage, so it belongs behind the
+ * same consent gate as GA and the Meta Pixel — it used to be written on the
+ * very first page load, before the banner had even appeared. Reading the raw
+ * key (rather than importing legal.jsx) keeps this module dependency-free.
+ *
+ * Accepting in the banner reloads the page with the query string intact, so a
+ * visitor who arrives from an ad and then consents is still captured correctly.
+ */
+function storageAllowed() {
+  try {
+    const raw = localStorage.getItem('areti_cookies');
+    if (!raw) return false;                 // not answered yet — assume no
+    if (raw === 'all') return true;
+    if (raw === 'essential') return false;
+    const prefs = JSON.parse(raw);
+    return !!(prefs?.marketing || prefs?.analytics);
+  } catch { return false; }
+}
+
 /** Capture the current touch. Call once on app load. */
 export function captureAttribution() {
   // Never run during the build-time prerender crawl.
   if (typeof window === 'undefined' || window.__PRERENDER__) return;
+  if (!storageAllowed()) return;
   const touch = buildTouch();
   if (!touch) return;
   try {
@@ -146,6 +173,7 @@ export function captureAttribution() {
  */
 export function getAttributionPayload() {
   if (typeof window === 'undefined') return null;
+  if (!storageAllowed()) return null;
   let store = null;
   try {
     const raw = localStorage.getItem(STORE_KEY);

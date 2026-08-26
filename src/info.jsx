@@ -16,9 +16,58 @@ function sanitizeHTML(html) {
   html = html.replace(/<(\/?)h1(\s[^>]*)?>/gi, '<$1h2$2>');
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['p','br','b','strong','i','em','u','a','ul','ol','li','h1','h2','h3','h4','h5','h6','blockquote','img','span','div','figure','figcaption','table','thead','tbody','tr','th','td'],
-    ALLOWED_ATTR: ['href','src','alt','title','class','style','target','rel','width','height','loading','decoding'],
+    // 'data-route' has to be listed explicitly: ALLOW_DATA_ATTR:false strips
+    // every other data-* attribute, and it used to strip this one too — which
+    // silently killed all 63 internal links in the articles (the click handler
+    // below called preventDefault and then found no route to go to).
+    ALLOWED_ATTR: ['href','src','alt','title','class','style','target','rel','width','height','loading','decoding','data-route'],
     ALLOW_DATA_ATTR: false,
   });
+}
+
+// Our own hostname, so absolute links written into article bodies
+// (https://demetriosbride-bg.com/...) are still treated as internal.
+const SITE_HOST = 'demetriosbride-bg.com';
+
+/**
+ * Handle a click inside a rendered article body.
+ *
+ * Drives navigation off the link's own href rather than a data-route
+ * attribute. The href is the thing that is actually in the HTML, is what a
+ * crawler follows, and covers every destination — products, collections,
+ * silhouettes, other posts — where data-route only ever named a top-level
+ * route. data-route is kept as a fallback for links that carry no usable href.
+ *
+ * Anything we don't recognise as our own is left alone, so external links keep
+ * working normally instead of being swallowed by preventDefault.
+ */
+function followInternalLink(e, setRoute) {
+  const link = e.target?.closest?.('a.blog-internal-link, a[data-route]');
+  if (!link) return;
+  const raw = link.getAttribute('href') || '';
+  let target = '';
+  if (raw && !raw.startsWith('#')) {
+    let url;
+    try { url = new URL(raw, window.location.origin); } catch { return; }
+    const host = url.hostname.replace(/^www\./, '');
+    const isOurs = url.origin === window.location.origin || host === SITE_HOST;
+    if (!isOurs) return;                    // external link — let the browser go
+    target = url.pathname + url.search;
+  }
+  e.preventDefault();
+  if (!target) {
+    const route = link.dataset.route;       // href-less link, legacy form
+    if (route) setRoute(route);
+    return;
+  }
+  if (target === window.location.pathname + window.location.search) return;
+  // Hand the URL to the router the same way the browser's back button does:
+  // App's popstate listener resolves redirects (old WordPress paths included)
+  // and syncs every piece of route state, so this works for products,
+  // collections and posts without threading a navigation prop into the article.
+  window.history.pushState({}, '', target);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Merge static BLOG_POSTS with any admin edits stored in localStorage
@@ -636,14 +685,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
           <div
             className="blog-post-content"
             dangerouslySetInnerHTML={{ __html: sanitizeHTML(bodyHtml) }}
-            onClick={(e) => {
-              const link = e.target.closest('.blog-internal-link');
-              if (link) {
-                e.preventDefault();
-                const route = link.dataset.route;
-                if (route) setRoute(route);
-              }
-            }}
+            onClick={(e) => followInternalLink(e, setRoute)}
           />
 
           <div style={{ marginTop: 64, paddingTop: 40, borderTop: "1px solid var(--champagne)" }}>

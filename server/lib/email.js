@@ -124,3 +124,56 @@ export function twoFactorCodeEmail({ name, code, expiresInMinutes = 10 }) {
     </div>
   `;
 }
+
+/**
+ * Confirmation email sent to the customer after a booking is created.
+ *
+ * Built HERE, server-side, on purpose. This used to be assembled in the browser
+ * and POSTed to /api/email/send-customer with `to`, `subject` and `html` all
+ * taken from the request body — an unauthenticated endpoint that would send any
+ * HTML to any address from info@areti.bg. That is an open mail relay: it burns
+ * the domain's sending reputation and lets anyone phish under our DKIM
+ * signature. The server already has every field it needs from the booking, so
+ * the browser never gets a say in recipient or content.
+ */
+export function bookingCustomerEmail(b, lang = 'bg') {
+  const isBg = lang !== 'en';
+  const row = (label, value) =>
+    `<tr><td style="width:140px;color:#8a7556;">${label}</td><td>${value}</td></tr>`;
+  const dresses = Array.isArray(b.dressRefs) && b.dressRefs.length ? esc(b.dressRefs.join(', ')) : '';
+  return `
+    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;">
+      <div style="padding:32px 0;border-bottom:1px solid #e8dfc9;">
+        <h1 style="font-size:28px;font-weight:400;margin:0;">Булчински салон <em>Арети</em></h1>
+      </div>
+      <div style="padding:32px 0;">
+        <p style="font-size:18px;line-height:1.5;margin:0 0 24px;">
+          ${isBg ? `Здравейте, ${esc(b.name)}!` : `Hello, ${esc(b.name)}!`}
+        </p>
+        <p style="font-size:16px;line-height:1.6;color:#4a4540;margin:0 0 24px;">
+          ${isBg
+            ? 'Получихме заявката Ви за консултация. Ще се свържем с Вас по телефон или имейл в рамките на 24 часа, за да уточним точния час и всички детайли.'
+            : 'We have received your consultation request. We will contact you by phone or email within 24 hours to confirm the exact time and all details.'}
+        </p>
+        <div style="background:#f9f5ed;padding:24px;border-radius:4px;margin:0 0 24px;">
+          <div style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#8a7556;margin-bottom:16px;">
+            ${isBg ? 'Вашата заявка' : 'Your request'}
+          </div>
+          <table style="width:100%;font-size:14px;line-height:1.8;color:#4a4540;">
+            ${row(isBg ? 'Тип' : 'Type', esc(b.type) || '—')}
+            ${row(isBg ? 'Дата' : 'Date', esc(b.date) || '—')}
+            ${row(isBg ? 'Час' : 'Time', esc(b.time) || (isBg ? 'ще уточним' : 'to be confirmed'))}
+            ${dresses ? row(isBg ? 'Рокли' : 'Dresses', dresses) : ''}
+          </table>
+        </div>
+        <p style="font-size:14px;color:#8a7556;line-height:1.5;">
+          ${isBg ? 'Очакваме Ви скоро! ✨' : 'We look forward to seeing you! ✨'}
+        </p>
+      </div>
+      <div style="padding:20px 0;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
+        Булчински салон Арети · София<br>
+        <a href="https://demetriosbride-bg.com" style="color:#8a7556;">demetriosbride-bg.com</a>
+      </div>
+    </div>
+  `;
+}

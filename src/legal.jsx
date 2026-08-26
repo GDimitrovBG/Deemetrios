@@ -5,19 +5,25 @@ import { useSeo, breadcrumbSchema } from './seo';
 function LegalPage({ page, lang, setRoute }) {
   const t = i18n[lang].legal;
   const content = t[page];
-  if (!content) return null;
 
+  // The `if (!content) return null` guard used to sit ABOVE this hook, which
+  // made useSeo conditional: the first render that found content would call a
+  // hook the previous one skipped, and React throws "rendered fewer hooks than
+  // expected". It never fired only because every legal page happens to be
+  // translated. The guard belongs after the hooks.
   useSeo({
-    title: content.seo_title,
-    description: content.seo_desc,
+    title: content?.seo_title,
+    description: content?.seo_desc,
     url: `/${page}`,
     lang,
-    jsonLd: breadcrumbSchema([
+    jsonLd: content ? breadcrumbSchema([
       { name: lang === "bg" ? "Начало" : "Home", url: "/" },
       { name: content.title, url: `/${page}` },
-    ]),
+    ]) : null,
     jsonLdId: page,
   });
+
+  if (!content) return null;
 
   return (
     <div className="page-enter">

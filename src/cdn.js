@@ -1,29 +1,35 @@
 // =====================================================
-//  CDN (Bunny.net) image routing + on-the-fly optimization
+//  IMAGE URL HELPER
 // =====================================================
 //
-//  HOW TO TURN ON:
-//  1. In Bunny.net create a Pull Zone with Origin = https://demetriosbride-bg.com
-//  2. Enable "Bunny Optimizer" on that zone (auto WebP/AVIF + compression).
-//  3. Copy the zone hostname (e.g. https://areti.b-cdn.net) into CDN_BASE below.
-//  4. Rebuild + deploy. Done — all uploaded images now go through Bunny,
-//     auto-converted to WebP and resized to the size each slot actually needs.
+//  This file used to be a Bunny.net integration: a `CDN_BASE` constant with
+//  setup instructions, plus a `cdnSrcset()` that built `?width=` variants.
+//  Using an external CDN was decided against, so `CDN_BASE` sat empty — which
+//  meant `cdnSrcset()` returned '' on every single call and the whole module
+//  did exactly one useful thing.
 //
-//  Leave CDN_BASE empty to serve images straight from the origin (current
-//  behaviour — zero change). This file is a no-op until you paste a host.
-
-export const CDN_BASE = ''; // ← paste your Bunny host here, e.g. 'https://areti.b-cdn.net'
+//  That one thing is kept here, and it is the thing that actually matters:
+//  our uploads directory holds a WebP twin next to every JPEG (see
+//  scripts/optimize-images.mjs), and WebP is roughly half the bytes at the
+//  same quality. Point every <img> at the twin.
+//
+//  If a CDN is ever revisited, this is the one seam to change — every image
+//  in the app already goes through it.
+// =====================================================
 
 const ORIGIN_RE = /^https?:\/\/(www\.)?demetriosbride-bg\.com/i;
 
 /**
- * Route one of our uploaded images through the CDN.
- * @param {string} src    image path or absolute URL
- * @param {number} [width] intended CSS display width; used for ?width= resize
- *                         (doubled for retina, capped). Omit to only swap host
- *                         (Bunny Optimizer still auto-converts to WebP).
+ * Resolve one of our uploaded images to the URL that should actually be
+ * requested. Site-relative in, site-relative out.
+ *
+ * Anything that isn't one of our own uploads (a data: URI, an external host,
+ * a bundled asset) is returned untouched.
+ *
+ * @param {string} src  image path or absolute URL
+ * @returns {string}
  */
-export function cdnImage(src, width) {
+export function cdnImage(src) {
   if (!src || typeof src !== 'string') return src;
   if (src.startsWith('data:') || src.startsWith('blob:')) return src;
 
@@ -31,40 +37,5 @@ export function cdnImage(src, width) {
   const path = src.replace(ORIGIN_RE, '');
   if (!path.startsWith('/wp-content/')) return src;
 
-  // Prefer WebP version of JPEG uploads (50% smaller, same quality)
-  let optimized = path.replace(/\.jpe?g$/i, '.webp');
-
-  if (CDN_BASE) {
-    let url = CDN_BASE.replace(/\/+$/, '') + optimized;
-    if (width && Number.isFinite(width)) {
-      const w = Math.min(Math.round(width * 2), 2000);
-      url += (url.includes('?') ? '&' : '?') + 'width=' + w;
-    }
-    return url;
-  }
-
-  return optimized;
-}
-
-/**
- * Build a responsive srcset for one of our uploaded images.
- *
- * Returns '' unless the CDN is enabled — the origin has no resized variants
- * (only the full-size ~2560px "-scaled" file), so a srcset there would just
- * repeat the same heavy URL. Once Bunny is on, this lets the browser pick the
- * smallest sufficient width per viewport, which is the real mobile win: a
- * 2-column phone grid then pulls ~30–40 KB images instead of the 200 KB+
- * full-size file the fixed `width` prop would otherwise request.
- *
- * @param {string} src      image path or absolute URL
- * @param {number[]} widths candidate render widths (device px)
- */
-export function cdnSrcset(src, widths = [320, 480, 640, 960, 1280, 1600]) {
-  if (!CDN_BASE || !src || typeof src !== 'string') return '';
-  if (src.startsWith('data:') || src.startsWith('blob:')) return '';
-  const path = src.replace(ORIGIN_RE, '');
-  if (!path.startsWith('/wp-content/')) return '';
-  const optimized = path.replace(/\.jpe?g$/i, '.webp');
-  const base = CDN_BASE.replace(/\/+$/, '') + optimized;
-  return widths.map(w => `${base}?width=${w} ${w}w`).join(', ');
+  return path.replace(/\.jpe?g$/i, '.webp');
 }

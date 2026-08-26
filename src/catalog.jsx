@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import i18n from './i18n';
-import { IMG, DRESSES, ACCESSORIES, COLLECTIONS } from './data';
+import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { DressCard } from './home';
 import { useSeo, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
-import { getProductHeading, getProductAlt, getAccessoryAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle, collectionLabel } from './seo-helpers';
+import { getProductHeading, getProductAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle, collectionLabel } from './seo-helpers';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -990,7 +990,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
         </div>
         <div className="product-main">
           <div className="product-gallery">
-            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} sizes="(max-width: 768px) 100vw, 55vw" />
+            <Img src={galleryImgs[0]} alt={getProductAlt(dress, lang, 0)} className="main-img" style={{ cursor: "zoom-in" }} priority width={1200} height={1600} />
             {galleryImgs.slice(1, 4).map((imgSrc, i) => (
               <Img key={i} src={imgSrc} alt={getProductAlt(dress, lang, i + 1)} className="thumb" style={{ cursor: "zoom-in" }} width={600} height={800} />
             ))}
@@ -1092,67 +1092,6 @@ function Lightbox({ imgs, idx, setIdx, label, dress, lang }) {
       <Img src={imgs[idx]} alt={dress ? getProductAlt(dress, lang || 'bg', idx) : label} style={{ aspectRatio: "3/4", height: "85vh", width: "auto" }} />
       <button className="lightbox-nav next" onClick={(e) => { e.stopPropagation(); setIdx((idx + 1) % imgs.length); }}>›</button>
       <div className="lightbox-counter">{(idx + 1).toString().padStart(2, "0")} / {imgs.length.toString().padStart(2, "0")}</div>
-    </div>
-  );
-}
-
-function AccessoriesPage({ lang, setRoute }) {
-  useSeo({
-    title: lang === "bg" ? "Аксесоари за булки — воали, диадеми, бижута" : "Bridal Accessories — Veils, Tiaras, Jewellery",
-    description: lang === "bg"
-      ? "Луксозни булчински аксесоари в Арети — воали, диадеми, обици, обувки и бижута. Внимателно подбрана селекция за финалния щрих на сватбената визия."
-      : "Luxury bridal accessories at Areti — veils, tiaras, earrings, shoes and jewellery. A curated selection for the final touch of your bridal look.",
-    url: "/accessories",
-    lang,
-    keywords: "булчински аксесоари, воали, диадеми, бижута за булки, обувки за сватба, Арети София",
-    jsonLd: breadcrumbSchema([
-      { name: lang === "bg" ? "Начало" : "Home", url: "/" },
-      { name: lang === "bg" ? "Аксесоари" : "Accessories", url: "/accessories" },
-    ]),
-  });
-  const t = i18n[lang];
-  const [cat, setCat] = useState(t.accessories.categories[0]);
-
-  const items = useMemo(() => {
-    if (cat === t.accessories.categories[0]) return ACCESSORIES;
-    return ACCESSORIES.filter(a => (lang === "bg" ? a.cat : a.cat_en) === cat);
-  }, [cat, lang]);
-
-  return (
-    <div className="page-enter">
-      <div className="collection-head">
-        <div>
-          <div className="t-eyebrow" style={{ marginBottom: 24 }}>{t.accessories.crumb}</div>
-          <h1>{t.accessories.title}</h1>
-          <p style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", fontSize: 19, color: "var(--ink-soft)", marginTop: 24, maxWidth: 480 }}>{t.accessories.lede}</p>
-        </div>
-        <div className="meta-stack">
-          <div className="count">{items.length} {lang === "en" ? "products" : "продукта"}</div>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: 4, padding: "32px var(--gutter)", maxWidth: "var(--maxw)", margin: "0 auto", flexWrap: "wrap" }}>
-        {t.accessories.categories.map(c => (
-          <button
-            key={c}
-            className={`filter-chip ${cat === c ? "active" : ""}`}
-            onClick={() => setCat(c)}
-          >{c}</button>
-        ))}
-      </div>
-      <div className="acc-grid">
-        {items.map((a, i) => (
-          <article key={i} className="acc-card">
-            <Img src={a.img} alt={getAccessoryAlt(a, lang)} className="img" width={600} height={800} />
-            <div className="info">
-              <div>
-                <h3>{lang === "bg" ? a.name_bg : a.name_en}</h3>
-                <div className="meta" style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--ink-mute)", marginTop: 4 }}>{lang === "bg" ? a.cat : a.cat_en}</div>
-              </div>
-              {a.price > 0 && <span className="price">{a.price.toLocaleString(lang === "bg" ? "bg-BG" : "en-US")} {t.common.bgn}</span>}
-            </div>
-          </article>
-        ))}
-      </div>
     </div>
   );
 }
@@ -1317,4 +1256,4 @@ function WishlistPage({ lang, setRoute, favorites = [], toggleFavorite, goBookin
   );
 }
 
-export { CollectionPage, ProductPage, AccessoriesPage, WishlistPage };
+export { CollectionPage, ProductPage, WishlistPage };

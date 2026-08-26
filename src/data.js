@@ -136,11 +136,3 @@ export const DRESSES = [
   { ref:'1074', name_bg:'Demetrios 1074 — Русалка булчинска рокля', name_en:'Demetrios 1074 — Mermaid Wedding Dress', collection:'demetrios', silhouette:'Русалка', silhouette_en:'Mermaid', price:0, img:'/wp-content/uploads/2025/12/1074-6137-768x557-1.jpg', imgs:["/wp-content/uploads/2025/12/1074-6137-768x557-1.jpg","/wp-content/uploads/2025/12/1074-6145-1-600x911-1.jpg","/wp-content/uploads/2025/12/1074-6174-1-600x971-1.jpg"], fabric:'Satin', seo_title_bg:"Булчинска рокля 1074 | Demetrios | Арети София", seo_title_en:"Wedding Dress 1074 | Demetrios | Areti Sofia", seo_description_bg:"Булчинска рокля Style 1074 от колекция Demetrios — русалка силует, изработена от сатен. Опитайте я в Арети — официален представител на Demetrios в София. Запазе", seo_description_en:"Wedding dress Style 1074 from the Demetrios collection — русалка silhouette in satin. Try it on at Areti, official Demetrios representative in Sofia. Book a fre" },
 ];
 
-export const ACCESSORIES = [
-  { name_bg:'Воал Клер',       name_en:'Veil Claire',    cat:'Воали',  cat_en:'Veils',    price:480, img:IMG.veil },
-  { name_bg:'Корона Аврора',   name_en:'Aurora crown',   cat:'Корони', cat_en:'Crowns',   price:920, img:IMG.crown },
-  { name_bg:'Обици Перлен',    name_en:'Pearl earrings', cat:'Обици',  cat_en:'Earrings', price:340, img:IMG.earrings },
-  { name_bg:'Обувки Сатен',    name_en:'Satin shoes',    cat:'Обувки', cat_en:'Shoes',    price:680, img:IMG.shoes },
-  { name_bg:'Воал Катедрал',   name_en:'Cathedral veil', cat:'Воали',  cat_en:'Veils',    price:620, img:IMG.detail1 },
-  { name_bg:'Колан с мъниста', name_en:'Beaded belt',    cat:'Колани', cat_en:'Belts',    price:280, img:IMG.detail2 },
-];

@@ -1,146 +1,129 @@
 # Deploy на Hetzner VPS
 
-Кратко ръководство за първоначален setup и за всеки следващ deploy.
+> **Тази страница беше пренаписана, защото описваше друг сървър.**
+> Предишната версия казваше nginx + PM2 (`pm2 restart areti-api`,
+> `systemctl reload nginx`) и `npm run build` направо в живата директория.
+> Нищо от това не отговаря на реалния сървър, а най-опасната част е билдът
+> на място: `vite build` изчиства `dist/`, така че сайтът е счупен през
+> цялото време на билда и на prerender-а (~2 минути).
+>
+> Реалният стек е **Caddy + systemd + атомична смяна на директорията**.
 
 ---
 
-## 1. Първоначална настройка (еднократно)
+## 1. Какво работи на сървъра
 
-SSH в сървъра като root и инсталирайте основните пакети:
+| Компонент | Реалност |
+|-----------|----------|
+| Уеб сървър | **Caddy** (не nginx) — сам управлява TLS, без certbot |
+| API процес | **systemd**, услуга `demetrios-backend` (не PM2) |
+| Статика | Прередерирана в `dist/`, качва се с **rsync в нова директория и после смяна** |
+| Снимки | Отделна `uploads` директория **извън репото** — deploy-ът никога не я пипа |
+| Prerender | Puppeteer; на сървъра ползва системния **chromium** |
 
-```bash
-apt update && apt upgrade -y
-apt install -y nginx certbot python3-certbot-nginx nodejs npm git ufw fail2ban
-npm install -g pm2
-```
-
-### MongoDB
-
-Ако базата не е външна, инсталирайте локално:
-```bash
-# https://www.mongodb.com/docs/manual/installation/
-apt install -y mongodb-org
-systemctl enable --now mongod
-```
-
-### Firewall
-
-```bash
-ufw allow OpenSSH
-ufw allow 'Nginx Full'
-ufw enable
-```
+`deploy/redirects.caddy` съдържа 301/410 правилата за старите WordPress URL-и.
+Те се поставят **вътре в site блока на `/etc/caddy/Caddyfile`**. Файлът в репото
+не се чете от Caddy — той е източникът, от който копирате. Прочетете коментарите
+в началото му преди първото поставяне: там са описани два капана, които вече са
+ни коствали тихо неработещи правила в продукция.
 
 ---
 
-## 2. Първи deploy
+## 2. Всеки следващ deploy
+
+Билдът се прави **встрани** и се пуска в употреба с една атомична стъпка, за да
+няма нито секунда, в която сайтът сервира половин директория.
 
 ```bash
-mkdir -p /var/www/demetriosbride-bg.com
-cd /var/www/demetriosbride-bg.com
-git clone <REPO_URL> .
-
-# Server dependencies
-cd server
-npm ci
-cp .env.example .env
-nano .env   # попълнете MONGO_URI, JWT_SECRET, BREVO_API_KEY, CORS_ORIGIN, SITE_URL
-
-# Client build
-cd ..
-npm ci
-npm run build   # → /var/www/demetriosbride-bg.com/dist
-```
-
-### Стартирайте API с PM2
-
-```bash
-cd /var/www/demetriosbride-bg.com/server
-pm2 start index.js --name areti-api
-pm2 startup        # копирайте показаната команда и я изпълнете
-pm2 save
-```
-
-### Конфигурирайте Nginx
-
-```bash
-cp deploy/nginx.conf /etc/nginx/sites-available/demetriosbride-bg.com
-ln -s /etc/nginx/sites-available/demetriosbride-bg.com /etc/nginx/sites-enabled/
-rm /etc/nginx/sites-enabled/default
-nginx -t && systemctl reload nginx
-```
-
-### SSL сертификат (Let's Encrypt)
-
-```bash
-certbot --nginx -d demetriosbride-bg.com -d www.demetriosbride-bg.com
-# Автоматично обновяване вече е настроено чрез systemd timer.
-```
-
----
-
-## 3. Следващ deploy (всеки път след промяна)
-
-```bash
-cd /var/www/demetriosbride-bg.com
+cd /path/to/repo            # проверете реалния път на сървъра
 git pull
-npm ci && npm run build
-cd server && npm ci && pm2 restart areti-api
-systemctl reload nginx
+
+# Клиент — билд в работната копия, не в живата директория
+npm ci
+npm run build               # sitemap → vite build → prerender (~2 мин)
+
+# Публикуване: нова директория, после смяна
+rsync -a --delete dist/ /path/to/releases/next/
+mv /path/to/live /path/to/releases/prev && mv /path/to/releases/next /path/to/live
 ```
 
-Или като еднократен скрипт:
+Точните пътища са специфични за машината — вземете ги от текущия
+`/etc/caddy/Caddyfile` (`root * …`), а не от този файл.
+
+### Кога трябва рестарт на backend-а
 
 ```bash
-cd /var/www/demetriosbride-bg.com && \
-  git pull && npm ci && npm run build && \
-  cd server && npm ci && pm2 restart areti-api && \
-  systemctl reload nginx
+systemctl restart demetrios-backend
+```
+
+Само когато има промяна в `server/` (route, модел, `lib/`) или в `server/.env`.
+Промени само по фронтенда **не** изискват рестарт.
+
+### Кога трябва пипане на Caddy
+
+Само когато `deploy/redirects.caddy` се е променил. Тогава:
+
+```bash
+caddy validate --config /etc/caddy/Caddyfile
+systemctl reload caddy
 ```
 
 ---
 
-## 4. Проверка след deploy
+## 3. Проверка след deploy
+
+Правило: правило, което се парсва и валидира, все още може да е мъртво.
+Проверявайте с `curl`, не по конфигурацията.
 
 ```bash
-# SPA маршрутите работят
+# SPA маршрути → 200
 curl -I https://demetriosbride-bg.com/collection/demetrios
 curl -I https://demetriosbride-bg.com/product/1505
 
+# Casing на артикулите → 301 в един скок към точния ref
+curl -I https://demetriosbride-bg.com/product/r149          # → 301 /product/R149
+
 # Стари WP URL-и → 301
-curl -I https://demetriosbride-bg.com/bulchinski-rokli/
 curl -I https://demetriosbride-bg.com/za-nas/
+curl -I https://demetriosbride-bg.com/bulchinski-rokli/
+
+# Мъртви WP технически URL-и → 410
+curl -I https://demetriosbride-bg.com/xmlrpc.php
+curl -I https://demetriosbride-bg.com/product/1500/feed/
+
+# Непознат URL → 404 shell с noindex, НЕ съдържанието на началната страница
+curl -s https://demetriosbride-bg.com/nesushtestvuvashta | grep -o '<meta name="robots"[^>]*>'
 
 # API
-curl https://demetriosbride-bg.com/api/health
-curl https://demetriosbride-bg.com/sitemap.xml | head -20
-curl https://demetriosbride-bg.com/robots.txt
+curl https://demetriosbride-bg.com/api/health               # → {"status":"ok"}
+curl -s https://demetriosbride-bg.com/sitemap.xml | head -5
 ```
 
-Очаквани отговори:
-- SPA маршрути → `200 OK`
-- Стари WP URL-и → `301 Moved Permanently` с правилен `Location:` header
-- API → `{"status":"ok"}`
+Ако `/product/1500` върне 301 вместо 200, виновникът е `@prod_gone` правилото —
+причината и решението са описани в `redirects.caddy`.
 
 ---
 
-## 5. Логове
+## 4. Логове
 
 ```bash
-# Nginx
-tail -f /var/log/nginx/access.log /var/log/nginx/error.log
-
-# Node API
-pm2 logs areti-api
-pm2 status
+journalctl -u demetrios-backend -f     # Node API
+journalctl -u caddy -f                 # Caddy (достъп + грешки)
 ```
 
 ---
 
-## 6. Restart на услугите
+## 5. Environment променливи (`server/.env`)
 
-```bash
-pm2 restart areti-api          # рестарт само на Node API
-systemctl reload nginx         # презареждане на nginx config без downtime
-systemctl restart mongod       # рестарт на MongoDB
-```
+| Ключ | За какво |
+|------|----------|
+| `MONGO_URI` | Връзка към базата |
+| `JWT_SECRET` | Подписва сесийните токени — **задължително** сменен от default-а |
+| `BREVO_API_KEY` | Транзакционни имейли (потвърждения, 2FA кодове) |
+| `ADMIN_EMAILS` | Кой получава известие при ново запитване (с запетаи) |
+| `CORS_ORIGIN` | `https://demetriosbride-bg.com` |
+| `PORT` | Портът, към който Caddy проксира (по подразбиране 4000) |
+
+Всеки от `/api/email/*` изисква вход в админ панела. Публичният сайт не вика
+нито един от тях — имейлите при запитване се пращат от самия
+`POST /api/bookings`.

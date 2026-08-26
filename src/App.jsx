@@ -4,7 +4,7 @@ import { Nav, Footer, FloatDial } from './components';
 // The legal pages live in the same small file — import them statically too
 // (dynamic-importing them would not split, and would only add Suspense churn).
 import { CookieConsent, PrivacyPage, TermsPage, CookiePolicyPage, NotFoundPage } from './legal';
-import { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakSelect, TweakToggle } from './TweaksPanel';
+import { useTweaks } from './tweaks';
 import { useSeoInject } from './seo-inject';
 import { pathToState, stateToPath, readInitialState } from './router';
 import { captureAttribution } from './attribution';
@@ -36,9 +36,27 @@ const DemetriosPage   = lazy(() => import('./info').then(m => ({ default: m.Deme
 const AdminPanel = lazy(() => import('./admin'));
 
 // =====================================================
-//  APP — Router + Tweaks panel + state
+//  APP — Router + site preferences + state
 // =====================================================
 
+const FAVORITES_KEY = 'areti_favorites';
+
+function readFavorites() {
+  if (typeof window === 'undefined' || window.__PRERENDER__) return [];
+  try {
+    const raw = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+    // Guard against a hand-edited or half-written value.
+    return Array.isArray(raw) ? raw.filter(r => typeof r === 'string').slice(0, 200) : [];
+  } catch { return []; }
+}
+
+function writeFavorites(refs) {
+  if (typeof window === 'undefined' || window.__PRERENDER__) return;
+  try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(refs)); } catch { /* storage blocked */ }
+}
+
+// Site defaults. A returning visitor's stored choices (see tweaks.js) are
+// layered on top of these.
 const TWEAKS = {
   "heroVariant": "split",
   "palette": "champagne",
@@ -49,13 +67,18 @@ const TWEAKS = {
 };
 
 export default function App() {
-  const initial = useRef(readInitialState()).current;
-  const [route, setRouteRaw] = useState(initial.route || "home");
+  // Lazy initialiser, not `useRef(readInitialState())`: the argument form is
+  // evaluated on EVERY render, so the router ran its full match — and could
+  // call history.replaceState — each time anything in the app re-rendered.
+  const initial = useRef(null);
+  if (initial.current === null) initial.current = readInitialState();
+  const initialState = initial.current;
+  const [route, setRouteRaw] = useState(initialState.route || "home");
   const [tweaks, setTweak] = useTweaks(TWEAKS);
   // The URL is the source of truth for language (/en/* → English). The stored
   // tweak is only a fallback for the prefix-less Bulgarian URLs, so a visitor
   // landing on an /en link always gets English regardless of past preference.
-  const [lang, setLang] = useState(initial.lang === "en" ? "en" : (tweaks.lang || "bg"));
+  const [lang, setLang] = useState(initialState.lang === "en" ? "en" : (tweaks.lang || "bg"));
   useSeoInject();
 
   const setRoute = (r) => {
@@ -95,11 +118,11 @@ export default function App() {
     if (lang !== tweaks.lang) setTweak("lang", lang);
   }, [lang]);
 
-  const [activeCollection, setActiveCollection] = useState(initial.collectionId || null);
-  const [activeSilhouette, setActiveSilhouette] = useState(initial.silhouetteId || null);
-  const [activeProduct, setActiveProduct] = useState(initial.productRef || null);
-  const [activeBlogPost, setActiveBlogPost] = useState(initial.blogPostId || null);
-  const [favorites, setFavorites] = useState([]);
+  const [activeCollection, setActiveCollection] = useState(initialState.collectionId || null);
+  const [activeSilhouette, setActiveSilhouette] = useState(initialState.silhouetteId || null);
+  const [activeProduct, setActiveProduct] = useState(initialState.productRef || null);
+  const [activeBlogPost, setActiveBlogPost] = useState(initialState.blogPostId || null);
+  const [favorites, setFavorites] = useState(readFavorites);
   const [bookingDress, setBookingDress] = useState(null);
 
   // Sync state → URL whenever route or its params change
@@ -145,6 +168,12 @@ export default function App() {
   const toggleFavorite = useCallback((ref) => {
     setFavorites(prev => prev.includes(ref) ? prev.filter(r => r !== ref) : [...prev, ref]);
   }, []);
+
+  // Persist the wishlist. It used to live in component state only, so every
+  // heart a visitor tapped was gone the moment they reloaded, opened a dress in
+  // a new tab, or came back the next day — which is the entire point of a
+  // wishlist on a boutique site where the decision takes weeks.
+  useEffect(() => { writeFavorites(favorites); }, [favorites]);
 
   const goCollection = (id = null) => {
     setActiveCollection(id);
@@ -212,76 +241,8 @@ export default function App() {
       <Footer lang={lang} setRoute={setRoute} goCollection={goCollection} />
       <FloatDial setRoute={setRoute} lang={lang} />
       <CookieConsent lang={lang} setRoute={setRoute} />
-      <TweaksPanel title="Tweaks">
-        <TweakSection label="Херо вариант">
-          <TweakRadio
-            label="Стил"
-            value={tweaks.heroVariant}
-            onChange={(v) => setTweak("heroVariant", v)}
-            options={[
-              { label: "Editorial", value: "editorial" },
-              { label: "Split", value: "split" },
-              { label: "Noir", value: "noir" },
-            ]}
-          />
-        </TweakSection>
-        <TweakSection label="Палитра">
-          <TweakColor
-            label="Тема"
-            value={tweaks.palette}
-            onChange={(v) => setTweak("palette", v)}
-            options={[
-              { value: "champagne", colors: ["#f6f1e8", "#c4a373", "#1a1612"] },
-              { value: "ivory", colors: ["#faf6ee", "#d9c5a8", "#2a2520"] },
-              { value: "blush", colors: ["#f4ebe3", "#e8b4a0", "#1a1612"] },
-              { value: "noir", colors: ["#14110d", "#c4a373", "#f5ecd8"] },
-            ]}
-          />
-        </TweakSection>
-        <TweakSection label="Типография">
-          <TweakSelect
-            label="Display шрифт"
-            value={tweaks.displayFont}
-            onChange={(v) => setTweak("displayFont", v)}
-            options={[
-              { label: "Italiana (тънък, fashion)", value: "italiana" },
-              { label: "Cormorant (класически)", value: "cormorant" },
-              { label: "Playfair (контраст)", value: "playfair" },
-              { label: "DM Serif (drama)", value: "didone" },
-            ]}
-          />
-        </TweakSection>
-        <TweakSection label="Оформление">
-          <TweakRadio
-            label="Плътност"
-            value={tweaks.density}
-            onChange={(v) => setTweak("density", v)}
-            options={[
-              { label: "Compact", value: "compact" },
-              { label: "Spacious", value: "spacious" },
-            ]}
-          />
-          <TweakToggle
-            label="Marquee лента"
-            value={tweaks.showMarquee}
-            onChange={(v) => setTweak("showMarquee", v)}
-          />
-        </TweakSection>
-        <TweakSection label="Език">
-          <TweakRadio
-            label="Език"
-            value={lang}
-            onChange={(v) => setLang(v)}
-            options={[
-              { label: "Български", value: "bg" },
-              { label: "English", value: "en" },
-            ]}
-          />
-        </TweakSection>
-      </TweaksPanel>
     </>
   );
 }
 
-// blush palette
 

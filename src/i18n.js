@@ -6,7 +6,7 @@ const i18n = {
     nav: {
       home: "Начало",
       collection: "Колекция",
-      accessories: "Вечерни рокли",
+      evening: "Вечерни рокли",
       bookings: "Резервирай час",
       about: "За нас",
       demetrios: "За Деметриос",
@@ -226,12 +226,6 @@ const i18n = {
         { meta: "Любовни истории · 9 мин", title: "Една булка, две рокли: историята на Иванa", p: "От гражданския до танцовия пол — една булка с две различни души." },
       ],
     },
-    accessories: {
-      crumb: "Колекция / Вечерни рокли",
-      title: "Вечерни рокли",
-      lede: "Елегантност, събрана във всеки детайл — вечерни рокли за всяко официално събитие.",
-      categories: ["Всички", "Воали", "Корони", "Обици", "Колани", "Обувки"],
-    },
     footer: {
       brand: "Арети",
       brand_em: "",
@@ -440,6 +434,8 @@ const i18n = {
             paragraphs: [
               "areti_cookies — Запомня вашия избор за бисквитки (необходима, 1 година).",
               "areti_tweaks — Съхранява визуалните настройки на сайта (необходима, 1 година).",
+              "areti_favorites — Запомня роклите, които сте добавили в „Любими“ (необходима, до изтриване).",
+              "areti_attr — Записва през кой канал сте стигнали до сайта (реклама, търсене, препратка), за да знаем кои кампании водят до запитвания. Записва се само след съгласие за маркетингови или аналитични бисквитки (маркетингова, до изтриване).",
               "_ga, _ga_* — Google Analytics: анализ на трафика (аналитична, 2 години).",
               "_fbp — Facebook Pixel: рекламно проследяване (маркетингова, 3 месеца).",
               "_gcl_au — Google Ads: рекламна атрибуция (маркетингова, 3 месеца).",
@@ -480,7 +476,7 @@ const i18n = {
     nav: {
       home: "Home",
       collection: "Collection",
-      accessories: "Evening dresses",
+      evening: "Evening dresses",
       bookings: "Book a fitting",
       about: "About us",
       demetrios: "Demetrios",
@@ -700,12 +696,6 @@ const i18n = {
         { meta: "Love stories · 9 min", title: "One bride, two dresses: Ivana's story", p: "From courthouse to dancefloor — a bride with two different souls." },
       ],
     },
-    accessories: {
-      crumb: "Collection / Evening dresses",
-      title: "Evening dresses",
-      lede: "Elegance in every detail — evening dresses for every formal occasion.",
-      categories: ["All", "Veils", "Crowns", "Earrings", "Belts", "Shoes"],
-    },
     footer: {
       brand: "Areti",
       brand_em: "",
@@ -914,6 +904,8 @@ const i18n = {
             paragraphs: [
               "areti_cookies — Remembers your cookie preference (essential, 1 year).",
               "areti_tweaks — Stores your site visual preferences (essential, 1 year).",
+              "areti_favorites — Remembers the gowns you added to your wishlist (essential, until cleared).",
+              "areti_attr — Records which channel brought you to the site (ad, search, referral) so we know which campaigns lead to enquiries. Written only after you accept marketing or analytics cookies (marketing, until cleared).",
               "_ga, _ga_* — Google Analytics: traffic analysis (analytics, 2 years).",
               "_fbp — Facebook Pixel: advertising tracking (marketing, 3 months).",
               "_gcl_au — Google Ads: ad attribution (marketing, 3 months).",

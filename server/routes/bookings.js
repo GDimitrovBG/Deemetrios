@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import Booking from '../models/Booking.js';
 import { requireAuth } from '../middleware/auth.js';
-import { sendEmailToMany, getAdminEmails, emailConfigured, bookingAdminEmail } from '../lib/email.js';
+import { sendEmail, sendEmailToMany, getAdminEmails, emailConfigured, bookingAdminEmail, bookingCustomerEmail } from '../lib/email.js';
 
 const router = Router();
 
@@ -45,7 +45,7 @@ function cleanAttribution(a) {
 // Public: create booking (from website form)
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, type, location, date, time, dressRefs, budget, notes, attribution } = req.body;
+    const { name, email, phone, type, location, date, time, dressRefs, budget, notes, attribution, lang } = req.body;
     if (!name || !email) {
       return res.status(400).json({ error: 'Име и email са задължителни' });
     }
@@ -90,6 +90,20 @@ router.post('/', async (req, res) => {
       if (others.length) {
         sendEmailToMany({ emails: others, subject, html: bookingAdminEmail(booking, { includeSource: false }) }).catch(onErr);
       }
+
+      // Confirmation to the customer. Also server-side: the browser used to
+      // POST the recipient and the full HTML body to a public endpoint, which
+      // made /api/email/send-customer an open relay for our own domain. The
+      // recipient here can only ever be the address stored on the booking.
+      const custLang = lang === 'en' ? 'en' : 'bg';
+      sendEmail({
+        to: booking.email,
+        toName: booking.name,
+        subject: custLang === 'en'
+          ? 'Booking Confirmation — Areti Bridal Salon'
+          : 'Потвърждение за консултация — Булчински салон Арети',
+        html: bookingCustomerEmail(booking, custLang),
+      }).catch(err => console.error('[bookings] customer confirmation failed:', err?.message || err));
     }
   } catch (err) {
     res.status(500).json({ error: 'Грешка при записване' });

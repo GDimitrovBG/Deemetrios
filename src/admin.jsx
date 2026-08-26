@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { DRESSES, COLLECTIONS } from './data';
-import { BLOG_POSTS } from './blog_data';
+import { COLLECTIONS } from './data';
 import * as api from './api';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

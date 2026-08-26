@@ -2134,26 +2134,6 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ============================================
-   ACCESSORIES
-   ============================================ */
-.acc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px 4px;
-  padding: 0 var(--gutter) var(--s-9);
-  max-width: var(--maxw); margin: 0 auto;
-}
-.acc-card .img { aspect-ratio: 1; background: linear-gradient(135deg, #e8dfc9, #c4a373); transition: transform 600ms; }
-.acc-card { cursor: pointer; }
-.acc-card:hover .img { transform: scale(1.04); }
-.acc-card .info {
-  padding: 14px 4px;
-  display: flex; justify-content: space-between; align-items: start;
-}
-.acc-card h3 { font-family: var(--f-serif); font-size: 17px; font-weight: 400; }
-.acc-card .price { font-family: var(--f-serif); font-style: italic; font-size: 15px; color: var(--ink-soft); }
-
-/* ============================================
    MOBILE NAV (burger + drawer)
    ============================================ */
 .burger {

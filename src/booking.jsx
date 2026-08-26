@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import i18n from './i18n';
-import { Img } from './components';
 import { DRESSES, COLLECTIONS } from './data';
 import { useSeo, orgSchema, breadcrumbSchema } from './seo';
 import { faqSchema } from './seo-helpers';
@@ -11,70 +10,14 @@ import { getAttributionPayload } from './attribution';
 //  BOOKING — 4-step reservation flow
 // =====================================================
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
-
-async function sendCustomerEmail({ to, toName, subject, html }) {
-  try {
-    await fetch(`${API_BASE}/api/email/send-customer`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ to, toName, subject, html }),
-    });
-  } catch { /* silent — booking still succeeds even if email fails */ }
-}
-
-function sendBookingEmails(booking, lang) {
-  const isBg = lang === 'bg';
-  const { name, email, phone, type, date, time, budget, notes, dressRefs } = booking;
-  const dressLine = dressRefs?.length ? dressRefs.join(', ') : (isBg ? 'не е избрана' : 'none selected');
-
-  // 1. Email to customer
-  if (email) {
-    sendCustomerEmail({
-      to: email,
-      toName: name,
-      subject: isBg ? 'Потвърждение за консултация — Булчински салон Арети' : 'Booking Confirmation — Areti Bridal Salon',
-      html: `
-        <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;color:#1a1612;">
-          <div style="padding:32px 0;border-bottom:1px solid #e8dfc9;">
-            <h1 style="font-size:28px;font-weight:400;margin:0;">Булчински салон <em>Арети</em></h1>
-          </div>
-          <div style="padding:32px 0;">
-            <p style="font-size:18px;line-height:1.5;margin:0 0 24px;">
-              ${isBg ? `Здравейте, ${name || ''}!` : `Hello, ${name || ''}!`}
-            </p>
-            <p style="font-size:16px;line-height:1.6;color:#4a4540;margin:0 0 24px;">
-              ${isBg
-                ? 'Получихме заявката Ви за консултация. Ще се свържем с Вас по телефон или имейл в рамките на 24 часа, за да уточним точния час и всички детайли.'
-                : 'We have received your consultation request. We will contact you by phone or email within 24 hours to confirm the exact time and all details.'}
-            </p>
-            <div style="background:#f9f5ed;padding:24px;border-radius:4px;margin:0 0 24px;">
-              <div style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#8a7556;margin-bottom:16px;">
-                ${isBg ? 'Вашата заявка' : 'Your request'}
-              </div>
-              <table style="width:100%;font-size:14px;line-height:1.8;color:#4a4540;">
-                <tr><td style="width:140px;color:#8a7556;">${isBg ? 'Тип' : 'Type'}</td><td>${type}</td></tr>
-                <tr><td style="color:#8a7556;">${isBg ? 'Дата' : 'Date'}</td><td>${date}</td></tr>
-                <tr><td style="color:#8a7556;">${isBg ? 'Час' : 'Time'}</td><td>${time || (isBg ? 'ще уточним' : 'to be confirmed')}</td></tr>
-                ${dressRefs?.length ? `<tr><td style="color:#8a7556;">${isBg ? 'Рокли' : 'Dresses'}</td><td>${dressLine}</td></tr>` : ''}
-              </table>
-            </div>
-            <p style="font-size:14px;color:#8a7556;line-height:1.5;">
-              ${isBg ? 'Очакваме Ви скоро! ✨' : 'We look forward to seeing you! ✨'}
-            </p>
-          </div>
-          <div style="padding:20px 0;border-top:1px solid #e8dfc9;font-size:12px;color:#8a7556;">
-            Булчински салон Арети · София<br>
-            <a href="https://demetriosbride-bg.com" style="color:#8a7556;">demetriosbride-bg.com</a>
-          </div>
-        </div>
-      `,
-    });
-  }
-
-  // Admin notification is sent SERVER-SIDE by POST /api/bookings — the public
-  // form is anonymous and can't call the auth-protected /notify-admins endpoint.
-}
+// Booking emails — BOTH of them — are sent by the server from POST /api/bookings.
+//
+// The customer confirmation used to be composed here and POSTed to
+// /api/email/send-customer with the recipient and the whole HTML body in the
+// request. That endpoint had to accept any `to` and any `html` from anyone,
+// which made it an open mail relay for info@areti.bg. The server now builds
+// that email itself (see server/lib/email.js → bookingCustomerEmail), so the
+// only thing the browser sends is the booking.
 
 function StepsBar({ steps, current, setCurrent, maxReached }) {
   return (
@@ -528,6 +471,11 @@ function BookingPage({ lang, setRoute, dress = null }) {
   const [step, setStep] = useState(0);
   const [data, setData] = useState({});
   const [done, setDone] = useState(false);
+  // The submit used to be fire-and-forget with `.catch(() => {})`, so a booking
+  // the server rejected (validation, rate limit, server down) still showed the
+  // success screen — a silently lost lead. Now the button waits for the API.
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const [dressRefs, setDressRefs] = useState(dress ? [String(dress.ref)] : []);
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -575,8 +523,8 @@ function BookingPage({ lang, setRoute, dress = null }) {
                 {t.booking.next} →
               </button>
             ) : (
-              <button className="btn btn-solid" onClick={() => {
-                if (!canNext()) return;
+              <button className="btn btn-solid" onClick={async () => {
+                if (!canNext() || sending) return;
                 const booking = {
                   id: Math.random().toString(36).slice(2,10) + Date.now().toString(36),
                   createdAt: new Date().toISOString(),
@@ -593,8 +541,22 @@ function BookingPage({ lang, setRoute, dress = null }) {
                   // Where this lead came from (FB ad vs organic vs direct …).
                   attribution: getAttributionPayload(),
                 };
-                createBooking(booking).catch(() => {});
-                sendBookingEmails(booking, lang);
+                setSending(true);
+                setSendError("");
+                try {
+                  // `lang` tells the server which language to write the
+                  // customer's confirmation email in.
+                  await createBooking({ ...booking, lang });
+                } catch (e) {
+                  setSending(false);
+                  setSendError(e?.message || (lang === "bg"
+                    ? "Заявката не беше изпратена. Опитайте пак или ни позвънете."
+                    : "The request could not be sent. Please try again or call us."));
+                  return;
+                }
+                setSending(false);
+                // Conversion pixels fire only once the booking is actually
+                // stored — otherwise a failed submit reported a fake lead.
                 // Fire Google Ads conversion (no-op if Ads not configured or
                 // user declined marketing cookies — see seo-inject.js).
                 try { window.__aretiAds?.sendBookingConversion?.(); } catch {}
@@ -603,11 +565,16 @@ function BookingPage({ lang, setRoute, dress = null }) {
                 // Meta Pixel Lead event (no-op until user grants marketing consent).
                 try { window.fbq?.('track', 'Lead', { content_category: 'booking', content_name: booking.type || 'unknown' }); } catch {}
                 setDone(true);
-              }} disabled={!canNext()} style={{ opacity: canNext() ? 1 : 0.4 }}>
-                {t.booking.confirm}
+              }} disabled={!canNext() || sending} style={{ opacity: canNext() && !sending ? 1 : 0.4 }}>
+                {sending ? (lang === "bg" ? "Изпраща се…" : "Sending…") : t.booking.confirm}
               </button>
             )}
           </div>
+          {sendError && (
+            <p role="alert" style={{ marginTop: 16, color: "#a4342a", fontFamily: "var(--f-serif)", fontSize: 15 }}>
+              {sendError}
+            </p>
+          )}
         </div>
         <Summary t={t} data={data} lang={lang} dressRefs={dressRefs} setDressRefs={setDressRefs} dressRequired={dressRequired} />
       </div>

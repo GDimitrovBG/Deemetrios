@@ -4,8 +4,8 @@
 //  Justin Alexander, Maggie Sottero and other leading
 //  bridal SEO performers.
 // =====================================================
-import { COLLECTIONS, DRESSES } from './data';
-import { SITE_URL, SITE_NAME, DEFAULT_IMG, DEFAULT_DESC, REVIEW_RATING, REVIEW_COUNT } from './seo';
+import { COLLECTIONS } from './data';
+import { SITE_URL, DEFAULT_DESC } from './seo';
 
 const COLLECTION_BY_ID = Object.fromEntries(COLLECTIONS.map(c => [c.id, c]));
 // Language-aware lookup — "Вечерни рокли" must not leak into English copy.
@@ -390,14 +390,6 @@ export function getProductAlt(p, lang = 'bg', idx = 0) {
   return `${kind} Style ${p.ref} — ${t.detail} ${idx + 1}`;
 }
 
-/** Alt text for accessory photos */
-export function getAccessoryAlt(a, lang = 'bg') {
-  const t = T[lang] || T.bg;
-  const name = lang === 'bg' ? a.name_bg : a.name_en;
-  const cat = lang === 'bg' ? a.cat : a.cat_en;
-  return `${name} — ${cat} | ${t.salon}`;
-}
-
 // -----------------------------------------------------
 //  Structured data — richer than baseline
 // -----------------------------------------------------
@@ -414,9 +406,13 @@ export function enhancedProductSchema(p, lang = 'bg') {
   // identical schema descriptions are a thin-content signal.
   const desc = buildProductDescription(p, lang) ||
                (lang === 'bg' ? p.seo_description_bg : p.seo_description_en) || DEFAULT_DESC;
-  // Schema image URLs should be absolute (safer for Google, required by other consumers)
+  // Schema image URLs must be absolute, and must point at the file the page
+  // actually renders — the WebP twin. Listing the .jpg here while the image
+  // sitemap lists the .webp gave Google two URLs for one photo and split the
+  // signals between them.
   const images = (p.imgs && p.imgs.length ? p.imgs : [p.img])
     .filter(Boolean)
+    .map(u => u.replace(/\.jpe?g$/i, '.webp'))
     .map(u => (u.startsWith('/') ? `${SITE_URL}${u}` : u));
 
   const schema = {
@@ -449,16 +445,13 @@ export function enhancedProductSchema(p, lang = 'bg') {
     "offerCount": "1",
     "availability": "https://schema.org/InStoreOnly",
   };
-  // Google Product rich results require offers, review, OR aggregateRating.
-  if (REVIEW_COUNT > 0) {
-    schema.aggregateRating = {
-      "@type": "AggregateRating",
-      "ratingValue": REVIEW_RATING,
-      "reviewCount": REVIEW_COUNT,
-      "bestRating": "5",
-      "worstRating": "1",
-    };
-  }
+  // No aggregateRating here on purpose. The 266 reviews we have are Google
+  // reviews of the SALON, and Google's structured-data policy requires review
+  // markup to be about the item it is attached to. Stamping the store's rating
+  // onto all 111 individual dresses is exactly the misuse that earns a
+  // structured-data manual action, and the AggregateOffer above already
+  // satisfies the Product rich-result requirement on its own. The rating stays
+  // where it is true: orgSchema() in seo.js.
   return schema;
 }
 
@@ -475,7 +468,10 @@ export function collectionItemListSchema(items, lang = 'bg') {
       "position": i + 1,
       "url": `${SITE_URL}/product/${p.ref}`,
       "name": getProductHeading(p, lang),
-      "image": (() => { const u = p.imgs?.[0] || p.img; return u && u.startsWith('/') ? `${SITE_URL}${u}` : u; })(),
+      "image": (() => {
+        const u = (p.imgs?.[0] || p.img || '').replace(/\.jpe?g$/i, '.webp');
+        return u.startsWith('/') ? `${SITE_URL}${u}` : u;
+      })(),
     })),
   };
 }

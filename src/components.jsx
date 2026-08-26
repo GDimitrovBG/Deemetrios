@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import i18n from './i18n';
 import { COLLECTIONS } from './data';
-import { cdnImage, cdnSrcset } from './cdn';
+import { cdnImage } from './cdn';
 import { collectionLabel } from './seo-helpers';
 
 // =====================================================
@@ -15,7 +15,7 @@ function useImageBg(src) {
   return { backgroundImage: `url(${src})`, backgroundSize: 'cover', backgroundPosition: 'center' };
 }
 
-function Img({ src, label, alt, className = "", style = {}, priority = false, width, height, sizes }) {
+function Img({ src, label, alt, className = "", style = {}, priority = false, width, height }) {
   const [errored, setErrored] = useState(false);
   const a = alt ?? label ?? "";
   if (!src || errored) {
@@ -28,14 +28,10 @@ function Img({ src, label, alt, className = "", style = {}, priority = false, wi
       ></div>
     );
   }
-  // Responsive srcset is only meaningful once the CDN is enabled (see cdn.js).
-  // Without it, srcSet is '' and the browser just uses `src` as today.
-  const srcSet = cdnSrcset(src);
   return (
     <div className={`ph ph-img ${className}`} style={style}>
       <img
-        src={cdnImage(src, width)}
-        {...(srcSet ? { srcSet, sizes: sizes || "(max-width: 768px) 50vw, 25vw" } : {})}
+        src={cdnImage(src)}
         alt={a}
         width={width}
         height={height}
@@ -73,15 +69,6 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
     return () => { document.body.style.overflow = ""; document.body.classList.remove("drawer-open"); };
   }, [drawerOpen]);
 
-  const links = [
-    { id: "collection", label: t.nav.collection },
-    { id: "accessories", label: t.nav.accessories },
-    { id: "about", label: t.nav.about },
-    { id: "blog", label: t.nav.blog },
-    { id: "contact", label: t.nav.contact },
-    { id: "booking", label: t.nav.bookings },
-  ];
-
   const goTo = (id) => {
     setDrawerOpen(false);
     setTimeout(() => setRoute(id), 80);
@@ -117,7 +104,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
                 </div>
               )}
             </div>
-            <a href="/collection/evening" className={`nav-link`} onClick={(e) => { e.preventDefault(); goCollection("evening"); }}>{t.nav.accessories}</a>
+            <a href="/collection/evening" className={`nav-link`} onClick={(e) => { e.preventDefault(); goCollection("evening"); }}>{t.nav.evening}</a>
             <a href="/about" className={`nav-link ${route === "about" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setRoute("about"); }}>{t.nav.about}</a>
           </div>
           <div className={`burger ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(!drawerOpen)}>
@@ -166,7 +153,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
           {/* Evening is a top-level nav item on desktop; add it to the mobile
               drawer too — it was missing, so вечерни рокли were unreachable on phones. */}
           <a href="/collection/evening" className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection("evening"); }}>
-            <span>{t.nav.accessories}</span>
+            <span>{t.nav.evening}</span>
           </a>
           <div className="m-divider" />
           <a href="/about" className={`m-link ${route === "about" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("about"); }}>
