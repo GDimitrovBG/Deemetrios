@@ -1,5 +1,9 @@
 const BASE = import.meta.env.VITE_API_URL || '';
 
+// The steps of the passwordless login. A 401 from these carries the server's
+// own message and must not be treated as an expired session.
+const LOGIN_STEPS = ['/api/auth/login', '/api/auth/verify-code', '/api/auth/resend-code'];
+
 let token = sessionStorage.getItem('areti_token') || null;
 let onUnauth = null;
 
@@ -24,7 +28,16 @@ async function request(path, opts = {}) {
     throw new Error('Сървърът не е достъпен');
   }
 
-  if (res.status === 401) {
+  // The 401 handler below exists for ONE case: a token that has expired while
+  // the user was working, on a protected endpoint. The three endpoints that
+  // hand OUT a session are not that case — the user has no session there yet,
+  // so a 401 from them means "wrong code" or "this challenge is stale", and
+  // the server says exactly which. Routing them through the generic handler
+  // replaced that with "Сесията е изтекла", so one mistyped digit told the
+  // user their session had expired on the screen where they are creating one.
+  const isLoginStep = LOGIN_STEPS.includes(path);
+
+  if (res.status === 401 && !isLoginStep) {
     setToken(null);
     if (onUnauth) onUnauth();
     throw new Error('Сесията е изтекла');

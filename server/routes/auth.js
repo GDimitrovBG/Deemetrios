@@ -91,7 +91,14 @@ router.post('/verify-code', async (req, res) => {
     }
     const userId = verifyChallenge(challenge);
     if (!userId) {
-      return res.status(401).json({ error: 'Сесията изтече — опитайте отново' });
+      // Two different things land here, and we must not say which: a challenge
+      // older than 10 minutes, and the fake one issued above for an address
+      // with no active account (see the comment in /login — we do not reveal
+      // whether an email exists). "Сесията изтече" was wrong for the second
+      // case and left the user re-typing a code that was never sent.
+      return res.status(401).json({
+        error: 'Кодът не е приет — сесията може да е изтекла или този адрес да няма достъп до панела. Върнете се назад и опитайте пак.',
+      });
     }
     const user = await User.findById(userId);
     if (!user || !user.active) {
@@ -113,7 +120,9 @@ router.post('/resend-code', async (req, res) => {
   try {
     const { challenge } = req.body;
     const userId = verifyChallenge(challenge);
-    if (!userId) return res.status(401).json({ error: 'Сесията изтече' });
+    if (!userId) return res.status(401).json({
+      error: 'Не може да се изпрати нов код — върнете се назад и въведете имейла отново.',
+    });
     const user = await User.findById(userId);
     if (!user) return res.status(401).json({ error: 'Невалиден потребител' });
     const code = await issueCode(user);
