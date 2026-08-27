@@ -15,6 +15,11 @@ function generateCode() {
   return String(randomInt(100000, 1000000));
 }
 
+// NOTE: this OVERWRITES any code already outstanding for the user. That is
+// correct — a new request should invalidate the old one — but it means that if
+// two codes ever go out, only the newer one works, while the older email is
+// the one sitting at the top of the inbox. That combination reads to the user
+// as "the code you sent me is wrong".
 async function issueCode(user) {
   const code = generateCode();
   user.otpHash = await bcrypt.hash(code, 10);
@@ -66,6 +71,11 @@ router.post('/login', async (req, res) => {
     }
 
     const code = await issueCode(user);
+    // One line per issued code. Without it there is no way to tell a duplicate
+    // sent by the app from a duplicate delivered by the mail provider — and
+    // that distinction is the whole diagnosis when someone reports two codes.
+    // The address is masked; the code itself is never logged.
+    console.log(`[auth] код издаден за ${maskEmail(user.email)} (валиден ${CODE_TTL_MIN} мин)`);
     await sendEmail({
       to: user.email,
       toName: user.name,
@@ -126,6 +136,7 @@ router.post('/resend-code', async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(401).json({ error: 'Невалиден потребител' });
     const code = await issueCode(user);
+    console.log(`[auth] НОВ код (resend) за ${maskEmail(user.email)}`);
     await sendEmail({
       to: user.email,
       toName: user.name,
