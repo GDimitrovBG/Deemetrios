@@ -435,16 +435,31 @@ export function enhancedProductSchema(p, lang = 'bg') {
       "name": collLabel,
     },
   };
-  // Exact prices aren't published — an AggregateOffer price range still lets
-  // Google show price info in Product rich results.
-  schema.offers = {
-    "@type": "AggregateOffer",
-    "lowPrice": "1000",
-    "highPrice": "4000",
-    "priceCurrency": "EUR",
-    "offerCount": "1",
-    "availability": "https://schema.org/InStoreOnly",
-  };
+  // Exact per-dress prices aren't published, so this is a range — but it is the
+  // range of the collection the dress is actually in, not one blanket
+  // 1000-4000 for everything. That blanket figure contradicted the page it sat
+  // on: a Platinum gown carried "from €1,000" in its structured data while the
+  // visible text on the same site says Platinum starts at €2,500. Structured
+  // data disagreeing with the page is exactly what gets a site flagged.
+  //
+  // Evening wear has no published range anywhere on the site, so it gets an
+  // Offer with no price rather than an invented one. Availability is still
+  // stated, which is the part that is true for every dress.
+  const col = COLLECTIONS.find(c => c.id === p.collection);
+  schema.offers = (col && col.priceFrom && col.priceTo)
+    ? {
+        "@type": "AggregateOffer",
+        "lowPrice": String(col.priceFrom),
+        "highPrice": String(col.priceTo),
+        "priceCurrency": "EUR",
+        "offerCount": "1",
+        "availability": "https://schema.org/InStoreOnly",
+      }
+    : {
+        "@type": "Offer",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStoreOnly",
+      };
   // No aggregateRating here on purpose. The 266 reviews we have are Google
   // reviews of the SALON, and Google's structured-data policy requires review
   // markup to be about the item it is attached to. Stamping the store's rating
