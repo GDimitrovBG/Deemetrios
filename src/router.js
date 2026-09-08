@@ -248,12 +248,33 @@ function stateToPathInner({ route, collectionId, productRef, blogPostId, silhoue
   }
 }
 
+/**
+ * Carry the query string across an in-app redirect.
+ *
+ * An ad that points at an old WordPress URL — /bulchinski-rokli?gclid=… — used
+ * to lose the click id outright. readInitialState() rewrites the URL to the new
+ * path at module-load time, and it dropped everything after the "?". gtag.js is
+ * loaded lazily so it had not run yet: by the time it looked at location.href
+ * the gclid was gone, no _gcl_aw cookie was written, and Google could never tie
+ * a later booking back to that click. Verified in a clean profile — the cookie
+ * was simply absent for that entry point, while direct landings kept it.
+ *
+ * Only the initial redirect matters. Once Google's tag has read the URL the
+ * parameters have done their job, so ordinary navigation still uses clean paths.
+ */
+function withQuery(path) {
+  if (typeof window === 'undefined') return path;
+  const q = window.location.search;
+  if (!q || q.length < 2 || path.includes('?')) return path;
+  return path + q;
+}
+
 export function readInitialState() {
   if (typeof window === 'undefined') return { route: 'home' };
   if (window.location.hash === '#admin') return { route: 'admin' };
   const s = pathToState(window.location.pathname);
   if (s.redirect) {
-    window.history.replaceState({}, '', s.redirect);
+    window.history.replaceState({}, '', withQuery(s.redirect));
     return pathToState(s.redirect);
   }
   return s;

@@ -129,7 +129,10 @@ export default function App() {
       if (window.location.hash === "#admin") { setRouteRaw("admin"); return; }
       const s = pathToState(window.location.pathname);
       if (s.redirect) {
-        window.history.replaceState({}, "", s.redirect);
+        // Keep any ?gclid / ?utm_* across the redirect — see withQuery() in
+        // router.js for why dropping them cost Google the click id.
+        const q = window.location.search;
+        window.history.replaceState({}, "", s.redirect + (q && !s.redirect.includes('?') ? q : ''));
         const next = pathToState(s.redirect);
         if (next.route) {
           setRouteRaw(next.route);
