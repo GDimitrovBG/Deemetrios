@@ -564,6 +564,24 @@ function BookingPage({ lang, setRoute, dress = null }) {
                 try { window.gtag?.('event', 'booking_request', { event_category: 'booking', event_label: booking.type || 'unknown' }); } catch {}
                 // Meta Pixel Lead event (no-op until user grants marketing consent).
                 try { window.fbq?.('track', 'Lead', { content_category: 'booking', content_name: booking.type || 'unknown' }); } catch {}
+                // A named dataLayer event so Google Tag Manager has something to
+                // trigger on. Without it a GTM container cannot fire anything
+                // here: the URL does not change on success (this is a state
+                // switch, not a navigation), so a page-view trigger never runs,
+                // and the form is React-controlled, so there is no native submit
+                // event either. Whoever manages the container builds a Custom
+                // Event trigger on "booking_submitted".
+                //
+                // Deliberately carries no name, email or phone — a dataLayer is
+                // readable by every tag in the container.
+                try {
+                  window.dataLayer = window.dataLayer || [];
+                  window.dataLayer.push({
+                    event: 'booking_submitted',
+                    booking_type: booking.type || 'unknown',
+                    dress_count: Array.isArray(dressRefs) ? dressRefs.length : 0,
+                  });
+                } catch {}
                 setDone(true);
               }} disabled={!canNext() || sending} style={{ opacity: canNext() && !sending ? 1 : 0.4 }}>
                 {sending ? (lang === "bg" ? "Изпраща се…" : "Sending…") : t.booking.confirm}
