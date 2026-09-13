@@ -424,8 +424,11 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   useSeo({
     title: lang === "bg"
-      ? "Арети — Булчински салон Demetrios в София | От 1992 г."
-      : "Areti — Demetrios Bridal Salon in Sofia | Since 1992",
+      // Keyword first: "булчински рокли" is the highest-impression query the
+      // homepage competes for (329/mo at 6.7% CTR); the brand-led title showed a
+      // snippet without the searched words.
+      ? "Булчински рокли София — салон Арети, Demetrios от 1992 г."
+      : "Wedding Dresses Sofia — Areti, Demetrios Bridal Salon since 1992",
     description: lang === "bg"
       ? "Официален представител на Demetrios в България от 1992 г. Булчински салон в Лозенец, София — над 100 рокли, консултация и корекции. Запазете час."
       : "Official Demetrios representative in Bulgaria since 1992. Bridal salon in Sofia — over 100 dresses, consultation and alterations. Book a fitting.",

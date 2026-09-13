@@ -499,7 +499,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
     title: silData
       ? (isBg ? `${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети` : `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`)
       : isEvening
-      ? (isBg ? "Абитуриентски и бални рокли в София — вечерна колекция | Арети" : "Prom & Evening Dresses in Sofia | Areti")
+      // "бални рокли 2027" is the fastest-growing evening query; the year goes
+      // in the title, and "бални" leads so it does not mirror the blog post
+      // ("Абитуриентски и бални рокли София 2027") word for word.
+      ? (isBg ? "Бални и абитуриентски рокли 2027 в София — колекция | Арети" : "Prom & Evening Dresses 2027 in Sofia | Areti")
       : colData
         ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
         : (isBg ? "Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
@@ -972,7 +975,12 @@ function getRelatedDresses(current, count = 4) {
     .map(x => x.d);
 }
 
-function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct }) {
+// Silhouette value on the spec sheet → landing page slug. Every product page
+// links its silhouette hub this way, so the three hubs collect internal links
+// from all 111 dresses instead of only from the guide and the quiz.
+const SILHOUETTE_SLUG_BY_VALUE = { "Русалка": "rusalka", "Принцеса": "printsesa", "А-силует": "a-siluet" };
+
+function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct, goSilhouette }) {
   const t = i18n[lang];
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const dress = DRESSES.find(d => d.ref === productRef) || DRESSES[0];
@@ -1045,9 +1053,19 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <div className="ref">{t.product.ref}: {dress.ref}</div>
             <p className="desc">{productDescription}</p>
             <dl>
-              {productSpecs.map((s) => (
-                <div className="spec-row" key={s.label}><dt>{s.label}</dt><dd>{s.value}</dd></div>
-              ))}
+              {productSpecs.map((s) => {
+                const silSlug = s.label === (isBg ? "Силует" : "Silhouette") ? SILHOUETTE_SLUG_BY_VALUE[dress.silhouette] : null;
+                return (
+                  <div className="spec-row" key={s.label}>
+                    <dt>{s.label}</dt>
+                    <dd>
+                      {silSlug
+                        ? <a href={withLang(`/collection/silueti/${silSlug}`, lang)} onClick={(e) => { e.preventDefault(); goSilhouette ? goSilhouette(silSlug) : setRoute("collection"); }} style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{s.value}</a>
+                        : s.value}
+                    </dd>
+                  </div>
+                );
+              })}
             </dl>
             <div className="cta-stack" style={{ marginTop: 32 }}>
               <button className="btn btn-solid" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_book}</button>
