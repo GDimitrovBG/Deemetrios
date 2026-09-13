@@ -26,6 +26,7 @@ const WP_REDIRECTS = {
   '/булчински-рокли-и-сватбени-рокли-в-соф': '/collection',
   '/бална-рокля-според-фигурата-как-да-изб': '/blog/balna-roklia-spored-figurata',
   '/кой-е-demetrios':     '/blog/koi-e-demetrios',
+  '/koj-e-demetrios':     '/blog/koi-e-demetrios',   // Latin transliteration of the same post
   '/сватбен-магазин-в-софия-сватбени-ро': '/collection',
 };
 

@@ -81,6 +81,11 @@ redir @r_home         / 301
 redir @r_cyr_collection /collection 301
 @r_cyr_balna      path_regexp ^/бална-рокля-според-фигурата-как-да-изб/?$
 redir @r_cyr_balna      /blog/balna-roklia-spored-figurata 301
+# Both spellings existed on the old site: the Cyrillic slug and its Latin
+# transliteration. Only the Cyrillic one was mapped; /koj-e-demetrios/ was
+# answering with the 404 shell.
+@r_koj_demetrios  path /koj-e-demetrios /koj-e-demetrios/
+redir @r_koj_demetrios /blog/koi-e-demetrios 301
 @r_cyr_demetrios  path_regexp ^/кой-е-demetrios/?$
 redir @r_cyr_demetrios  /blog/koi-e-demetrios 301
 
@@ -209,7 +214,13 @@ redir @pc39 /product/T238 301
 # under a product URL, and only client-side JS corrected it. That is why the
 # GENERATED case block above must come first: it 301s straight to the
 # exact-case URL in one hop. Do not reorder them.
-@wp_product path_regexp wpprod ^/product/.+-style-([A-Za-z0-9]+)/?$
+# The prefix before "style-" is OPTIONAL. WordPress produced both
+# /product/wedding-dress-style-1534/ and the bare /product/style-1534/, and the
+# old pattern demanded at least one character plus a hyphen before "style-",
+# so the bare form matched nothing, fell through to the SPA fallback, and
+# answered 200 with the noindex 404 shell. Search Console listed exactly that
+# URL under "crawled – not indexed" while ref 1534 is a live product.
+@wp_product path_regexp wpprod ^/product/(?:.*-)?style-([A-Za-z0-9]+)/?$
 redir @wp_product /product/{re.wpprod.1} 301
 
 # --- Discontinued products → collection (301, one hop) ---
