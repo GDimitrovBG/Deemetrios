@@ -66,6 +66,7 @@ router.get('/sitemap.xml', async (req, res) => {
       { loc: '/collection/silueti/rusalka',   priority: '0.8', changefreq: 'weekly' },
       { loc: '/collection/silueti/printsesa', priority: '0.8', changefreq: 'weekly' },
       { loc: '/collection/silueti/a-siluet',  priority: '0.8', changefreq: 'weekly' },
+      { loc: '/collection/2027',              priority: '0.8', changefreq: 'weekly' },
       { loc: '/about', priority: '0.6', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
       { loc: '/booking', priority: '0.8', changefreq: 'monthly' },

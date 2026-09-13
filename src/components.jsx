@@ -120,6 +120,10 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
                   <a href={withLang("/collection", lang)} className="nd-item nd-all" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(null); }}>
                     {lang === "bg" ? "Всички колекции" : "All Collections"}
                   </a>
+                  <a href={withLang("/collection/2027", lang)} className="nd-item" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection("2027"); }}>
+                    <span className="nd-label">{lang === "bg" ? "Колекция 2027" : "2027 Collection"}</span>
+                    <span className="nd-desc">{lang === "bg" ? "Новият сезон Demetrios " : "The new Demetrios season "}</span>
+                  </a>
                   {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
                     <a key={c.id} href={withLang(`/collection/${c.id}`, lang)} className="nd-item" onClick={(e) => { e.preventDefault(); setColHover(false); goCollection(c.id); }}>
                       <span className="nd-label">{collectionLabel(c, lang)}</span>
@@ -169,6 +173,9 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
           <a href={withLang("/collection", lang)} className={`m-link ${route === "collection" ? "m-link--active" : ""}`} onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(null); }}>
             <span>{t.nav.collection}</span>
             <span className="arr">→</span>
+          </a>
+          <a href={withLang("/collection/2027", lang)} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection("2027"); }}>
+            <span>{lang === "bg" ? "Колекция 2027" : "2027 Collection"}</span>
           </a>
           {COLLECTIONS.filter(c => c.id !== "evening").map(c => (
             <a key={c.id} href={withLang(`/collection/${c.id}`, lang)} className="m-link m-link-sub" onClick={(e) => { e.preventDefault(); goTo("collection"); goCollection(c.id); }}>

@@ -157,6 +157,9 @@ function pathToStateInner(pathname) {
   }
   if (p === '/collection/silueti') return { redirect: '/collection' };
 
+  // Season landing page rides in the collectionId slot — see SEASON_ID in catalog.jsx.
+  if (p === '/collection/2027') return { route: 'collection', collectionId: '2027' };
+
   const collMatch = p.match(/^\/collection\/([a-z]+)$/);
   if (collMatch && COLLECTION_IDS.includes(collMatch[1])) {
     return { route: 'collection', collectionId: collMatch[1] };

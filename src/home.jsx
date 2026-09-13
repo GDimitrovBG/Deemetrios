@@ -196,7 +196,7 @@ function DressCardBase({ d, lang, onClick, isFav = false, toggleFavorite }) {
   const imgAlt = getProductAlt(d, lang, 0);
   return (
     <article className="dress-card" onClick={onClick}>
-      {d.badge && <span className="badge">{d.badge}</span>}
+      {(d.season === "2027" || d.badge) && <span className="badge">{d.season === "2027" ? (lang === "bg" ? "Ново 2027" : "New 2027") : d.badge}</span>}
       {toggleFavorite && (
         <button
           className={`fav-btn ${isFav ? "on" : ""}`}

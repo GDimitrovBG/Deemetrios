@@ -129,6 +129,8 @@ async function run() {
   for (const id of SILHOUETTE_IDS) {
     pair(`/collection/silueti/${id}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
   }
+  // Season landing page — changes with every delivery, so weekly.
+  pair('/collection/2027', { lastmod: today, changefreq: 'weekly', priority: '0.8' });
   // Free tool — high-intent landing page, worth a strong priority.
   pair('/kviz', { lastmod: today, changefreq: 'monthly', priority: '0.8' });
   for (const p of ['/booking', '/about', '/demetrios', '/contact']) {

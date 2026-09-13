@@ -377,6 +377,97 @@ function SilhouetteSeo({ lang, setRoute, goSilhouette, slug, count }) {
 
 
 // -----------------------------------------------------------------------------
+//  Season landing page — /collection/2027. Exists BEFORE the dresses do: the
+//  query "булчински рокли 2027" starts in October and the page needs a few
+//  weeks in the index to rank for it. Dresses opt in with `season: '2027'` in
+//  data.js; until any do, the grid shows the newest current styles under a
+//  "докато пристигат" heading instead of an empty list.
+// -----------------------------------------------------------------------------
+export const SEASON_ID = "2027";
+export const isSeasonDress = (d) => d.season === SEASON_ID;
+
+const SEASON_2027 = {
+  h1_bg: <>Булчински рокли <em>2027</em> — новата колекция Demetrios</>,
+  h1_en: <>Wedding Dresses <em>2027</em> — the new Demetrios collection</>,
+  title_bg: (n) => n ? `Булчински рокли 2027 — ${n} нови модела Demetrios в София | Арети` : "Булчински рокли 2027 — новата колекция Demetrios в София | Арети",
+  title_en: (n) => n ? `Wedding Dresses 2027 — ${n} new Demetrios styles in Sofia | Areti` : "Wedding Dresses 2027 — the new Demetrios collection in Sofia | Areti",
+  meta_bg: "Булчински рокли 2027 в София — новата колекция Demetrios пристига в салон Арети в края на септември. Първи проби по предварителен час, цени от 1 000 €.",
+  meta_en: "Wedding dresses 2027 in Sofia — the new Demetrios collection arrives at Areti in late September. First fittings by appointment, prices from €1,000.",
+  intro_bg: "Колекция 2027 на Demetrios пристига в Арети в края на септември 2026 г. Първите модели от новия сезон се пробват на живо в салона в Лозенец, преди да се появят другаде в България. Добавяме всяка рокля на тази страница в деня, в който влезе в салона.",
+  intro_en: "The Demetrios 2027 collection arrives at Areti in late September 2026. The first styles of the new season can be tried on in our Lozenets salon before they appear anywhere else in Bulgaria. Every gown is added to this page the day it reaches the salon.",
+  waiting_bg: "Докато пристигат — най-новите модели в салона",
+  waiting_en: "While they arrive — the newest styles in the salon",
+  notice_bg: "Първите рокли от колекция 2027 пристигат до края на септември. Запазете час за първа проба — ще ви покажем новите модели още в седмицата на пристигането им.",
+  notice_en: "The first 2027 gowns arrive by the end of September. Book a first-look fitting — we will show you the new styles the week they arrive.",
+};
+
+const SEASON_FAQ = {
+  bg: [
+    { q: "Кога пристига колекция 2027 в Арети?", a: "Първите модели пристигат в салона до края на септември 2026 г. Добавяме всяка рокля на тази страница в деня, в който влезе в салона — списъкът тук е актуалният." },
+    { q: "Мога ли да пробвам новите модели преди всички?", a: "Да. Запазете час за проба и отбележете, че искате да видите колекция 2027 — ще ви покажем новите рокли през първата седмица след пристигането им." },
+    { q: "Колко струват булчинските рокли от колекция 2027?", a: "Цените следват колекциите на Demetrios: Cosmobella от 1 000 €, Demetrios от 1 500 €, Platinum от 2 500 €. Точната цена на всеки модел ще научите при пробата." },
+    { q: "Сватбата ми е през лятото на 2027 г. — кога да поръчам?", a: "Ако роклята не е на склад, поръчката от Demetrios отнема 3–4 месеца, плюс 1–2 месеца за корекции. За сватба през май–септември 2027 г. най-спокойно е да изберете до януари–февруари." },
+  ],
+  en: [
+    { q: "When does the 2027 collection arrive at Areti?", a: "The first styles reach the salon by the end of September 2026. Each gown is added to this page the day it arrives — the list here is the current one." },
+    { q: "Can I try the new styles before anyone else?", a: "Yes. Book a fitting and mention you want to see the 2027 collection — we will show you the new gowns in the first week after they arrive." },
+    { q: "How much do the 2027 wedding dresses cost?", a: "Prices follow the Demetrios collections: Cosmobella from €1,000, Demetrios from €1,500, Platinum from €2,500. You will get the exact price of each style at your fitting." },
+    { q: "My wedding is in summer 2027 — when should I order?", a: "If the gown is not in stock, a Demetrios order takes 3–4 months, plus 1–2 months for alterations. For a May–September 2027 wedding, choosing by January–February is the comfortable timeline." },
+  ],
+};
+
+function SeasonSeo({ lang, setRoute, count }) {
+  const isBg = lang === "bg";
+  const [faqOpen, setFaqOpen] = useState({});
+  const isPrerender = typeof window !== 'undefined' && window.__PRERENDER__;
+  const faq = SEASON_FAQ[isBg ? "bg" : "en"];
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? "Какво носи новият сезон" : "What the new season brings"}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
+        {isBg
+          ? "Demetrios представя нова колекция всяка есен, а Арети — официалният представител за България от 1992 г. — избира моделите, които влизат в салона в София. Кои точно рокли ще пристигнат, решаваме, когато видим колекцията на живо, затова тази страница се обновява с всяка нова доставка, вместо да обещава предварително. Постоянното е друго: трите силуета, с които работим — А-силует, русалка и принцеса, — оригиналните материи на Demetrios и корекциите в собственото ни ателие."
+          : "Demetrios presents a new collection every autumn, and Areti — the official representative for Bulgaria since 1992 — selects the styles that come to the Sofia salon. Which gowns arrive is decided when we see the collection in person, so this page is updated with each delivery rather than promising in advance. What stays constant: the three silhouettes we work with — A-line, mermaid and ball gown — original Demetrios fabrics, and alterations in our own atelier."}
+      </p>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12, marginTop: 40 }}>
+        {isBg ? "Кога да изберете рокля за сватба през 2027 г." : "When to choose a dress for a 2027 wedding"}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
+        {isBg
+          ? "Идеалното начало е 6 до 9 месеца преди сватбата. Ако избраният модел е на склад, го взимате след корекциите — 1–2 седмици. Ако се поръчва от Demetrios, доставката отнема 3–4 месеца и следват пробни срещи за корекции. За сватба през лятото на 2027 г. това означава избор до януари–февруари; за есенна сватба — до април. Цените остават по колекции: от 1 000 € за Cosmobella до 4 000 € за Platinum."
+          : "The ideal start is 6 to 9 months before the wedding. If the style you choose is in stock, you take it after alterations — 1–2 weeks. If it is ordered from Demetrios, delivery takes 3–4 months, followed by fitting sessions for alterations. For a summer 2027 wedding that means choosing by January–February; for an autumn wedding, by April. Prices stay by collection: from €1,000 for Cosmobella to €4,000 for Platinum."}
+      </p>
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
+        <span>{count ? `${count} ${isBg ? "нови модела в салона" : "new styles in store"}` : (isBg ? "Пристигат до края на септември" : "Arriving by end of September")}</span>
+        <span>{isBg ? "Цени от 1 000 €" : "Prices from €1,000"}</span>
+        <span>{isBg ? "Оригинални Demetrios" : "Original Demetrios"}</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
+        <button className="btn btn-solid" onClick={() => setRoute("booking")}>
+          {isBg ? "Запази първа проба →" : "Book a first-look fitting →"}
+        </button>
+        <a className="btn" href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }}>
+          {isBg ? "Всички булчински рокли" : "All wedding dresses"}
+        </a>
+      </div>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 48 }}>
+        {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
+      </h2>
+      <div className="collection-faq">
+        {faq.map(({ q, a }, i) => (
+          <details key={q} open={isPrerender || !!faqOpen[i]} onToggle={(e) => { const isOpen = e.currentTarget?.open ?? e.target?.open ?? false; setFaqOpen(o => ({ ...o, [i]: isOpen })); }}>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// -----------------------------------------------------------------------------
 //  Evening / prom SEO content — only rendered on /collection/evening.
 //  CollectionSeoContent covers the bridal hub, but the evening collection had
 //  just its intro paragraph (~430 words total) while ranking for a cluster with
@@ -472,7 +563,11 @@ function EveningSeoContent({ lang, setRoute }) {
 function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, goSilhouette, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
-  const colData = initCollection ? COLLECTIONS.find(c => c.id === initCollection) : null;
+  // "2027" travels through the collectionId slot so App.jsx needs no new state;
+  // it is a landing page, not a COLLECTIONS entry, so colData stays null.
+  const seasonData = initCollection === SEASON_ID ? SEASON_2027 : null;
+  const seasonDresses = seasonData ? DRESSES.filter(isSeasonDress) : [];
+  const colData = initCollection && !seasonData ? COLLECTIONS.find(c => c.id === initCollection) : null;
   const silData = initSilhouette ? SILHOUETTE_PAGES[initSilhouette] : null;
   const silName = silData ? (isBg ? silData.bg : silData.en) : null;
   const silCount = silData ? DRESSES.filter(d => d.silhouette === silData.bg).length : 0;
@@ -496,7 +591,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
     },
   };
   useSeo({
-    title: silData
+    title: seasonData
+      ? (isBg ? seasonData.title_bg(seasonDresses.length) : seasonData.title_en(seasonDresses.length))
+      : silData
       ? (isBg ? `${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети` : `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`)
       : isEvening
       // "бални рокли 2027" is the fastest-growing evening query; the year goes
@@ -506,7 +603,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       : colData
         ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
         : (isBg ? "Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
-    description: silData
+    description: seasonData
+      ? (isBg ? seasonData.meta_bg : seasonData.meta_en)
+      : silData
       ? (isBg ? silData.meta_bg : silData.meta_en)
       : isEvening
       ? (isBg
@@ -520,7 +619,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
-    keywords: silData
+    keywords: seasonData
+      ? (isBg ? "булчински рокли 2027, сватбени рокли 2027, нова колекция Demetrios, булчински рокли София" : "wedding dresses 2027, new Demetrios collection, bridal Sofia")
+      : silData
       ? (isBg ? `булчинска рокля ${silData.bg.toLowerCase()}, ${silData.bg.toLowerCase()} булчински рокли София, Demetrios` : `${silData.en.toLowerCase()} wedding dress, ${silData.en.toLowerCase()} bridal Sofia`)
       : "колекции булчински рокли, Demetrios, Cosmobella, Platinum, Destination Romance, сватбени рокли София",
     jsonLd: { "@graph": [
@@ -529,9 +630,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         { name: isBg ? "Колекция" : "Collection", url: "/collection" },
         ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
         ...(silData ? [{ name: isBg ? silData.h1_bg : silData.h1_en, url: `/collection/silueti/${initSilhouette}` }] : []),
+        ...(seasonData ? [{ name: isBg ? "Колекция 2027" : "2027 Collection", url: `/collection/${SEASON_ID}` }] : []),
       ]),
+      ...(seasonData ? [faqSchema(SEASON_FAQ[isBg ? "bg" : "en"])] : []),
       collectionItemListSchema(
-        (silData ? DRESSES.filter(d => d.silhouette === silData.bg)
+        (seasonData ? seasonDresses
+          : silData ? DRESSES.filter(d => d.silhouette === silData.bg)
           : initCollection ? DRESSES.filter(d => d.collection === initCollection)
           : DRESSES),
         lang,
@@ -565,6 +669,14 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && d.silhouette === silData.bg));
       return applyFiltersAndSort(ordered, filters, sortBy);
     }
+    if (seasonData) {
+      // Before the first 2027 delivery: the twelve highest style numbers of the
+      // main line stand in, so the page is never an empty grid.
+      const list = seasonDresses.length
+        ? seasonDresses
+        : DRESSES.filter(d => d.collection === "demetrios").slice(-12).reverse();
+      return applyFiltersAndSort(list, filters, sortBy);
+    }
     if (!activeCol) {
       // All: respect collection order (cosmobella → demetrios → … → evening)
       const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id));
@@ -582,7 +694,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   // How many dresses the heading is actually talking about. NOT displayList —
   // that intentionally continues into the following collections so "Виж още"
   // flows on, which would have the Demetrios page claim 99 styles instead of 53.
-  const headingCount = silData
+  const headingCount = seasonData
+    ? seasonDresses.length
+    : silData
     ? DRESSES.filter(d => d.silhouette === silData.bg).length
     : activeCol
       ? DRESSES.filter(d => d.collection === activeCol).length
@@ -629,7 +743,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               title carried the keywords and the strongest heading on the page
               carried none of them. */}
           <h1>
-            {silData ? (isBg ? silData.h1_bg : silData.h1_en)
+            {seasonData ? (isBg ? seasonData.h1_bg : seasonData.h1_en)
+              : silData ? (isBg ? silData.h1_bg : silData.h1_en)
               : activeCol === "evening"
                 ? (isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
               : activeColData
@@ -637,7 +752,19 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
                         : <><em>{collectionLabel(activeColData, lang)}</em> wedding dresses</>)
               : (isBg ? <>Булчински и сватбени рокли <em>София</em></> : <>Wedding Dresses in <em>Sofia</em></>)}
           </h1>
-          {silData ? (
+          {seasonData ? (
+            <>
+              <p className="collection-intro">{isBg ? seasonData.intro_bg : seasonData.intro_en}</p>
+              {seasonDresses.length === 0 && (
+                <p className="collection-intro" style={{ borderLeft: "2px solid var(--champagne-deep)", paddingLeft: 16 }}>
+                  {isBg ? seasonData.notice_bg : seasonData.notice_en}{' '}
+                  <a href={withLang("/booking", lang)} onClick={(e) => { e.preventDefault(); setRoute("booking"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+                    {isBg ? "Запази час →" : "Book a fitting →"}
+                  </a>
+                </p>
+              )}
+            </>
+          ) : silData ? (
             <p className="collection-intro">
               {isBg ? silData.intro_bg : silData.intro_en}{' '}
               <a href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
@@ -672,7 +799,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         </div>
       </div>
 
-      {!silData && (
+      {!silData && !seasonData && (
         <div className="collection-tabs">
           <button className={`col-tab ${!activeCol ? 'active' : ''}`} onClick={() => setActiveCol(null)}>
             {isBg ? 'Всички' : 'All'}
@@ -729,10 +856,14 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       {/* The H1 above now names the collection, so this says something the H1
           does not: how many, and where. */}
       <h2 className="grid-heading">
-        {isBg ? `${headingCount} модела` : `${headingCount} styles`}
-        <span className="grid-heading-count">
-          {isBg ? " в салона в София" : " at the Sofia showroom"}
-        </span>
+        {seasonData && seasonDresses.length === 0
+          ? (isBg ? seasonData.waiting_bg : seasonData.waiting_en)
+          : <>
+              {isBg ? `${headingCount} модела` : `${headingCount} styles`}
+              <span className="grid-heading-count">
+                {isBg ? " в салона в София" : " at the Sofia showroom"}
+              </span>
+            </>}
       </h2>
 
       {/* Grid — render visible items with collection dividers */}
@@ -808,6 +939,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       {initCollection === "evening" && <EveningSeoContent lang={lang} setRoute={setRoute} />}
       {initCollection && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
       {silData && <SilhouetteSeo lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} slug={initSilhouette} count={silCount} />}
+      {seasonData && <SeasonSeo lang={lang} setRoute={setRoute} count={seasonDresses.length} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}
       {createPortal(
