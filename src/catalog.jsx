@@ -502,7 +502,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       ? (isBg ? "Абитуриентски и бални рокли в София — вечерна колекция | Арети" : "Prom & Evening Dresses in Sofia | Areti")
       : colData
         ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
-        : (isBg ? "Булчински рокли София — 100+ модела, цени от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
+        : (isBg ? "Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
     description: silData
       ? (isBg ? silData.meta_bg : silData.meta_en)
       : isEvening

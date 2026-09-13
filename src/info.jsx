@@ -6,7 +6,7 @@ import { Img } from './components';
 import { BLOG_POSTS } from './blog_data';
 import { useSeo, orgSchema, articleSchema, breadcrumbSchema, blogPostPath } from './seo';
 import { faqSchema } from './seo-helpers';
-import { cdnImage } from './cdn';
+import { cdnImage, srcsetFor } from './cdn';
 
 function sanitizeHTML(html) {
   if (!html) return '';
@@ -535,7 +535,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
           <div className="blog-feature" style={{ cursor: "pointer" }} onClick={() => goBlogPost(featured.id)}>
             <div className="img-wrap">
               {featured.image
-                ? <img src={cdnImage(featured.image, 1200)} alt={featured.title} className="img" loading="lazy" decoding="async" />
+                ? <img src={cdnImage(featured.image)} srcSet={srcsetFor(featured.image, 1200) || undefined} sizes="(max-width: 768px) 100vw, 60vw" alt={featured.title} className="img" loading="lazy" decoding="async" />
                 : <div className="img" style={{ background: "var(--champagne)" }} />
               }
             </div>
@@ -561,7 +561,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
             >
               <div className="img-wrap">
                 {post.image
-                  ? <img src={cdnImage(post.image, 600)} alt={post.title} className="img" loading="lazy" decoding="async" />
+                  ? <img src={cdnImage(post.image)} srcSet={srcsetFor(post.image, 1200) || undefined} sizes="(max-width: 768px) 100vw, 33vw" alt={post.title} className="img" loading="lazy" decoding="async" />
                   : <div className="img" style={{ background: "var(--champagne)" }} />
                 }
               </div>
@@ -639,7 +639,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
       {/* Hero */}
       <div className="blog-post-hero">
         {post.image && (
-          <img src={cdnImage(post.image, 1400)} alt={post.title} className="blog-post-hero-img" loading="eager" decoding="sync" />
+          <img src={cdnImage(post.image)} srcSet={srcsetFor(post.image, 1600) || undefined} sizes="(max-width: 768px) 100vw, 900px" alt={post.title} className="blog-post-hero-img" loading="eager" decoding="async" fetchpriority="high" />
         )}
         <div className="blog-post-hero-overlay" />
         <div className="blog-post-hero-content">
@@ -671,7 +671,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
               <div className="blog-sidebar-scroll">
                 {relatedProducts.map(p => (
                   <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
-                    <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
+                    <img src={cdnImage(p.imgs?.[0] || p.img)} srcSet={srcsetFor(p.imgs?.[0] || p.img, 1600) || undefined} sizes="(max-width: 768px) 45vw, 140px" alt={dressName(p)} loading="lazy" decoding="async" />
                     <div className="blog-sidebar-card-info">
                       <h3><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
                       <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
@@ -702,7 +702,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
               <h2 className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</h2>
               {relatedProducts.map(p => (
                 <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
-                  <img src={cdnImage(p.imgs?.[0] || p.img, 600)} alt={dressName(p)} loading="lazy" decoding="async" />
+                  <img src={cdnImage(p.imgs?.[0] || p.img)} srcSet={srcsetFor(p.imgs?.[0] || p.img, 1600) || undefined} sizes="(max-width: 768px) 45vw, 140px" alt={dressName(p)} loading="lazy" decoding="async" />
                   <div className="blog-sidebar-card-info">
                     <h3><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
                     <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
@@ -734,7 +734,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
                 onClick={() => goBlogPost(op.id)}
               >
                 {op.image
-                  ? <img src={cdnImage(op.image, 600)} alt={op.title} loading="lazy" decoding="async"
+                  ? <img src={cdnImage(op.image)} srcSet={srcsetFor(op.image, 1200) || undefined} sizes="(max-width: 768px) 100vw, 300px" alt={op.title} loading="lazy" decoding="async"
                       style={{ width: "100%", aspectRatio: "3/2", objectFit: "cover", display: "block", marginBottom: 16 }} />
                   : <div style={{ width: "100%", aspectRatio: "3/2", background: "var(--champagne)", marginBottom: 16 }} />
                 }
