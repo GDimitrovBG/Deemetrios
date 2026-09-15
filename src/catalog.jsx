@@ -115,7 +115,7 @@ const SILHOUETTE_INFO = {
 // Guide silhouette keys → landing-page slugs (only the 3 with real stock).
 const GUIDE_KEY_TO_SLUG = { aline: "a-siluet", mermaid: "rusalka", ballgown: "printsesa" };
 
-function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
+function CollectionSeoContent({ lang, setRoute, goSilhouette, goMaterial }) {
   const isBg = lang === "bg";
   const faq = COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg;
   const sil = SILHOUETTE_INFO[lang] || SILHOUETTE_INFO.bg;
@@ -171,6 +171,17 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette }) {
         <a href={withLang("/kviz", lang)} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
           {isBg ? "Направете безплатния тест за булчинска рокля →" : "Take the free wedding dress quiz →"}
         </a>
+      </p>
+
+      {/* Material landing pages — internal-link entry point. Mirrors the
+          silhouette guide above and feeds the /collection/materii/* pages. */}
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 40 }}>
+        {isBg ? "Разгледайте булчинските рокли и по материя: " : "Browse wedding dresses by fabric: "}
+        {[["dantela", isBg ? "дантела" : "lace"], ["tyul", isBg ? "тюл" : "tulle"], ["saten", isBg ? "сатен" : "satin"], ["mikado", isBg ? "микадо" : "mikado"]].map(([slug, label], i, arr) => (
+          <span key={slug}>
+            <a href={withLang(`/collection/materii/${slug}`, lang)} onClick={(e) => { e.preventDefault(); goMaterial && goMaterial(slug); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>{label}</a>{i < arr.length - 1 ? " · " : ""}
+          </span>
+        ))}
       </p>
 
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
@@ -560,7 +571,97 @@ function EveningSeoContent({ lang, setRoute }) {
   );
 }
 
-function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, goSilhouette, favorites = [], toggleFavorite, goProduct }) {
+// -----------------------------------------------------------------------------
+//  Material landing pages — /collection/materii/<slug>. Target real fabric
+//  queries with no existing page ("булчинска рокля дантела/сатен/тюл/микадо").
+//  A dress's `fabric` string is a free-text, multi-value field, so a gown can
+//  legitimately appear on more than one material page. Slugs kept in sync with
+//  MATERIAL_IDS in router.js.
+// -----------------------------------------------------------------------------
+export const MATERIAL_MATCH = {
+  dantela: /lace|дантел/i,
+  tyul:    /tulle|тюл/i,
+  saten:   /satin|charmeuse|сатен|шармюз/i,
+  mikado:  /mikado|микадо/i,
+};
+export const dressHasMaterial = (d, slug) => MATERIAL_MATCH[slug]?.test(d.fabric || '') || false;
+
+const MATERIAL_PAGES = {
+  dantela: {
+    bg: "дантела", en: "lace",
+    h1_bg: "Булчински рокли с дантела", h1_en: "Lace Wedding Dresses",
+    intro_bg: "Дантелата е най-романтичната материя за булчинска рокля — смекчава линията, добавя дълбочина и текстура и изглежда еднакво добре на класическа и на модерна визия. В Арети предлагаме оригинални модели Demetrios с фина, ръчно бродирана и 3D дантела, често съчетана с тюл или сатен.",
+    intro_en: "Lace is the most romantic fabric for a wedding dress — it softens the line, adds depth and texture, and looks equally at home on a classic or a modern gown. Areti offers original Demetrios styles in delicate, hand-embroidered and 3D lace, often paired with tulle or satin.",
+    meta_bg: "Булчински рокли с дантела в София — фина, бродирана и 3D дантела. Оригинални модели Demetrios, цени от 1 000 €. Проба по час в Арети.",
+    meta_en: "Lace wedding dresses in Sofia — delicate, embroidered and 3D lace. Original Demetrios styles from €1,000. Fittings at Areti.",
+  },
+  tyul: {
+    bg: "тюл", en: "tulle",
+    h1_bg: "Булчински рокли от тюл", h1_en: "Tulle Wedding Dresses",
+    intro_bg: "Тюлът дава на роклята лекота и обем без тежест — затова е сред най-обичаните материи за булчинска рокля. Блестящият тюл и тюлът с мъниста улавят светлината и са особено ефектни на снимка. В Арети имаме широк избор оригинални модели Demetrios от тюл, във всички силуети.",
+    intro_en: "Tulle gives a gown lightness and volume without weight — which is why it is one of the best-loved bridal fabrics. Sparkling tulle and beaded tulle catch the light and are especially striking in photographs. Areti carries a wide choice of original Demetrios tulle gowns across every silhouette.",
+    meta_bg: "Булчински рокли от тюл в София — блестящ тюл и тюл с мъниста, лек и обемен силует. Оригинални модели Demetrios, цени от 1 000 €. Проба в Арети.",
+    meta_en: "Tulle wedding dresses in Sofia — sparkling and beaded tulle, light and voluminous. Original Demetrios styles from €1,000. Fittings at Areti.",
+  },
+  saten: {
+    bg: "сатен", en: "satin",
+    h1_bg: "Булчински рокли от сатен", h1_en: "Satin Wedding Dresses",
+    intro_bg: "Сатенът е плътна, изчистена материя, която пада красиво и изглежда скъпо с минимум украса. Идеален е за модерна, елегантна булка, която търси чиста линия без излишен блясък. Разгледайте оригиналните сатенени модели Demetrios в салон Арети, София.",
+    intro_en: "Satin is a dense, clean fabric that drapes beautifully and looks expensive with minimal embellishment. It is ideal for a modern, elegant bride who wants a clean line without excess sparkle. Explore the original Demetrios satin gowns at Areti, Sofia.",
+    meta_bg: "Булчински рокли от сатен в София — плътна, изчистена материя с красив пад. Оригинални модели Demetrios, цени от 1 000 €. Проба в Арети.",
+    meta_en: "Satin wedding dresses in Sofia — a dense, clean fabric with a beautiful drape. Original Demetrios styles from €1,000. Fittings at Areti.",
+  },
+  mikado: {
+    bg: "микадо", en: "mikado",
+    h1_bg: "Булчински рокли от микадо", h1_en: "Mikado Wedding Dresses",
+    intro_bg: "Микадото е плътен, структуриран копринен плат, който държи формата и създава архитектурни, скулптурни силуети. За булка, която иска изчистена, но впечатляваща визия, микадото е сред най-луксозните избори. В Арети предлагаме оригинални модели Demetrios от микадо.",
+    intro_en: "Mikado is a dense, structured silk-blend fabric that holds its shape and creates architectural, sculptural silhouettes. For a bride who wants a clean yet commanding look, mikado is one of the most luxurious choices. Areti offers original Demetrios mikado gowns.",
+    meta_bg: "Булчински рокли от микадо в София — плътен, структуриран плат за скулптурен силует. Оригинални модели Demetrios, цени от 1 000 €. Проба в Арети.",
+    meta_en: "Mikado wedding dresses in Sofia — a dense, structured fabric for a sculptural silhouette. Original Demetrios styles from €1,000. Fittings at Areti.",
+  },
+};
+
+function MaterialSeo({ lang, setRoute, goMaterial, slug, count }) {
+  const isBg = lang === "bg";
+  const data = MATERIAL_PAGES[slug];
+  if (!data) return null;
+  const others = Object.entries(MATERIAL_PAGES).filter(([s]) => s !== slug);
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? `Защо булчинска рокля от ${data.bg}?` : `Why a ${data.en} wedding dress?`}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
+        {isBg ? data.intro_bg : data.intro_en}
+      </p>
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
+        <span>{count} {isBg ? "модела в салона" : "styles in store"}</span>
+        <span>{isBg ? "Цени от 1 000 €" : "Prices from €1,000"}</span>
+        <span>{isBg ? "Оригинални Demetrios" : "Original Demetrios"}</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
+        <button className="btn btn-solid" onClick={() => setRoute("booking")}>
+          {isBg ? "Запази проба →" : "Book a fitting →"}
+        </button>
+        <button className="btn" onClick={() => setRoute("collection")}>
+          {isBg ? "Всички булчински рокли" : "All wedding dresses"}
+        </button>
+      </div>
+      <div style={{ fontSize: 14, color: "var(--ink-soft)" }}>
+        <strong>{isBg ? "Други материи:" : "Other fabrics:"}</strong>{" "}
+        {others.map(([s, d], i) => (
+          <span key={s}>
+            <a href={withLang(`/collection/materii/${s}`, lang)} onClick={(e) => { e.preventDefault(); goMaterial && goMaterial(s); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+              {isBg ? d.h1_bg : d.h1_en}
+            </a>{i < others.length - 1 ? " · " : ""}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, initMaterial = null, goSilhouette, goMaterial, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
   // "2027" travels through the collectionId slot so App.jsx needs no new state;
@@ -571,6 +672,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   const silData = initSilhouette ? SILHOUETTE_PAGES[initSilhouette] : null;
   const silName = silData ? (isBg ? silData.bg : silData.en) : null;
   const silCount = silData ? DRESSES.filter(d => d.silhouette === silData.bg).length : 0;
+  const matData = initMaterial ? MATERIAL_PAGES[initMaterial] : null;
+  const matDresses = matData ? DRESSES.filter(d => dressHasMaterial(d, initMaterial)) : [];
+  const matCount = matDresses.length;
   const isEvening = initCollection === "evening";
   // CTR-optimized titles: pages already earn impressions, but generic titles
   // win few clicks (GSC: /collection/demetrios 1% CTR at 506 impressions).
@@ -593,6 +697,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   useSeo({
     title: seasonData
       ? (isBg ? seasonData.title_bg(seasonDresses.length) : seasonData.title_en(seasonDresses.length))
+      : matData
+      ? (isBg ? `${matData.h1_bg} в София — ${matCount} модела Demetrios | Арети` : `${matData.h1_en} in Sofia — ${matCount} Demetrios styles | Areti`)
       : silData
       ? (isBg ? `${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети` : `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`)
       : isEvening
@@ -605,6 +711,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         : (isBg ? "Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
     description: seasonData
       ? (isBg ? seasonData.meta_bg : seasonData.meta_en)
+      : matData
+      ? (isBg ? matData.meta_bg : matData.meta_en)
       : silData
       ? (isBg ? silData.meta_bg : silData.meta_en)
       : isEvening
@@ -617,10 +725,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
             ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Проба по час в Арети."
             : "Over 100 wedding dresses in Sofia — from €1,000 to €4,000. Demetrios, Cosmobella, Platinum, Destination Romance. Fittings at Areti."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
-    url: silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
+    url: matData ? `/collection/materii/${initMaterial}` : silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
     keywords: seasonData
       ? (isBg ? "булчински рокли 2027, сватбени рокли 2027, нова колекция Demetrios, булчински рокли София" : "wedding dresses 2027, new Demetrios collection, bridal Sofia")
+      : matData
+      ? (isBg ? `булчинска рокля ${matData.bg}, булчински рокли от ${matData.bg} София, Demetrios` : `${matData.en} wedding dress, ${matData.en} bridal Sofia`)
       : silData
       ? (isBg ? `булчинска рокля ${silData.bg.toLowerCase()}, ${silData.bg.toLowerCase()} булчински рокли София, Demetrios` : `${silData.en.toLowerCase()} wedding dress, ${silData.en.toLowerCase()} bridal Sofia`)
       : "колекции булчински рокли, Demetrios, Cosmobella, Platinum, Destination Romance, сватбени рокли София",
@@ -630,11 +740,13 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         { name: isBg ? "Колекция" : "Collection", url: "/collection" },
         ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
         ...(silData ? [{ name: isBg ? silData.h1_bg : silData.h1_en, url: `/collection/silueti/${initSilhouette}` }] : []),
+        ...(matData ? [{ name: isBg ? matData.h1_bg : matData.h1_en, url: `/collection/materii/${initMaterial}` }] : []),
         ...(seasonData ? [{ name: isBg ? "Колекция 2027" : "2027 Collection", url: `/collection/${SEASON_ID}` }] : []),
       ]),
       ...(seasonData ? [faqSchema(SEASON_FAQ[isBg ? "bg" : "en"])] : []),
       collectionItemListSchema(
         (seasonData ? seasonDresses
+          : matData ? matDresses
           : silData ? DRESSES.filter(d => d.silhouette === silData.bg)
           : initCollection ? DRESSES.filter(d => d.collection === initCollection)
           : DRESSES),
@@ -669,6 +781,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && d.silhouette === silData.bg));
       return applyFiltersAndSort(ordered, filters, sortBy);
     }
+    if (matData) {
+      const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && dressHasMaterial(d, initMaterial)));
+      return applyFiltersAndSort(ordered, filters, sortBy);
+    }
     if (seasonData) {
       // Before the first 2027 delivery: the twelve highest style numbers of the
       // main line stand in, so the page is never an empty grid.
@@ -689,13 +805,15 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       DRESSES.filter(d => d.collection === COLLECTIONS[i].id).forEach(d => ordered.push(d));
     }
     return applyFiltersAndSort(ordered, filters, sortBy);
-  }, [activeCol, filters, sortBy, initSilhouette]);
+  }, [activeCol, filters, sortBy, initSilhouette, initMaterial]);
 
   // How many dresses the heading is actually talking about. NOT displayList —
   // that intentionally continues into the following collections so "Виж още"
   // flows on, which would have the Demetrios page claim 99 styles instead of 53.
   const headingCount = seasonData
     ? seasonDresses.length
+    : matData
+    ? matCount
     : silData
     ? DRESSES.filter(d => d.silhouette === silData.bg).length
     : activeCol
@@ -744,6 +862,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               carried none of them. */}
           <h1>
             {seasonData ? (isBg ? seasonData.h1_bg : seasonData.h1_en)
+              : matData ? (isBg ? matData.h1_bg : matData.h1_en)
               : silData ? (isBg ? silData.h1_bg : silData.h1_en)
               : activeCol === "evening"
                 ? (isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
@@ -764,6 +883,13 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
                 </p>
               )}
             </>
+          ) : matData ? (
+            <p className="collection-intro">
+              {isBg ? matData.intro_bg : matData.intro_en}{' '}
+              <a href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+                {isBg ? "Вижте всички булчински рокли →" : "See all wedding dresses →"}
+              </a>
+            </p>
           ) : silData ? (
             <p className="collection-intro">
               {isBg ? silData.intro_bg : silData.intro_en}{' '}
@@ -799,7 +925,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         </div>
       </div>
 
-      {!silData && !seasonData && (
+      {!silData && !seasonData && !matData && (
         <div className="collection-tabs">
           <button className={`col-tab ${!activeCol ? 'active' : ''}`} onClick={() => setActiveCol(null)}>
             {isBg ? 'Всички' : 'All'}
@@ -935,10 +1061,11 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         )}
       </div>
 
-      {!initCollection && !silData && <CollectionSeoContent lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} />}
+      {!initCollection && !silData && !matData && !seasonData && <CollectionSeoContent lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} goMaterial={goMaterial} />}
       {initCollection === "evening" && <EveningSeoContent lang={lang} setRoute={setRoute} />}
       {initCollection && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
       {silData && <SilhouetteSeo lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} slug={initSilhouette} count={silCount} />}
+      {matData && <MaterialSeo lang={lang} setRoute={setRoute} goMaterial={goMaterial} slug={initMaterial} count={matCount} />}
       {seasonData && <SeasonSeo lang={lang} setRoute={setRoute} count={seasonDresses.length} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}

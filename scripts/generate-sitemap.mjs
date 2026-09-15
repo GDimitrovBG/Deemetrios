@@ -24,6 +24,7 @@ const OUT = path.join(ROOT, 'public', 'sitemap.xml');
 
 const COLLECTION_IDS = ['cosmobella', 'demetrios', 'platinum', 'destination', 'evening'];
 const SILHOUETTE_IDS = ['rusalka', 'printsesa', 'a-siluet'];
+const MATERIAL_IDS = ['dantela', 'tyul', 'saten', 'mikado'];
 
 // XML-escape text for use inside a tag.
 const esc = (s) => String(s ?? '')
@@ -128,6 +129,9 @@ async function run() {
   }
   for (const id of SILHOUETTE_IDS) {
     pair(`/collection/silueti/${id}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
+  }
+  for (const id of MATERIAL_IDS) {
+    pair(`/collection/materii/${id}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
   }
   // Season landing page — changes with every delivery, so weekly.
   pair('/collection/2027', { lastmod: today, changefreq: 'weekly', priority: '0.8' });

@@ -48,6 +48,10 @@ async function loadRoutes() {
     '/collection/silueti/rusalka',
     '/collection/silueti/printsesa',
     '/collection/silueti/a-siluet',
+    '/collection/materii/dantela',
+    '/collection/materii/tyul',
+    '/collection/materii/saten',
+    '/collection/materii/mikado',
     '/collection/2027',
     '/kviz',
     // Reachable from the nav heart and the mobile menu, and deliberately kept
