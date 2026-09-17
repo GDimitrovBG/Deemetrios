@@ -11,6 +11,40 @@
 #
 #      try_files {path} {path}/index.html /404.html      # was: /index.html
 #
+#  ---------------------------------------------------------------------------
+#  ⚠ THE FALLBACK MUST ANSWER **404**, NOT 200 (soft 404)
+#  ---------------------------------------------------------------------------
+#  Found 2026-09-17 from a Search Console "Page with redirect" drilldown:
+#  `try_files … /404.html` serves the right HTML but `file_server` writes it
+#  with **HTTP 200**. Every unknown URL therefore answered "200 + Страницата не
+#  е намерена" — a soft 404. Google keeps re-crawling those instead of dropping
+#  them, and three old WP slugs redirected 301 → /product/am43|am67|am38 (refs
+#  no longer in the catalogue) and landed on that 200 shell.
+#
+#  Serve the same file with a real 404 status — drop /404.html from try_files
+#  and let handle_errors answer it (file_server's `status` needs Caddy ≥ 2.7):
+#
+#      route {
+#          handle @wp_dead     { respond 410 }
+#          handle @wp_feed_any { respond 410 }
+#          # … the redirects from this file …
+#          try_files {path} {path}/index.html
+#          file_server
+#      }
+#
+#      handle_errors {
+#          @404 expression {err.status_code} == 404
+#          handle @404 {
+#              rewrite * /404.html
+#              file_server { status 404 }
+#          }
+#      }
+#
+#  Verify the STATUS, not just the robots meta — the old check passed on a
+#  soft 404 because the HTML was correct:
+#      curl -I https://demetriosbride-bg.com/nesushtestvuvashta  → 404
+#      curl -I https://demetriosbride-bg.com/product/am67        → 404
+#
 #  Why: dist/404.html is the prerendered noindex 404 shell. With /index.html as
 #  the fallback, every unmatched URL answered 200 with the HOME page's content
 #  and <link rel=canonical href="/"> — Google crawled removed products and old
@@ -123,85 +157,85 @@ redir @r_cat_rest       /collection 301
 # 40 lettered product refs — regenerate with:
 #   node scripts/generate-caddy-redirects.mjs
 # Must sit BEFORE the generic "-style-" rule so it wins the one-hop redirect.
-@pc0 path_regexp ^/product/(?:[a-z0-9-]*style-)?r180_73(?:-\d{1,2})?/?$
+@pc0 path_regexp ^/product/(?:[a-z0-9-]*-)?r180_73(?:-\d{1,2})?/?$
 redir @pc0 /product/R180_73 301
-@pc1 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp430(?:-\d{1,2})?/?$
+@pc1 path_regexp ^/product/(?:[a-z0-9-]*-)?dp430(?:-\d{1,2})?/?$
 redir @pc1 /product/DP430 301
-@pc2 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp480(?:-\d{1,2})?/?$
+@pc2 path_regexp ^/product/(?:[a-z0-9-]*-)?dp480(?:-\d{1,2})?/?$
 redir @pc2 /product/DP480 301
-@pc3 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp485(?:-\d{1,2})?/?$
+@pc3 path_regexp ^/product/(?:[a-z0-9-]*-)?dp485(?:-\d{1,2})?/?$
 redir @pc3 /product/DP485 301
-@pc4 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp491(?:-\d{1,2})?/?$
+@pc4 path_regexp ^/product/(?:[a-z0-9-]*-)?dp491(?:-\d{1,2})?/?$
 redir @pc4 /product/DP491 301
-@pc5 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp523(?:-\d{1,2})?/?$
+@pc5 path_regexp ^/product/(?:[a-z0-9-]*-)?dp523(?:-\d{1,2})?/?$
 redir @pc5 /product/DP523 301
-@pc6 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp527(?:-\d{1,2})?/?$
+@pc6 path_regexp ^/product/(?:[a-z0-9-]*-)?dp527(?:-\d{1,2})?/?$
 redir @pc6 /product/DP527 301
-@pc7 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp529(?:-\d{1,2})?/?$
+@pc7 path_regexp ^/product/(?:[a-z0-9-]*-)?dp529(?:-\d{1,2})?/?$
 redir @pc7 /product/DP529 301
-@pc8 path_regexp ^/product/(?:[a-z0-9-]*style-)?dp548(?:-\d{1,2})?/?$
+@pc8 path_regexp ^/product/(?:[a-z0-9-]*-)?dp548(?:-\d{1,2})?/?$
 redir @pc8 /product/DP548 301
-@pc9 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr319(?:-\d{1,2})?/?$
+@pc9 path_regexp ^/product/(?:[a-z0-9-]*-)?dr319(?:-\d{1,2})?/?$
 redir @pc9 /product/DR319 301
-@pc10 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr371(?:-\d{1,2})?/?$
+@pc10 path_regexp ^/product/(?:[a-z0-9-]*-)?dr371(?:-\d{1,2})?/?$
 redir @pc10 /product/DR371 301
-@pc11 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr392(?:-\d{1,2})?/?$
+@pc11 path_regexp ^/product/(?:[a-z0-9-]*-)?dr392(?:-\d{1,2})?/?$
 redir @pc11 /product/DR392 301
-@pc12 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr405(?:-\d{1,2})?/?$
+@pc12 path_regexp ^/product/(?:[a-z0-9-]*-)?dr405(?:-\d{1,2})?/?$
 redir @pc12 /product/DR405 301
-@pc13 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr414(?:-\d{1,2})?/?$
+@pc13 path_regexp ^/product/(?:[a-z0-9-]*-)?dr414(?:-\d{1,2})?/?$
 redir @pc13 /product/DR414 301
-@pc14 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr436(?:-\d{1,2})?/?$
+@pc14 path_regexp ^/product/(?:[a-z0-9-]*-)?dr436(?:-\d{1,2})?/?$
 redir @pc14 /product/DR436 301
-@pc15 path_regexp ^/product/(?:[a-z0-9-]*style-)?dr437(?:-\d{1,2})?/?$
+@pc15 path_regexp ^/product/(?:[a-z0-9-]*-)?dr437(?:-\d{1,2})?/?$
 redir @pc15 /product/DR437 301
-@pc16 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1046(?:-\d{1,2})?/?$
+@pc16 path_regexp ^/product/(?:[a-z0-9-]*-)?l1046(?:-\d{1,2})?/?$
 redir @pc16 /product/L1046 301
-@pc17 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1054(?:-\d{1,2})?/?$
+@pc17 path_regexp ^/product/(?:[a-z0-9-]*-)?l1054(?:-\d{1,2})?/?$
 redir @pc17 /product/L1054 301
-@pc18 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1071(?:-\d{1,2})?/?$
+@pc18 path_regexp ^/product/(?:[a-z0-9-]*-)?l1071(?:-\d{1,2})?/?$
 redir @pc18 /product/L1071 301
-@pc19 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1106(?:-\d{1,2})?/?$
+@pc19 path_regexp ^/product/(?:[a-z0-9-]*-)?l1106(?:-\d{1,2})?/?$
 redir @pc19 /product/L1106 301
-@pc20 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1145(?:-\d{1,2})?/?$
+@pc20 path_regexp ^/product/(?:[a-z0-9-]*-)?l1145(?:-\d{1,2})?/?$
 redir @pc20 /product/L1145 301
-@pc21 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1152(?:-\d{1,2})?/?$
+@pc21 path_regexp ^/product/(?:[a-z0-9-]*-)?l1152(?:-\d{1,2})?/?$
 redir @pc21 /product/L1152 301
-@pc22 path_regexp ^/product/(?:[a-z0-9-]*style-)?l1159(?:-\d{1,2})?/?$
+@pc22 path_regexp ^/product/(?:[a-z0-9-]*-)?l1159(?:-\d{1,2})?/?$
 redir @pc22 /product/L1159 301
-@pc23 path_regexp ^/product/(?:[a-z0-9-]*style-)?d291(?:-\d{1,2})?/?$
+@pc23 path_regexp ^/product/(?:[a-z0-9-]*-)?d291(?:-\d{1,2})?/?$
 redir @pc23 /product/D291 301
-@pc24 path_regexp ^/product/(?:[a-z0-9-]*style-)?d296(?:-\d{1,2})?/?$
+@pc24 path_regexp ^/product/(?:[a-z0-9-]*-)?d296(?:-\d{1,2})?/?$
 redir @pc24 /product/D296 301
-@pc25 path_regexp ^/product/(?:[a-z0-9-]*style-)?d298(?:-\d{1,2})?/?$
+@pc25 path_regexp ^/product/(?:[a-z0-9-]*-)?d298(?:-\d{1,2})?/?$
 redir @pc25 /product/D298 301
-@pc26 path_regexp ^/product/(?:[a-z0-9-]*style-)?r141(?:-\d{1,2})?/?$
+@pc26 path_regexp ^/product/(?:[a-z0-9-]*-)?r141(?:-\d{1,2})?/?$
 redir @pc26 /product/R141 301
-@pc27 path_regexp ^/product/(?:[a-z0-9-]*style-)?r148(?:-\d{1,2})?/?$
+@pc27 path_regexp ^/product/(?:[a-z0-9-]*-)?r148(?:-\d{1,2})?/?$
 redir @pc27 /product/R148 301
-@pc28 path_regexp ^/product/(?:[a-z0-9-]*style-)?r149(?:-\d{1,2})?/?$
+@pc28 path_regexp ^/product/(?:[a-z0-9-]*-)?r149(?:-\d{1,2})?/?$
 redir @pc28 /product/R149 301
-@pc29 path_regexp ^/product/(?:[a-z0-9-]*style-)?r156(?:-\d{1,2})?/?$
+@pc29 path_regexp ^/product/(?:[a-z0-9-]*-)?r156(?:-\d{1,2})?/?$
 redir @pc29 /product/R156 301
-@pc30 path_regexp ^/product/(?:[a-z0-9-]*style-)?r157(?:-\d{1,2})?/?$
+@pc30 path_regexp ^/product/(?:[a-z0-9-]*-)?r157(?:-\d{1,2})?/?$
 redir @pc30 /product/R157 301
-@pc31 path_regexp ^/product/(?:[a-z0-9-]*style-)?r161(?:-\d{1,2})?/?$
+@pc31 path_regexp ^/product/(?:[a-z0-9-]*-)?r161(?:-\d{1,2})?/?$
 redir @pc31 /product/R161 301
-@pc32 path_regexp ^/product/(?:[a-z0-9-]*style-)?r163(?:-\d{1,2})?/?$
+@pc32 path_regexp ^/product/(?:[a-z0-9-]*-)?r163(?:-\d{1,2})?/?$
 redir @pc32 /product/R163 301
-@pc33 path_regexp ^/product/(?:[a-z0-9-]*style-)?r165(?:-\d{1,2})?/?$
+@pc33 path_regexp ^/product/(?:[a-z0-9-]*-)?r165(?:-\d{1,2})?/?$
 redir @pc33 /product/R165 301
-@pc34 path_regexp ^/product/(?:[a-z0-9-]*style-)?r168(?:-\d{1,2})?/?$
+@pc34 path_regexp ^/product/(?:[a-z0-9-]*-)?r168(?:-\d{1,2})?/?$
 redir @pc34 /product/R168 301
-@pc35 path_regexp ^/product/(?:[a-z0-9-]*style-)?r170(?:-\d{1,2})?/?$
+@pc35 path_regexp ^/product/(?:[a-z0-9-]*-)?r170(?:-\d{1,2})?/?$
 redir @pc35 /product/R170 301
-@pc36 path_regexp ^/product/(?:[a-z0-9-]*style-)?r173(?:-\d{1,2})?/?$
+@pc36 path_regexp ^/product/(?:[a-z0-9-]*-)?r173(?:-\d{1,2})?/?$
 redir @pc36 /product/R173 301
-@pc37 path_regexp ^/product/(?:[a-z0-9-]*style-)?r177(?:-\d{1,2})?/?$
+@pc37 path_regexp ^/product/(?:[a-z0-9-]*-)?r177(?:-\d{1,2})?/?$
 redir @pc37 /product/R177 301
-@pc38 path_regexp ^/product/(?:[a-z0-9-]*style-)?r180(?:-\d{1,2})?/?$
+@pc38 path_regexp ^/product/(?:[a-z0-9-]*-)?r180(?:-\d{1,2})?/?$
 redir @pc38 /product/R180 301
-@pc39 path_regexp ^/product/(?:[a-z0-9-]*style-)?t238(?:-\d{1,2})?/?$
+@pc39 path_regexp ^/product/(?:[a-z0-9-]*-)?t238(?:-\d{1,2})?/?$
 redir @pc39 /product/T238 301
 # <<< END GENERATED
 
@@ -220,7 +254,11 @@ redir @pc39 /product/T238 301
 # so the bare form matched nothing, fell through to the SPA fallback, and
 # answered 200 with the noindex 404 shell. Search Console listed exactly that
 # URL under "crawled – not indexed" while ref 1534 is a live product.
-@wp_product path_regexp wpprod ^/product/(?:.*-)?style-([A-Za-z0-9]+)/?$
+# "styl+e-?" deliberately tolerates the two malformed spellings WordPress
+# actually produced: the "stylle" typo (/product/long-dress-stylle-r161/) and
+# the missing hyphen (/product/bridal-gown-style1500/). Both answered 200 with
+# the 404 shell before — soft 404s in the Coverage report.
+@wp_product path_regexp wpprod ^/product/(?:.*-)?styl+e-?([A-Za-z0-9]+)/?$
 redir @wp_product /product/{re.wpprod.1} 301
 
 # --- Discontinued products → collection (301, one hop) ---
@@ -252,6 +290,9 @@ redir @prod_gone /collection 301
 redir @wp_author / 301
 @wp_tag    path_regexp ^/tag/.*$
 redir @wp_tag    /collection 301
+# Old WP blog categories (/category/uncategorized/ …) → the blog index.
+@wp_category path_regexp ^/category/.*$
+redir @wp_category /blog 301
 @wp_date   path_regexp ^/20\d\d(/\d{2})?/?$
 redir @wp_date   /blog 301
 

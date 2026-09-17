@@ -68,6 +68,38 @@ caddy validate --config /etc/caddy/Caddyfile
 systemctl reload caddy
 ```
 
+#### ⚠ Непознатият URL трябва да връща 404, не 200
+
+Открито на 17.09.2026 от доклада „Страница с пренасочване" в Search Console.
+`try_files … /404.html` сервира правилния HTML, но `file_server` го дава със
+**статус 200** — мек 404. Google продължава да обхожда такива адреси, вместо
+да ги изхвърли. Три стари WP адреса пренасочваха 301 към `/product/am43`,
+`am67`, `am38` (спрени артикули) и попадаха точно на тази 200 обвивка.
+
+Махнете `/404.html` от `try_files` и оставете `handle_errors` да я върне
+(`status` в `file_server` иска Caddy ≥ 2.7):
+
+```caddy
+route {
+    handle @wp_dead     { respond 410 }
+    handle @wp_feed_any { respond 410 }
+    # … пренасочванията от deploy/redirects.caddy …
+    try_files {path} {path}/index.html
+    file_server
+}
+
+handle_errors {
+    @404 expression {err.status_code} == 404
+    handle @404 {
+        rewrite * /404.html
+        file_server { status 404 }
+    }
+}
+```
+
+Проверявайте **статуса**, не само `robots` мета — старата проверка минаваше
+върху мек 404, защото HTML-ът беше правилен.
+
 ---
 
 ## 3. Проверка след deploy
@@ -91,7 +123,10 @@ curl -I https://demetriosbride-bg.com/bulchinski-rokli/
 curl -I https://demetriosbride-bg.com/xmlrpc.php
 curl -I https://demetriosbride-bg.com/product/1500/feed/
 
-# Непознат URL → 404 shell с noindex, НЕ съдържанието на началната страница
+# Непознат URL → трябва да върне СТАТУС 404 (не 200!)
+curl -I https://demetriosbride-bg.com/nesushtestvuvashta    # → HTTP/2 404
+curl -I https://demetriosbride-bg.com/product/am67          # → HTTP/2 404 (спрян артикул)
+# И съдържанието да е noindex обвивката, не началната страница:
 curl -s https://demetriosbride-bg.com/nesushtestvuvashta | grep -o '<meta name="robots"[^>]*>'
 
 # API

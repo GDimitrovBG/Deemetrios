@@ -53,8 +53,14 @@ const refs = [...new Set(DRESSES.map(d => d.ref).filter(r => /[A-Za-z]/.test(r))
 
 const rules = refs.map((ref, i) => {
   const lower = ref.toLowerCase();
-  // [a-z0-9-]*style- also matches a bare "style-" prefix (/product/style-r180-2/).
-  const re = `^/product/(?:[a-z0-9-]*style-)?${lower}(?:-\\d{1,2})?/?$`;
+  // The prefix is ANY old-WP slug text ending in a hyphen, not only one ending
+  // in "style-". WordPress also shipped typo'd and unhyphenated spellings
+  // (/product/long-dress-stylle-r161/), which the "style-"-only prefix missed:
+  // those URLs fell through to the SPA fallback and answered 200 with the
+  // noindex 404 shell — a soft 404 in Search Console. The ref stays a
+  // lower-case literal anchored to the end and path_regexp is case-sensitive,
+  // so /product/R161 still cannot match its own rule and cannot loop.
+  const re = `^/product/(?:[a-z0-9-]*-)?${lower}(?:-\\d{1,2})?/?$`;
   return `@pc${i} path_regexp ${re}\nredir @pc${i} /product/${ref} 301`;
 });
 
