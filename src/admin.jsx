@@ -436,11 +436,17 @@ function AdminLogin({ onLogin }) {
 }
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
-function Dashboard({ bookings, products, articles, user }) {
+function Dashboard({ bookings, phoneCalls = [], products, articles, user }) {
   const isOwner = canSeeAnalytics(user);
   const nb = bookings.filter(b => b.status === "new").length;
+  // Phone-call taps captured on the site. Count last 30 days as "recent" so
+  // the dashboard reflects what's live now, not a slowly accreting all-time total.
+  const now = Date.now();
+  const MS_30D = 30 * 24 * 60 * 60 * 1000;
+  const recentCalls = phoneCalls.filter(c => now - new Date(c.createdAt).getTime() < MS_30D);
   const stats = [
     { label:"Нови часове",      value:nb, sub:`от ${bookings.length} общо`,  color:"#c4a373" },
+    { label:"Обаждания (30 дни)", value:recentCalls.length, sub:`от ${phoneCalls.length} общо`, color:"#e0a94f" },
     { label:"Продукти",         value:products.length, sub:"в каталога",     color:"#7ca3c4" },
     { label:"Статии",           value:articles.length, sub:"публикувани",    color:"#7cc48a" },
   ];
@@ -518,6 +524,52 @@ function Dashboard({ bookings, products, articles, user }) {
           </p>
         </>
       ))}
+            {/* Phone-call breakdown — cheapest signal we get for "did the tap turn
+          into a lead?". Visible to everyone with admin access; attribution
+          (which paid channel, if any) is owner-only and lives further down. */}
+      <h3 className="adm-subtitle" style={{ marginTop:40 }}>Обаждания от сайта</h3>
+      {phoneCalls.length === 0 ? (
+        <p className="adm-empty">Все още няма регистрирани обаждания. Всяко цъкане на телефона на сайта се записва тук.</p>
+      ) : (
+        <>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:12, marginBottom:16 }}>
+            {[
+              { key:"footer",  label:"От контактния бутон", color:"#e0a94f" },
+              { key:"product", label:"От страница на рокля", color:"#c4a373" },
+            ].map(({key,label,color}) => {
+              const n = recentCalls.filter(c => c.source === key).length;
+              const pct = recentCalls.length ? Math.round(n/recentCalls.length*100) : 0;
+              return (
+                <div key={key} className="adm-stat-card" style={{ minWidth:180, flex:"0 1 auto" }}>
+                  <div className="adm-stat-value" style={{ color, fontSize:28 }}>{n}</div>
+                  <div className="adm-stat-label">{label}</div>
+                  <div className="adm-stat-sub">{pct}% от последните 30 дни</div>
+                </div>
+              );
+            })}
+          </div>
+          {(() => {
+            const byPage = recentCalls.reduce((acc,c) => {
+              const pg = c.page || "—";
+              acc[pg] = (acc[pg]||0)+1; return acc;
+            },{});
+            const top = Object.entries(byPage).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            if (top.length === 0) return null;
+            return (
+              <div style={{ marginTop:8 }}>
+                <div style={{ color:"#888", fontSize:13, marginBottom:6 }}>Топ страници (30 дни)</div>
+                <div className="adm-table-wrap"><table className="adm-table">
+                  <thead><tr><th>Страница</th><th style={{width:110}}>Обаждания</th></tr></thead>
+                  <tbody>{top.map(([pg,n]) => (
+                    <tr key={pg}><td style={{fontFamily:"monospace", fontSize:12}}>{pg}</td><td>{n}</td></tr>
+                  ))}</tbody>
+                </table></div>
+              </div>
+            );
+          })()}
+        </>
+      )}
+
       <h3 className="adm-subtitle" style={{ marginTop:40 }}>Последни резервации</h3>
       {recent.length === 0
         ? <p className="adm-empty">Все още няма резервации.</p>
@@ -1202,6 +1254,7 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
   const [loading, setLoading] = useState(true);
   const [section, setSection] = useState("dashboard");
   const [bookings, setBookings]   = useState([]);
+  const [phoneCalls, setPhoneCalls] = useState([]);
   const [products, setProducts]   = useState([]);
   const [articles, setArticles]   = useState([]);
   const [mobileNav, setMobileNav] = useState(false);
@@ -1210,14 +1263,16 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
 
   const loadData = async () => {
     try {
-      const [b, p, a] = await Promise.all([
+      const [b, p, a, pc] = await Promise.all([
         api.getBookings().catch(() => []),
         api.getProducts().catch(() => []),
         api.getArticles(true).catch(() => []),
+        api.getPhoneCalls().catch(() => []),
       ]);
       setBookings(b);
       setProducts(p);
       setArticles(a);
+      setPhoneCalls(pc);
     } catch {}
   };
 
@@ -1307,7 +1362,7 @@ export default function AdminPanel({ setRoute: appSetRoute }) {
       {mobileNav&&<div className="adm-overlay" onClick={()=>setMobileNav(false)}/>}
 
       <main className="adm-main">
-        {section==="dashboard"  && <Dashboard bookings={bookings} products={products} articles={articles} user={user}/>}
+        {section==="dashboard"  && <Dashboard phoneCalls={phoneCalls} bookings={bookings} products={products} articles={articles} user={user}/>}
         {section==="bookings"   && <BookingsSection bookings={bookings} reload={loadData} isOwner={canSeeAnalytics(user)}/>}
         {section==="products"   && <ProductsSection products={products} reload={loadData} onEdit={goEditProduct} onNew={goNewProduct}/>}
         {section==="product-edit" && (

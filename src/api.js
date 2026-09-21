@@ -75,6 +75,9 @@ export const deleteUser = (id) =>
 export const createBooking = (data) =>
   request('/api/bookings', { method: 'POST', body: JSON.stringify(data) });
 export const getBookings = () => request('/api/bookings');
+export const createPhoneCall = (data) =>
+  request('/api/phone-calls', { method: 'POST', body: JSON.stringify(data) });
+export const getPhoneCalls = () => request('/api/phone-calls');
 export const updateBooking = (id, data) =>
   request(`/api/bookings/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteBooking = (id) =>

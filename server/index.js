@@ -9,6 +9,7 @@ import { sendErrorAlert } from './lib/errorAlert.js';
 import authRoutes     from './routes/auth.js';
 import usersRoutes    from './routes/users.js';
 import bookingsRoutes from './routes/bookings.js';
+import phoneCallsRoutes from './routes/phone-calls.js';
 import productsRoutes from './routes/products.js';
 import articlesRoutes from './routes/articles.js';
 import settingsRoutes from './routes/settings.js';
@@ -57,6 +58,16 @@ const bookingLimiter = rateLimit({
 });
 app.post('/api/bookings', bookingLimiter);
 
+// Phone-call logs are cheap but a bot mashing tel: taps could still bloat the
+// collection. Same 10/hour cap; keeps a real user (who taps once, maybe twice)
+// well below it.
+const phoneCallLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  message: { error: 'Твърде много заявки. Опитайте пак след 1 час.' },
+});
+app.post('/api/phone-calls', phoneCallLimiter);
+
 const emailLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 10,
@@ -67,6 +78,7 @@ app.use('/api/email', emailLimiter);
 app.use('/api/auth',     authRoutes);
 app.use('/api/users',    usersRoutes);
 app.use('/api/bookings', bookingsRoutes);
+app.use('/api/phone-calls', phoneCallsRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/articles', articlesRoutes);
 app.use('/api/settings', settingsRoutes);
