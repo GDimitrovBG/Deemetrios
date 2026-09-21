@@ -8,6 +8,7 @@ import { useSeo, breadcrumbSchema, faqSchema, blogPostPath } from './seo';
 import { BLOG_POSTS } from './blog_data';
 import { getProductHeading, getProductAlt, enhancedProductSchema, collectionItemListSchema, localizeFabric, buildProductDescription, buildProductSpecs, buildProductTitle, collectionLabel } from './seo-helpers';
 import { withLang, blogHref } from './router';
+import { trackPhoneCall } from './analytics';
 
 // =====================================================
 //  CATALOG: Collection grid, Product detail, Accessories
@@ -1328,7 +1329,7 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             </dl>
             <div className="cta-stack" style={{ marginTop: 32 }}>
               <button className="btn btn-solid" onClick={() => (goBooking ? goBooking(dress) : setRoute("booking"))}>{t.product.cta_book}</button>
-              <a className="btn" href="tel:+359878521660">{t.product.cta_inquire}</a>
+              <a className="btn" href="tel:+359878521660" onClick={() => trackPhoneCall('product')}>{t.product.cta_inquire}</a>
               <button
                 className={`fav-btn-product ${isFav ? "on" : ""}`}
                 onClick={() => toggleFavorite && toggleFavorite(dress.ref)}
