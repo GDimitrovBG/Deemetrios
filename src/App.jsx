@@ -65,7 +65,9 @@ export default function App() {
   // The URL is the source of truth for language (/en/* → English). The stored
   // tweak is only a fallback for the prefix-less Bulgarian URLs, so a visitor
   // landing on an /en link always gets English regardless of past preference.
-  const [lang, setLang] = useState(initialState.lang === "en" ? "en" : (tweaks.lang || "bg"));
+  const [lang, setLang] = useState(
+    (initialState.lang === "en" || initialState.lang === "el") ? initialState.lang : (tweaks.lang || "bg")
+  );
   useSeoInject();
 
   const setRoute = (r) => {

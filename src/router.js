@@ -92,12 +92,18 @@ function normalize(pathname) {
 //  than not having one, so /en/blog/<untranslated> folds back to the Bulgarian
 //  original — see blogHref() for the link-side counterpart.
 // -----------------------------------------------------------------------------
-export const LANGS = ['bg', 'en'];
+export const LANGS = ['bg', 'en', 'el'];
+// Non-default locales carry a URL prefix; Bulgarian keeps its bare URLs (they
+// hold all current rankings — never move them). Greek (el) joins as a full
+// third locale for brides from Greece, where Demetrios gowns cost far more.
+const LANG_PREFIX = { en: '/en', el: '/el' };
 
 export function splitLang(pathname) {
   const p = normalize(pathname);
-  if (p === '/en') return { lang: 'en', path: '/' };
-  if (p.startsWith('/en/')) return { lang: 'en', path: p.slice(3) };
+  for (const [lang, pre] of Object.entries(LANG_PREFIX)) {
+    if (p === pre) return { lang, path: '/' };
+    if (p.startsWith(pre + '/')) return { lang, path: p.slice(pre.length) };
+  }
   return { lang: 'bg', path: p };
 }
 
@@ -113,34 +119,42 @@ export function splitLang(pathname) {
 export function blogHref(slug, lang) {
   const path = `/blog/${slug}`;
   const post = BLOG_POSTS.find(b => b.slug === slug);
-  return post?.title_en ? withLang(path, lang) : path;
+  return hasPostInLang(post, lang) ? withLang(path, lang) : path;
 }
 
 /** Prefix a Bulgarian path with the locale (no-op for bg). */
 export function withLang(path, lang) {
-  if (lang !== 'en') return path;
-  return path === '/' ? '/en' : `/en${path}`;
+  const pre = LANG_PREFIX[lang];
+  if (!pre) return path;
+  return path === '/' ? pre : `${pre}${path}`;
 }
 
-/** Does this blog post have an English translation? */
-const hasEnPost = (id) => {
-  const p = BLOG_POSTS.find(b => b.id === id || String(b.id) === String(id));
-  return !!p?.title_en;
-};
+/** Does this blog post carry a translation for `lang`? Bulgarian always does;
+ *  a locale twin exists only when the post has that locale's title. */
+function hasPostInLang(post, lang) {
+  if (lang === 'bg') return true;
+  if (!post) return false;
+  if (lang === 'en') return !!post.title_en;
+  if (lang === 'el') return !!post.title_el;
+  return false;
+}
+const hasPostId = (id, lang) =>
+  hasPostInLang(BLOG_POSTS.find(b => b.id === id || String(b.id) === String(id)), lang);
 
-/** Routes that exist only in Bulgarian. The blog LISTING is bilingual;
- *  individual posts are Bulgarian-only unless translated. */
-const BG_ONLY = (route, blogPostId) =>
-  route === 'blog-post' && !hasEnPost(blogPostId);
+/** A blog post that has no twin in the requested non-Bulgarian locale. The
+ *  blog LISTING is available in every locale; individual posts fall back to
+ *  the Bulgarian original rather than serve an untranslated page. */
+const NOT_IN_LANG = (route, blogPostId, lang) =>
+  lang !== 'bg' && route === 'blog-post' && !hasPostId(blogPostId, lang);
 
 export function pathToState(pathname) {
   const { lang, path } = splitLang(pathname);
   const s = pathToStateInner(path);
 
   if (s.redirect) return { ...s, redirect: withLang(s.redirect, lang), lang };
-  // Untranslated blog posts have no /en twin — send those URLs to the
+  // Untranslated blog posts have no locale twin — send those URLs to the
   // Bulgarian original rather than serving an untranslated page.
-  if (lang === 'en' && BG_ONLY(s.route, s.blogPostId)) return { redirect: path, lang: 'bg' };
+  if (NOT_IN_LANG(s.route, s.blogPostId, lang)) return { redirect: path, lang: 'bg' };
   return { ...s, lang };
 }
 
@@ -231,8 +245,8 @@ function pathToStateInner(pathname) {
 
 export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId, materialId, lang = 'bg' }) {
   const path = stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId, materialId });
-  // Untranslated posts never take the /en prefix; everything else localizes.
-  return BG_ONLY(route, blogPostId) ? path : withLang(path, lang);
+  // Untranslated posts never take a locale prefix; everything else localizes.
+  return NOT_IN_LANG(route, blogPostId, lang) ? path : withLang(path, lang);
 }
 
 function stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId, materialId }) {

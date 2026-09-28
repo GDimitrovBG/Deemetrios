@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import i18n from './i18n';
 import { useSeo, breadcrumbSchema } from './seo';
+import { withLang } from './router';
 
 function LegalPage({ page, lang, setRoute }) {
   const t = i18n[lang].legal;
@@ -234,7 +235,7 @@ function CookieConsent({ lang, setRoute }) {
             <button type="button" onClick={() => setExpanded(true)} className="cookie-link">{t.manage}</button>
           )}
           <a
-            href={lang === "en" ? "/en/cookies" : "/cookies"}
+            href={withLang("/cookies", lang)}
             onClick={(e) => { e.preventDefault(); setRoute("cookies"); }}
             className="cookie-link"
           >{t.link}</a>

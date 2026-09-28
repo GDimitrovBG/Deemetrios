@@ -694,7 +694,17 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       platinum:    `Luxury Platinum Wedding Dresses from €2,500 | Areti Sofia`,
       destination: `Destination Romance Wedding Dresses — boho & beach | Areti`,
     },
+    el: {
+      demetrios:   `Νυφικά Demetrios — ${colCount} μοντέλα από 1.500 € | Areti Σόφια`,
+      cosmobella:  `Νυφικά Cosmobella — τιμές από 1.000 € | Areti Σόφια`,
+      platinum:    `Πολυτελή νυφικά Platinum από 2.500 € | Areti Σόφια`,
+      destination: `Νυφικά Destination Romance — boho & παραλία | Areti`,
+    },
   };
+  // 3-way string picker. matData/silData/seasonData landing copy has no Greek
+  // source yet, so those branches stay bg/en and fall back to English for el —
+  // the collection and default pages below carry real Greek.
+  const L3 = (bg, en, el) => (lang === "el" ? el : isBg ? bg : en);
   useSeo({
     title: seasonData
       ? (isBg ? seasonData.title_bg(seasonDresses.length) : seasonData.title_en(seasonDresses.length))
@@ -706,10 +716,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       // "бални рокли 2027" is the fastest-growing evening query; the year goes
       // in the title, and "бални" leads so it does not mirror the blog post
       // ("Абитуриентски и бални рокли София 2027") word for word.
-      ? (isBg ? "Бални и абитуриентски рокли 2027 в София — колекция | Арети" : "Prom & Evening Dresses 2027 in Sofia | Areti")
+      ? L3("Бални и абитуриентски рокли 2027 в София — колекция | Арети", "Prom & Evening Dresses 2027 in Sofia | Areti", "Βραδινά & φορέματα αποφοίτησης 2027 στη Σόφια | Areti")
       : colData
-        ? ((CTR_TITLES[isBg ? "bg" : "en"] || {})[initCollection] || (isBg ? `Луксозни булчински рокли ${colData.label} в София | Арети` : `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`))
-        : (isBg ? "Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети" : "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti"),
+        ? ((CTR_TITLES[lang] || CTR_TITLES.en)[initCollection] || L3(`Луксозни булчински рокли ${colData.label} в София | Арети`, `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`, `Πολυτελή νυφικά ${colData.label} στη Σόφια | Areti`))
+        : L3("Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети", "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti", "Νυφικά & βραδινά φορέματα στη Σόφια — 100+ μοντέλα από 1.000 € | Areti"),
     description: seasonData
       ? (isBg ? seasonData.meta_bg : seasonData.meta_en)
       : matData
@@ -717,14 +727,16 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       : silData
       ? (isBg ? silData.meta_bg : silData.meta_en)
       : isEvening
-      ? (isBg
-          ? `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Проба по предварителен час, корекции на място.`
-          : `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Fitting by appointment, in-house alterations.`)
+      ? L3(
+          `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Проба по предварителен час, корекции на място.`,
+          `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Fitting by appointment, in-house alterations.`,
+          `Φορέματα αποφοίτησης, μπαλ και επίσημα στη Σόφια — ${colCount} μοντέλα στην Areti. Πρόβα με ραντεβού, προσαρμογές επιτόπου.`)
       : colData
         ? (isBg ? (colData.seo_desc_bg || colData.desc_bg) : (colData.seo_desc_en || colData.desc_en))
-        : (isBg
-            ? "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Проба по час в Арети."
-            : "Over 100 wedding dresses in Sofia — from €1,000 to €4,000. Demetrios, Cosmobella, Platinum, Destination Romance. Fittings at Areti."),
+        : L3(
+            "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Проба по час в Арети.",
+            "Over 100 wedding dresses in Sofia — from €1,000 to €4,000. Demetrios, Cosmobella, Platinum, Destination Romance. Fittings at Areti.",
+            "Πάνω από 100 νυφικά στη Σόφια — τιμές 1.000 έως 4.000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Πρόβα με ραντεβού στην Areti."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
     url: matData ? `/collection/materii/${initMaterial}` : silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
     lang,
@@ -866,11 +878,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               : matData ? (isBg ? matData.h1_bg : matData.h1_en)
               : silData ? (isBg ? silData.h1_bg : silData.h1_en)
               : activeCol === "evening"
-                ? (isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
+                ? (lang === "el" ? <>Βραδινά, μπαλ και <em>φορέματα αποφοίτησης</em></> : isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
               : activeColData
-                ? (isBg ? <>Булчински рокли <em>{collectionLabel(activeColData, lang)}</em></>
-                        : <><em>{collectionLabel(activeColData, lang)}</em> wedding dresses</>)
-              : (isBg ? <>Булчински и сватбени рокли <em>София</em></> : <>Wedding Dresses in <em>Sofia</em></>)}
+                ? (lang === "el" ? <>Νυφικά <em>{collectionLabel(activeColData, lang)}</em></>
+                   : isBg ? <>Булчински рокли <em>{collectionLabel(activeColData, lang)}</em></>
+                          : <><em>{collectionLabel(activeColData, lang)}</em> wedding dresses</>)
+              : (lang === "el" ? <>Νυφικά στη <em>Σόφια</em></> : isBg ? <>Булчински и сватбени рокли <em>София</em></> : <>Wedding Dresses in <em>Sofia</em></>)}
           </h1>
           {seasonData ? (
             <>

@@ -605,7 +605,7 @@ function BookingShell({ t, children, lang }) {
     <div className="page-enter">
       <div className="booking">
         <div className="booking-head">
-          <div className="t-eyebrow" style={{ marginBottom: 24 }}>{lang === "en" ? "— Booking" : "— Запазване"}</div>
+          <div className="t-eyebrow" style={{ marginBottom: 24 }}>{{ bg: "— Запазване", en: "— Booking", el: "— Κράτηση" }[lang]}</div>
           <h1>{t.booking.title} <em>{t.booking.title_em}</em></h1>
           <p className="lede">{t.booking.lede}</p>
         </div>

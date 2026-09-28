@@ -29,6 +29,14 @@ const T = {
     salon:     'Areti Sofia',
     book:      'Book a fitting',
   },
+  el: {
+    bridal:    'Νυφικό',
+    evening:   'Βραδινό φόρεμα',
+    detail:    'λεπτομέρεια',
+    collection:'συλλογή',
+    salon:     'Areti Σόφια',
+    book:      'Κλείστε ραντεβού',
+  },
 };
 
 const isEvening = p => p?.collection === 'evening';
@@ -42,7 +50,11 @@ const isEvening = p => p?.collection === 'evening';
  */
 export function collectionLabel(c, lang = 'bg') {
   if (!c) return '';
-  return (lang === 'en' && c.label_en) ? c.label_en : c.label;
+  // Most collections are brand names, identical in every language. Only the
+  // "Вечерни рокли" collection has translations (label_en / label_el).
+  if (lang === 'el') return c.label_el || c.label_en || c.label;
+  if (lang === 'en') return c.label_en || c.label;
+  return c.label;
 }
 
 // -----------------------------------------------------
@@ -76,16 +88,43 @@ const FABRIC_BG = {
   'organza': 'органза',
 };
 
-/** Translate a comma-separated fabric string for the given language. */
+const FABRIC_EL = {
+  'tulle': 'τούλι',
+  'beaded tulle': 'τούλι με χάντρες',
+  'sparkling tulle': 'αστραφτερό τούλι',
+  'sparkle tulle': 'αστραφτερό τούλι',
+  'sparkling underlace': 'αστραφτερή βάση δαντέλας',
+  'underlace': 'βάση δαντέλας',
+  'lace': 'δαντέλα',
+  'beaded lace': 'δαντέλα με χάντρες',
+  'beading': 'χάντρες',
+  'pearl beading': 'πέρλες',
+  'overlace': 'δαντέλα επένδυσης',
+  'embroidery': 'κέντημα',
+  'satin': 'σατέν',
+  'mikado': 'μικάντο',
+  'lux mikado': 'πολυτελές μικάντο',
+  'luxe dupione': 'ντουπιόνι',
+  'dupione': 'ντουπιόνι',
+  'chiffon': 'σιφόν',
+  'crepe': 'κρεπ',
+  'taffeta': 'ταφτάς',
+  'feathers': 'φτερά',
+  'organza': 'οργάντζα',
+};
+
+/** Translate a comma-separated fabric string for the given language.
+ *  English keeps the source English terms; bg and el get their own maps. */
 export function localizeFabric(fabric, lang = 'bg') {
-  if (!fabric || lang !== 'bg') return fabric || '';
+  if (!fabric || lang === 'en') return fabric || '';
+  const map = lang === 'el' ? FABRIC_EL : FABRIC_BG;
   return fabric
     .split(',')
     .map(part => {
       const key = part.trim().toLowerCase();
-      const bg = FABRIC_BG[key];
+      const tr = map[key];
       // Capitalise the first letter to match the original styling.
-      return bg ? bg.charAt(0).toUpperCase() + bg.slice(1) : part.trim();
+      return tr ? tr.charAt(0).toUpperCase() + tr.slice(1) : part.trim();
     })
     .join(', ');
 }
@@ -212,6 +251,61 @@ const DESC_POOLS = {
       "Reserve a fitting at Areti and discover whether Style {ref} is your dress.",
     ],
   },
+  // Greek pool. Silhouette keys are the ENGLISH silhouette names because el
+  // reads p.silhouette_en (there is no silhouette_el on the dress data), the
+  // same way the en pool does.
+  el: {
+    openers: [
+      "{KIND} Style {ref} από τη συλλογή {coll}.",
+      "{KIND} Style {ref} φέρει την υπογραφή της συλλογής {coll}.",
+      "Ανακαλύψτε το {kindLower} Style {ref} από τη συλλογή {coll}.",
+      "{KIND} Style {ref} συνδυάζει αριστοτεχνική ραφή και σύγχρονη αισθητική — σχέδιο της συλλογής {coll}.",
+      "Το Style {ref} από τη συλλογή {coll} είναι ένα {kindLower} για μια αξέχαστη ημέρα.",
+      "{KIND} Style {ref} ξεχωρίζει στη συλλογή {coll}.",
+    ],
+    silhouette: {
+      "A-line": [
+        "Η κομψή γραμμή Α στενεύει από τη μέση και πέφτει απαλά ως το πάτωμα, κολακεύοντας τη σιλουέτα χωρίς περιττό όγκο — μία από τις πιο περιζήτητες νυφικές γραμμές.",
+        "Η κοπή γραμμή Α κολακεύει κάθε σωματότυπο: τονίζει τη μέση και δημιουργεί μια αρμονική, επιμήκη γραμμή που δείχνει αβίαστη και χαριτωμένη.",
+        "Η γραμμή Α είναι η διαχρονική κλασική επιλογή — απαλή μετάβαση από εφαρμοστό μπούστο σε ανοιχτή φούστα, ιδανική για εκκλησία ή υπαίθρια τελετή.",
+      ],
+      "Ball gown": [
+        "Η εντυπωσιακή σιλουέτα μπαλ γκάουν συνδυάζει εφαρμοστό μπούστο με πλούσια, ογκώδη φούστα — μια εμφάνιση για μεγάλους, επίσημους γάμους.",
+        "Το μπαλ γκάουν έχει παραμυθένια στάση: δομημένο μπούστο και υπερβολική φούστα που κάνουν την είσοδό σας στιγμή να θυμάστε.",
+        "Η κλασική κοπή μπαλ γκάουν τονίζει τη μέση και ολοκληρώνεται σε πλούσια φούστα από στρώσεις τούλι — η ενσάρκωση του ρομαντικού νυφικού ονείρου.",
+      ],
+      "Mermaid": [
+        "Η αισθησιακή σιλουέτα γοργόνα αγκαλιάζει το σώμα ως το γόνατο και ανοίγει σε εντυπωσιακή ουρά — για νύφες που θέλουν να τονίσουν τις καμπύλες τους.",
+        "Η κοπή γοργόνα ακολουθεί τις γραμμές του σώματος και ολοκληρώνεται δραματικά — μία από τις πιο φωτογενείς εμφανίσεις στη σύγχρονη νυφική μόδα.",
+        "Η σιλουέτα γοργόνα είναι μια τολμηρή, θηλυκή επιλογή: εφαρμοστή παντού με ένα τελικό φινάλε που αποπνέει αυτοπεποίθηση και στιλ.",
+      ],
+    },
+    fabric: [
+      "Είναι ραμμένο από {fabric}, που του προσδίδουν βάθος και εκλεπτυσμένη υφή.",
+      "Το φόρεμα υλοποιείται σε {fabric} με προσοχή σε κάθε λεπτομέρεια.",
+      "{Fabric} διαμορφώνουν το φόρεμα και δημιουργούν ένα απαλό παιχνίδι φωτός.",
+      "Ο πλούτος από {fabric} φαίνεται στις επιλεγμένες λεπτομέρειες.",
+    ],
+    occasion: [
+      "Ιδανική επιλογή για έναν πολυτελή γάμο στη Σόφια και για νύφες που εκτιμούν μια καταξιωμένη διεθνή μάρκα.",
+      "Κατάλληλο για μια μεγαλοπρεπή τελετή όπου θέλετε όλα τα βλέμματα πάνω σας.",
+      "Μια υπέροχη επιλογή τόσο για κλασικό γάμο όσο και για πιο ιδιαίτερη γιορτή.",
+      "Δημιουργημένο για τη νύφη που αναζητά ισορροπία ανάμεσα στην κομψότητα και την προσωπικότητα.",
+      "Ιδανικό για ζευγάρια που ονειρεύονται έναν κομψό, αξέχαστο γάμο.",
+    ],
+    occasionEvening: [
+      "Ιδανικό για χορό αποφοίτησης, επίσημο δείπνο ή ως καλεσμένη σε γάμο.",
+      "Εξαιρετική επιλογή για μπαλ, κοκτέιλ πάρτι ή ειδική περίσταση όπου θέλετε να λάμψετε.",
+      "Δημιουργημένο για τις βραδινές στιγμές — χορό, γιορτή ή επίσημη εκδήλωση στη Σόφια.",
+      "Κατάλληλο για αποφοίτους και κυρίες που αναζητούν μια κομψή, επίσημη εμφάνιση.",
+    ],
+    closer: [
+      "Κλείστε ραντεβού για πρόβα στην Areti — επίσημος αντιπρόσωπος της Demetrios στη Βουλγαρία από το 1992.",
+      "Δοκιμάστε το από κοντά στο κατάστημα Areti στη Σόφια και νιώστε την ποιότητα Demetrios.",
+      "Σας περιμένουμε στην Areti για συμβουλευτική και πρόβα με ραντεβού.",
+      "Κλείστε πρόβα στην Areti και ανακαλύψτε αν το Style {ref} είναι το φόρεμά σας.",
+    ],
+  },
 };
 
 /**
@@ -255,17 +349,26 @@ export function buildProductDescription(p, lang = 'bg') {
  * Real, per-product spec rows (silhouette, fabric, collection, brand).
  * Replaces the previous hardcoded spec list that was identical on every page.
  */
+const SPEC_LABELS = {
+  bg: { silhouette: 'Силует', fabric: 'Тъкан', collection: 'Колекция', brand: 'Марка' },
+  en: { silhouette: 'Silhouette', fabric: 'Fabric', collection: 'Collection', brand: 'Brand' },
+  el: { silhouette: 'Σιλουέτα', fabric: 'Ύφασμα', collection: 'Συλλογή', brand: 'Μάρκα' },
+};
+
 export function buildProductSpecs(p, lang = 'bg') {
   if (!p) return [];
-  const bg = lang === 'bg';
+  const L = SPEC_LABELS[lang] || SPEC_LABELS.bg;
   const collLabel = collLabelById(p.collection, lang) || 'Demetrios';
-  const silhouette = (bg ? p.silhouette : p.silhouette_en) || '';
+  // Show a locale-natural silhouette (capitalised) rather than the raw EN value
+  // el/en would otherwise leak.
+  const silRaw = silPhrase(p, lang);
+  const silhouette = silRaw ? cap(silRaw) : '';
   const fabric = localizeFabric(p.fabric || '', lang);
   const rows = [
-    { label: bg ? 'Силует' : 'Silhouette', value: silhouette },
-    fabric ? { label: bg ? 'Тъкан' : 'Fabric', value: fabric } : null,
-    { label: bg ? 'Колекция' : 'Collection', value: collLabel },
-    { label: bg ? 'Марка' : 'Brand', value: 'Demetrios' },
+    { label: L.silhouette, value: silhouette },
+    fabric ? { label: L.fabric, value: fabric } : null,
+    { label: L.collection, value: collLabel },
+    { label: L.brand, value: 'Demetrios' },
   ];
   return rows.filter(Boolean);
 }
@@ -277,15 +380,19 @@ export function buildProductSpecs(p, lang = 'bg') {
 // Silhouette wording that reads naturally inside a sentence/title.
 // "Булчинска рокля русалка" / "…тип принцеса" mirrors how the silhouette
 // landing pages already phrase it.
-const SIL_PHRASE_BG = {
-  'А-силует': 'А-силует',
-  'Русалка':  'русалка',
-  'Принцеса': 'принцеса',
+// Silhouette wording per locale. bg is keyed by the Bulgarian silhouette; en
+// and el read p.silhouette_en, so their maps are keyed by the English name.
+const SIL_PHRASE = {
+  bg: { 'А-силует': 'А-силует', 'Русалка': 'русалка', 'Принцеса': 'принцеса' },
+  en: { 'A-line': 'A-line', 'Mermaid': 'mermaid', 'Ball gown': 'ball gown' },
+  el: { 'A-line': 'γραμμή Α', 'Mermaid': 'γοργόνα', 'Ball gown': 'μπαλ γκάουν' },
 };
-const SIL_PHRASE_EN = {
-  'A-line':    'A-line',
-  'Mermaid':   'mermaid',
-  'Ball gown': 'ball gown',
+/** Raw silhouette value used for `lang` (bg reads the BG field, en/el the EN). */
+const silRawFor = (p, lang) => (lang === 'bg' ? p.silhouette : p.silhouette_en) || '';
+/** Natural-reading silhouette phrase for `lang`. */
+const silPhrase = (p, lang) => {
+  const raw = silRawFor(p, lang);
+  return (SIL_PHRASE[lang] || SIL_PHRASE.bg)[raw] || raw.toLowerCase();
 };
 
 /** Primary (first) fabric only — keeps titles short and scannable. */
@@ -310,30 +417,31 @@ function primaryFabric(p, lang = 'bg') {
  */
 export function buildProductTitle(p, lang = 'bg') {
   const t = T[lang] || T.bg;
-  const bg = lang !== 'en';
   const kind = isEvening(p) ? t.evening : t.bridal;
-  const silRaw = (bg ? p.silhouette : p.silhouette_en) || '';
-  const sil = (bg ? SIL_PHRASE_BG : SIL_PHRASE_EN)[silRaw] || silRaw.toLowerCase();
+  const sil = silPhrase(p, lang);
   const fabric = primaryFabric(p, lang);
 
-  // BG puts the silhouette after the noun ("рокля русалка"); EN puts it before
-  // ("Mermaid Wedding Dress"), so the two languages need different word order.
+  // BG and EL put the silhouette after the noun ("рокля русалка" / "νυφικό
+  // γοργόνα"); EN puts it before ("Mermaid Wedding Dress").
   let base;
-  if (bg) {
-    base = [kind, sil].filter(Boolean).join(' ');
-    if (fabric) base += ` с ${fabric}`;
-  } else {
+  if (lang === 'en') {
     base = [cap(sil), kind].filter(Boolean).join(' ');
     if (fabric) base += ` in ${cap(fabric)}`;
+  } else if (lang === 'el') {
+    base = [kind, sil].filter(Boolean).join(' ');
+    if (fabric) base += ` με ${fabric}`;
+  } else {
+    base = [kind, sil].filter(Boolean).join(' ');
+    if (fabric) base += ` с ${fabric}`;
   }
   base += ` — ${p.ref}`;
 
   // Keep the whole title inside Google's ~60-char display budget: use the full
-  // "Арети София" brand suffix when it fits, the short one when it doesn't.
+  // brand suffix when it fits, the short one when it doesn't.
   const long = `${base} | ${t.salon}`;
   if (long.length <= 60) return long;
-  const short = `${base} | ${bg ? 'Арети' : 'Areti'}`;
-  return short;
+  const shortBrand = lang === 'bg' ? 'Арети' : 'Areti';
+  return `${base} | ${shortBrand}`;
 }
 
 /**
@@ -343,16 +451,14 @@ export function buildProductTitle(p, lang = 'bg') {
  */
 export function getProductHeading(p, lang = 'bg') {
   const t = T[lang] || T.bg;
-  const bg = lang !== 'en';
   const kind = isEvening(p) ? t.evening : t.bridal;
-  const silRaw = (bg ? p.silhouette : p.silhouette_en) || '';
-  const sil = (bg ? SIL_PHRASE_BG : SIL_PHRASE_EN)[silRaw] || silRaw.toLowerCase();
+  const sil = silPhrase(p, lang);
   if (!sil) return `${kind} Style ${p.ref}`;
-  // Same word-order split as buildProductTitle: "Булчинска рокля русалка" vs
-  // "Mermaid Wedding Dress".
-  return bg
-    ? `${kind} ${sil} — Style ${p.ref}`
-    : `${cap(sil)} ${kind} — Style ${p.ref}`;
+  // Same word-order split as buildProductTitle: bg/el put the silhouette after
+  // the noun, en before it.
+  return lang === 'en'
+    ? `${cap(sil)} ${kind} — Style ${p.ref}`
+    : `${kind} ${sil} — Style ${p.ref}`;
 }
 
 /** Short name for product cards in grids (clean visual) */
@@ -375,7 +481,8 @@ export function getProductAlt(p, lang = 'bg', idx = 0) {
   const t = T[lang] || T.bg;
   const kind = isEvening(p) ? t.evening : t.bridal;
   const collLabel = collLabelById(p.collection, lang) || '';
-  const silhouette = (lang === 'bg' ? p.silhouette : p.silhouette_en) || '';
+  const silRaw = silPhrase(p, lang);
+  const silhouette = silRaw ? cap(silRaw) : '';
   const fabric = localizeFabric(p.fabric || '', lang);
 
   if (idx === 0) {

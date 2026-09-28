@@ -81,7 +81,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
         </div>
         <div className="meta-row fade-up delay-3">
           <div className="meta-stack">
-            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>{lang === "en" ? "Demetrios Collection 2026" : "Колекция Demetrios 2026"}</span>
+            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>{{ bg: "Колекция Demetrios 2026", en: "Demetrios Collection 2026", el: "Συλλογή Demetrios 2026" }[lang]}</span>
             <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
@@ -279,12 +279,12 @@ function ServicesSection({ t, lang }) {
     <section className="section section-tight" style={{ background: "var(--bg-soft)", maxWidth: "100%" }}>
       <div style={{ maxWidth: "var(--maxw)", margin: "0 auto" }}>
         <div className="sec-head">
-          <div className="left">{lang === "en" ? "— The service" : "— Услугата"}</div>
+          <div className="left">{{ bg: "— Услугата", en: "— The service", el: "— Η υπηρεσία" }[lang]}</div>
           <h2>
             <span className="t-eyebrow" style={{ display: "block", marginBottom: 14 }}>{t.home.services_eye}</span>
             {t.home.services_title} <em>{t.home.services_title_em}</em>
           </h2>
-          <div className="right">{lang === "en" ? "III · the process" : "III · процеса"}</div>
+          <div className="right">{{ bg: "III · процеса", en: "III · the process", el: "III · η διαδικασία" }[lang]}</div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, borderTop: "1px solid var(--rule)" }}>
           {items.map((s, i) => (
@@ -421,7 +421,7 @@ function CtaBand({ t, setRoute, lang }) {
   return (
     <section style={{ background: "var(--ink)", color: "var(--bg)", padding: "120px var(--gutter)" }}>
       <div style={{ maxWidth: 980, margin: "0 auto", textAlign: "center" }}>
-        <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 20 }}>{lang === "en" ? "— Booking —" : "— Запазване —"}</div>
+        <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 20 }}>{{ bg: "— Запазване —", en: "— Booking —", el: "— Κράτηση —" }[lang]}</div>
         <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(56px, 7vw, 112px)", lineHeight: 0.95, marginBottom: 28 }}>
           {t.home.cta_band.split(" ").slice(0, 2).join(" ")}{" "}
           <em style={{ fontFamily: "var(--f-serif)", fontStyle: "italic", color: "var(--champagne)" }}>
@@ -440,19 +440,27 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
   const t = i18n[lang];
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   useSeo({
-    title: lang === "bg"
-      // Keyword first: "булчински рокли" is the highest-impression query the
-      // homepage competes for (329/mo at 6.7% CTR); the brand-led title showed a
-      // snippet without the searched words.
-      ? "Булчински рокли София — салон Арети, Demetrios от 1992 г."
-      : "Wedding Dresses Sofia — Areti, Demetrios Bridal Salon since 1992",
-    description: lang === "bg"
-      ? "Официален представител на Demetrios в България от 1992 г. Булчински салон в Лозенец, София — над 100 рокли, консултация и корекции. Запазете час."
-      : "Official Demetrios representative in Bulgaria since 1992. Bridal salon in Sofia — over 100 dresses, consultation and alterations. Book a fitting.",
+    // Keyword first: "булчински рокли" is the highest-impression query the
+    // homepage competes for; the Greek title leads with "τιμές Βουλγαρίας",
+    // the reason Greek brides cross the border in the first place.
+    title: {
+      bg: "Булчински рокли София — салон Арети, Demetrios от 1992 г.",
+      en: "Wedding Dresses Sofia — Areti, Demetrios Bridal Salon since 1992",
+      el: "Νυφικά Demetrios στη Σόφια σε τιμές Βουλγαρίας | Areti",
+    }[lang],
+    description: {
+      bg: "Официален представител на Demetrios в България от 1992 г. Булчински салон в Лозенец, София — над 100 рокли, консултация и корекции. Запазете час.",
+      en: "Official Demetrios representative in Bulgaria since 1992. Bridal salon in Sofia — over 100 dresses, consultation and alterations. Book a fitting.",
+      el: "Αυθεντικά νυφικά Demetrios στη Σόφια — 1.000 έως 4.000 €, τιμές Βουλγαρίας. Μιλάμε ελληνικά, 3,5 ώρες από τη Θεσσαλονίκη. Κλείστε ραντεβού.",
+    }[lang],
     image: IMG.hero1,
     url: "/",
     lang,
-    keywords: "булчински рокли, сватбени рокли, Demetrios, София, Арети, bridal Sofia, wedding dresses Bulgaria",
+    keywords: {
+      bg: "булчински рокли, сватбени рокли, Demetrios, София, Арети",
+      en: "wedding dresses Sofia, bridal Bulgaria, Demetrios, Areti",
+      el: "νυφικά Σόφια, νυφικά Βουλγαρία, Demetrios, τιμές νυφικών, Areti",
+    }[lang],
     jsonLd: { "@graph": [orgSchema(), websiteSchema()] },
     jsonLdId: "home",
   });

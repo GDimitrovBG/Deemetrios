@@ -72,7 +72,7 @@ function heading(d) {
  * bg and en entries. Each URL must list itself as well, or Google discards
  * the whole cluster.
  */
-function urlBlock(loc, meta, def, images = [], bgPath = null) {
+function urlBlock(loc, meta, def, images = [], bgPath = null, hasEl = true) {
   const m = meta[loc] || {};
   const lastmod    = m.lastmod    || def.lastmod;
   const changefreq = m.changefreq || def.changefreq;
@@ -86,12 +86,13 @@ function urlBlock(loc, meta, def, images = [], bgPath = null) {
   if (bgPath) {
     const bgUrl = `${SITE}${bgPath}`;
     const enUrl = `${SITE}${bgPath === '/' ? '/en/' : `/en${bgPath}`}`;
+    const elUrl = `${SITE}${bgPath === '/' ? '/el/' : `/el${bgPath}`}`;
     altXml =
       `\n    <xhtml:link rel="alternate" hreflang="bg" href="${bgUrl}"/>` +
       `\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>` +
-      // The Greek landing exists only as a home (/el/, static page in
-      // public/el/) — it joins the home cluster and no other.
-      (bgPath === '/' ? `\n    <xhtml:link rel="alternate" hreflang="el" href="${SITE}/el/"/>` : '') +
+      // el is a full locale for every page EXCEPT blog posts (no Greek twin
+      // yet), which pass hasEl=false so their cluster stays bg/en only.
+      (hasEl ? `\n    <xhtml:link rel="alternate" hreflang="el" href="${elUrl}"/>` : '') +
       `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${bgUrl}"/>`;
   }
   return `  <url>
@@ -109,29 +110,28 @@ async function run() {
   const today = new Date().toISOString().slice(0, 10);
   const out = [];
 
-  // Emits the Bulgarian URL and its English twin, each carrying the full
-  // hreflang set. Used for every page that exists in both locales.
-  const pair = (path, def, images = []) => {
-    out.push(urlBlock(`${SITE}${path}`, meta, def, images, path));
-    // '/en/' keeps its trailing slash — the server 301s /en to /en/, and a
-    // sitemap entry that redirects is reported as "Page with redirect".
+  // Emits the Bulgarian URL and its English + Greek twins, each carrying the
+  // full hreflang set. Pass { hasEl: false } for pages that exist only in
+  // bg/en (translated blog posts).
+  const pair = (path, def, images = [], { hasEl = true } = {}) => {
+    out.push(urlBlock(`${SITE}${path}`, meta, def, images, path, hasEl));
+    // '/en/' and '/el/' keep the trailing slash — the server 301s /en → /en/,
+    // and a sitemap entry that redirects is reported as "Page with redirect".
     const enPath = path === '/' ? '/en/' : `/en${path}`;
-    // English is the secondary locale — slightly lower priority than its
-    // Bulgarian twin so crawl budget favours the primary market. Images are
-    // listed once, on the Bulgarian entry: the same photo under two URLs
-    // would only double the file with no extra discovery.
-    const enPriority = String(Math.max(0.1, Number(def.priority) - 0.1).toFixed(1));
-    out.push(urlBlock(`${SITE}${enPath}`, meta, { ...def, priority: enPriority }, [], path));
+    // Secondary locales get a slightly lower priority so crawl budget favours
+    // the primary market. Images are listed once, on the Bulgarian entry.
+    const secPriority = String(Math.max(0.1, Number(def.priority) - 0.1).toFixed(1));
+    out.push(urlBlock(`${SITE}${enPath}`, meta, { ...def, priority: secPriority }, [], path, hasEl));
+    if (hasEl) {
+      const elPath = path === '/' ? '/el/' : `/el${path}`;
+      out.push(urlBlock(`${SITE}${elPath}`, meta, { ...def, priority: secPriority }, [], path, hasEl));
+    }
   };
 
   // --- Static pages -------------------------------------------------------
   pair('/', { lastmod: today, changefreq: 'weekly', priority: '1.0' });
-  // Greek landing — a single static page (public/el/index.html) in the home
-  // hreflang cluster. urlBlock's bgPath='/' emits the same bg/en/el set the
-  // BG and EN homes carry, keeping the cluster reciprocal.
-  out.push(urlBlock(`${SITE}/el/`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, [], '/'));
-  // Greek-only support pages (prices, the travel guide) — no hreflang
-  // cluster, they exist in one language.
+  // Greek-only support pages (prices, the travel guide for brides from Greece)
+  // — no hreflang cluster, they exist in one language.
   out.push(urlBlock(`${SITE}/el/times/`,  meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }));
   out.push(urlBlock(`${SITE}/el/odigos/`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }));
   pair('/collection', { lastmod: today, changefreq: 'weekly', priority: '0.9' });
@@ -173,7 +173,8 @@ async function run() {
   for (const b of BLOG_POSTS) {
     const slug = b.slug ? `/blog/${b.slug}` : `/blog/${b.id}`;
     const images = b.image ? [{ loc: absImg(b.image), title: esc(b.title || 'Блог — Арети') }] : [];
-    if (b.title_en) pair(slug, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images);
+    // Blog posts have no Greek twin yet → bg/en only (hasEl:false).
+    if (b.title_en) pair(slug, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images, { hasEl: false });
     else out.push(urlBlock(`${SITE}${slug}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images));
   }
 

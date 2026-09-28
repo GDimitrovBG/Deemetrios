@@ -82,7 +82,14 @@ async function loadRoutes() {
   const enRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog')), ...productRoutes, ...enBlogRoutes]
     .map(r => (r === '/' ? '/en' : `/en${r}`));
 
-  return [...bgRoutes, ...enRoutes, NOT_FOUND_ROUTE];
+  // Greek mirrors the same set as English. No blog posts are translated to
+  // Greek yet, so /el/blog is the (Greek-chrome) listing only; individual posts
+  // fold back to the Bulgarian original, exactly like an untranslated /en post.
+  const elBlogRoutes = ['/blog'];
+  const elRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog')), ...productRoutes, ...elBlogRoutes]
+    .map(r => (r === '/' ? '/el' : `/el${r}`));
+
+  return [...bgRoutes, ...enRoutes, ...elRoutes, NOT_FOUND_ROUTE];
 }
 
 // ---- Local SPA server (always returns index.html for unknown paths) ------

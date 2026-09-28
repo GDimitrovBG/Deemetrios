@@ -134,21 +134,29 @@ export function useSeo({
     // explicit `alternates`). The /blog LISTING is bilingual — /en/blog lists
     // the translated posts.
     const bgOnly = /^\/blog\//.test(bgPath);
-    // The English home is '/en/' WITH the trailing slash: the server issues a
-    // 301 from /en to /en/, and an hreflang target or sitemap entry that
-    // redirects is discarded by Google (it wants a 200 that self-canonicalises).
-    // Every other path stays slash-less, matching the rest of the site.
-    const enPath = bgPath === '/' ? '/en/' : `/en${bgPath}`;
-    const localePath = (lang === 'en' && (!bgOnly || alternates)) ? enPath : bgPath;
+    // Locale homes carry a trailing slash ('/en/', '/el/'): the server 301s
+    // '/en' → '/en/', and an hreflang target or sitemap entry that redirects is
+    // discarded by Google (it wants a 200 that self-canonicalises). Every other
+    // path stays slash-less, matching the rest of the site.
+    const LOCALE_PREFIX = { en: '/en', el: '/el' };
+    const localePathFor = (l) => {
+      const pre = LOCALE_PREFIX[l];
+      if (!pre) return bgPath;
+      return bgPath === '/' ? `${pre}/` : `${pre}${bgPath}`;
+    };
+    // The page exists outside Bulgarian when it isn't a bg-only blog post (or an
+    // explicit alternates set was passed for a translated post).
+    const inLocale = !bgOnly || alternates;
+    const localePath = (lang !== 'bg' && inLocale) ? localePathFor(lang) : bgPath;
     const finalUrl = `${SITE_URL}${localePath === '/' ? '/' : localePath}`;
 
-    // Reciprocal, self-referencing pair (Google drops one-directional sets).
-    // Suppressed on noindex pages, which have nothing to cluster.
+    // Reciprocal, self-referencing set (Google drops one-directional clusters).
+    // Suppressed on noindex pages, which have nothing to cluster. Every non-blog
+    // page now exists in bg, en and el.
     const finalAlternates = alternates !== null ? alternates
       : (bgOnly || noindex) ? null
-      // The home pages also point at the Greek landing (/el/ has only a home).
-      : { bg: bgPath, en: enPath, ...(bgPath === '/' ? { el: '/el/' } : {}) };
-    const finalLocale = lang === 'en' ? 'en_US' : DEFAULT_LOCALE;
+      : { bg: bgPath, en: localePathFor('en'), el: localePathFor('el') };
+    const finalLocale = lang === 'en' ? 'en_US' : lang === 'el' ? 'el_GR' : DEFAULT_LOCALE;
 
     document.title = finalTitle;
     document.documentElement.lang = lang;
