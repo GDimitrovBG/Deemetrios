@@ -202,6 +202,7 @@ export function orgSchema() {
     "name": "Арети — Bridal Couture",
     "alternateName": "Areti Wedding Salon",
     "image": DEFAULT_IMG,
+    "logo": { "@type": "ImageObject", "url": `${SITE_URL}/icons/icon-512.png`, "width": 512, "height": 512 },
     "url": SITE_URL,
     "telephone": "+359 878 521 660",
     "email": "info@areti.bg",
@@ -272,18 +273,23 @@ export function articleSchema(post, lang = 'bg') {
       ? [(u => u.startsWith('/') ? `${SITE_URL}${u}` : u)(post.image.replace(/\.jpe?g$/i, '.webp'))]
       : [DEFAULT_IMG],
     "datePublished": post.isoDate || post.date,
-    "dateModified":  post.isoDate || post.date,
+    // A refreshed article carries isoModified — a real freshness signal Google
+    // reads from BlogPosting. Without it dateModified just echoes the publish
+    // date and a content update is invisible to the crawler.
+    "dateModified":  post.isoModified || post.isoDate || post.date,
     "author": {
       "@type": "Organization",
       "name": SITE_NAME,
       "url": SITE_URL,
-      "logo": { "@type": "ImageObject", "url": DEFAULT_IMG },
+      "logo": { "@type": "ImageObject", "url": `${SITE_URL}/icons/icon-512.png`, "width": 512, "height": 512 },
     },
     "publisher": {
       "@type": "Organization",
       "name": SITE_NAME,
       "url": SITE_URL,
-      "logo": { "@type": "ImageObject", "url": DEFAULT_IMG, "width": 1200, "height": 630 },
+      // A real logo mark, not a hero photo — Google renders publisher.logo in
+      // article rich results and a dress photo there reads as spam.
+      "logo": { "@type": "ImageObject", "url": `${SITE_URL}/icons/icon-512.png`, "width": 512, "height": 512 },
     },
     "mainEntityOfPage": { "@type": "WebPage", "@id": url },
     "description": post.excerpt || DEFAULT_DESC,

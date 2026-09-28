@@ -157,6 +157,7 @@ export const BLOG_POSTS = [
     date_en: "10 June 2026",
     faq_en: [{"q":"How much does a wedding dress cost at Areti in Sofia?","a":"Prices range from €1,000 (Cosmobella) to €4,000 (Demetrios Platinum). Every price includes a stylist consultation, unlimited try-ons and one free alteration."},{"q":"Are there wedding dress sales in Sofia?","a":"Yes — Areti periodically discounts previous-season styles by up to 30%. Ask about current offers when booking your fitting."},{"q":"What is included in the price?","a":"A personal stylist consultation, unlimited try-ons, one free alteration fitted to your figure and a guarantee that every gown is an original Demetrios."},{"q":"Can I order a dress that is not in the showroom?","a":"Yes. As the official Demetrios representative for Bulgaria, Areti can order any current-season style. Delivery takes 3–4 months, plus 1–2 months for alterations."}],
     isoDate: "2026-06-10",
+    isoModified: "2026-09-28", // разширена с обхват на сезон 2027
     date: "10 Юни 2026",
     category: "Булчински рокли",
     image: "/wp-content/uploads/2025/10/булчински-рокли-София1500_1-scaled.webp",
@@ -304,6 +305,7 @@ export const BLOG_POSTS = [
     date_en: "16 August 2026",
     faq_en: [{"q":"How much does it cost to rent a wedding dress in Sofia?","a":"Most often between €150 and €400, depending on the salon and the style, usually with a deposit and a short return window. Alterations to your figure are heavily limited — the dress has to be returned in its original condition."},{"q":"Does Areti rent out wedding dresses?","a":"No — Areti sells original Demetrios wedding dresses. For brides on a tighter budget we offer the Cosmobella collection from €1,000 and periodic discounts of up to 30% on styles from previous seasons, which often work out comparable to a rental."},{"q":"Which is better value — renting or buying?","a":"It depends on the wedding. For a short civil ceremony a rental may be enough. For a full wedding with a church or outdoor ceremony, photographs and a whole day of wear, buying an affordable original dress altered to your figure usually gives you more for your money."},{"q":"What does the price include when you buy at Areti?","a":"A consultation with a personal stylist, unlimited fittings, one free alteration to your figure and a guarantee of authenticity. The dress stays yours — as a keepsake."}],
     isoDate: "2026-08-16",
+    isoModified: "2026-09-28", // допълнена с „сватбени рокли под наем" покритие
     date: "16 Август 2026",
     category: "Булчински рокли",
     image: "/wp-content/uploads/2025/11/Воали-за-булки-8251_1.webp",
