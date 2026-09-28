@@ -280,11 +280,12 @@ function Footer({ lang, setRoute, goCollection }) {
             {/* Paths line up with shop_links by index. Evening dresses point at
                 the real collection route — they used to point at /accessories,
                 which duplicated it under a page titled "bridal accessories". */}
-            <ul>{["/collection", "/collection/evening", "/kviz", "/contact"].map((href, i) => (
+            <ul>{["/collection", "/collection/2027", "/collection/evening", "/kviz", "/contact"].map((href, i) => (
               <li key={i}>
                 <a href={withLang(href, lang)} onClick={(e) => {
                   e.preventDefault();
                   if (href === "/collection/evening") goCollection("evening");
+                  else if (href === "/collection/2027") goCollection("2027");
                   else setRoute(href === "/kviz" ? "quiz" : href.slice(1));
                 }}>{t.shop_links[i]}</a>
               </li>

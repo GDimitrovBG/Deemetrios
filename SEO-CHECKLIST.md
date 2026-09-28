@@ -67,7 +67,9 @@
 ## 2. Google Search Console
 
 - [ ] Добави и верифицирай домейна (ако не е)
-- [ ] Submit sitemap: `https://demetriosbride-bg.com/api/sitemap-index.xml`
+- [ ] Submit sitemap: `https://demetriosbride-bg.com/sitemap.xml`
+      (ако в Search Console стои старият `/api/sitemap-index.xml` — премахни го;
+      той вече отговаря с 301 към каноничния)
 - [ ] Поискай индексиране на новата статия:
       `https://demetriosbride-bg.com/blog/kak-da-izberete-bulchinska-roklia-sofia`
 - [ ] След 2 седмици: провери „Coverage" за 404 грешки (старите WP URL-и

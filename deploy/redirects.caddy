@@ -304,3 +304,13 @@ redir @wp_date   /blog 301
 respond @wp_dead 410
 @wp_feed_any path_regexp ^/.+/feed/?$
 respond @wp_feed_any 410
+
+# --- Removed product refs → 410 Gone ---
+# Dresses that left the catalogue for good (Search Console 2026-09 still shows
+# them under "Crawled — currently not indexed": /product/am67, /product/am51,
+# /product/t238sk30 …). They answer 404 today, which works, but Google retries
+# 404s for months; a 410 is treated as definitive and drops them faster.
+# t238sk30 is a WP-era slug that glued two refs together — never a real page.
+# Keep this list in sync when a ref is retired from src/data.js.
+@removed_products path_regexp ^/product/(?i)(am38|am43|am51|am67|t238sk30)/?$
+respond @removed_products 410

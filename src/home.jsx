@@ -4,7 +4,7 @@ import { IMG, DRESSES, COLLECTIONS } from './data';
 import { Img } from './components';
 import { useSeo, orgSchema, websiteSchema } from './seo';
 import { getProductCardName, getProductAlt, localizeFabric, collectionLabel } from './seo-helpers';
-import { cdnImage } from './cdn';
+import { cdnImage, srcsetFor } from './cdn';
 import { withLang } from './router';
 
 // =====================================================
@@ -50,9 +50,26 @@ function HomeHeroV1({ t, setRoute }) {
 }
 
 function HomeHeroV2({ t, lang, setRoute }) {
+  // The hero is the LCP element on the home page. As a CSS background it could
+  // only ever load the full ~150KB file; a real <img> with srcset lets a phone
+  // pick the 480w (~28KB) variant instead — the single biggest LCP save on
+  // mobile, where Search Console has every URL at "needs improvement".
+  // The keyword alt also puts the hero into Google Images (64 clicks/period
+  // already come from image search).
+  const heroSrcset = srcsetFor(IMG.hero2, 1500);
   return (
     <section className="hero-v2">
-      <div className="hero-img" style={{ backgroundImage: `url(${cdnImage(IMG.hero2, 1100)})`, backgroundSize: "cover", backgroundPosition: "center" }}></div>
+      <div className="hero-img" style={{ position: "relative", overflow: "hidden" }}>
+        <img
+          src={cdnImage(IMG.hero2)}
+          {...(heroSrcset ? { srcSet: heroSrcset, sizes: "(max-width: 720px) 100vw, (max-width: 1024px) 50vw, 55vw" } : {})}
+          alt={t.home.hero_kw}
+          fetchpriority="high"
+          loading="eager"
+          decoding="sync"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+        />
+      </div>
       <div className="hero-text">
         <div className="fade-up delay-1" style={{ marginTop: 60 }}>
           <h1 className="t-display">

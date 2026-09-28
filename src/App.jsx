@@ -211,7 +211,7 @@ export default function App() {
   let page = null;
   switch (route) {
     case "collection": page = <Page lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} initMaterial={activeMaterial} goSilhouette={goSilhouette} goMaterial={goMaterial} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
-    case "product": page = <Page lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} goSilhouette={goSilhouette} />; break;
+    case "product": page = <Page lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} goSilhouette={goSilhouette} goMaterial={goMaterial} />; break;
     case "booking": page = <Page lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
     case "quiz": page = <Page lang={lang} setRoute={setRoute} goProduct={goProduct} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} />; break;
     case "wishlist": page = <Page lang={lang} setRoute={setRoute} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} />; break;

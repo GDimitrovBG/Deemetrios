@@ -60,7 +60,15 @@
        Must match the DEFAULT hero variant ("split" → HomeHeroV2, which renders
        hero2). Preloading a non-displayed image just wastes the high-priority
        fetch and delays the real LCP element on mobile. -->
-  <link rel="preload" as="image" href="https://demetriosbride-bg.com/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled.webp" fetchpriority="high" />
+  <!-- imagesrcset lets the browser preload the SAME candidate the hero <img>
+       will pick: ~28KB (480w) on a phone instead of the ~150KB original. The
+       -480w/-960w files are written on the server by
+       scripts/optimize-images.mjs --variants (see deploy/README.md). -->
+  <link rel="preload" as="image"
+        href="https://demetriosbride-bg.com/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled.webp"
+        imagesrcset="https://demetriosbride-bg.com/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled-480w.webp 480w, https://demetriosbride-bg.com/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled-960w.webp 960w, https://demetriosbride-bg.com/wp-content/uploads/2025/10/сватбени-рокли1500_2-scaled.webp 1500w"
+        imagesizes="(max-width: 720px) 100vw, (max-width: 1024px) 50vw, 55vw"
+        fetchpriority="high" />
 
   <!--
     Fonts, self-hosted.

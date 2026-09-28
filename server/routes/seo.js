@@ -1,42 +1,17 @@
 import { Router } from 'express';
-import Product from '../models/Product.js';
-import Article from '../models/Article.js';
 import Setting from '../models/Setting.js';
 
 const router = Router();
 
 const SITE_URL = process.env.SITE_URL || 'https://demetriosbride-bg.com';
 
-// Client-side blog posts (from src/blog_data.js) that aren't in MongoDB.
-// Keep in sync when adding new posts to blog_data.js.
-const CLIENT_BLOG_SLUGS = [
-  { slug: 'bulchinska-roklia-moment-ne-prosto-pokupka', date: '2026-03-06' },
-  { slug: 'bulchinska-vizia-stil-siluet-useshchane', date: '2026-03-06' },
-  { slug: 'svatben-den-tsyalostno-prezhivyavane', date: '2026-03-06' },
-  { slug: 'balna-roklia-spored-figurata', date: '2026-03-06' },
-  { slug: 'nameri-svoyata-roklia-areti', date: '2026-03-06' },
-  { slug: 'koi-e-demetrios', date: '2026-03-06' },
-  { slug: 'kak-da-izberete-bulchinska-roklia-sofia', date: '2026-06-01' },
-  { slug: 'bulchinski-rokli-tseni-2026', date: '2026-06-10' },
-  { slug: 'svatbeni-rokli-kak-da-namerite-perfektnata', date: '2026-06-10' },
-  { slug: 'bulchinska-roklia-silueti-narachnik', date: '2026-06-10' },
-  { slug: 'luksozni-bulchinski-rokli', date: '2026-06-10' },
-  { slug: 'bulchinski-rokli-sofia-svatben-salon', date: '2026-06-10' },
-  { slug: 'abiturientski-balni-rokli-sofia', date: '2026-07-02' },
-  { slug: 'svatbeni-rokli-sofia', date: '2026-07-20' },
-];
-
-function xmlEscape(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 //  NOTE — the canonical sitemap is the STATIC /sitemap.xml built at deploy time
 //  by scripts/generate-sitemap.mjs and served directly by Caddy. robots.txt
 //  below declares only that one.
 //
-//  The /api/sitemap*.xml endpoints here are kept for backwards compatibility
-//  but are no longer advertised, because:
+//  The /api/sitemap*.xml endpoints used to serve their own DB-driven XML,
+//  which was retired because:
 //    • they emitted <lastmod> = request time on every fetch, so every URL always
 //      looked "just modified" — Google learns to distrust lastmod entirely;
 //    • the storefront renders from src/data.js (not the DB), so a DB-driven
@@ -44,178 +19,14 @@ function xmlEscape(s) {
 //    • two overlapping sitemap sets are a conflicting signal.
 //  Declaring both was causing exactly that overlap. Keep one source of truth.
 // ─────────────────────────────────────────────────────────────────────────────
-router.get('/sitemap.xml', async (req, res) => {
-  try {
-    const doc = await Setting.findOne({ key: 'site' });
-    const settings = doc?.value || {};
-    if (settings.sitemap_enabled === false) {
-      return res.status(404).send('Sitemap disabled');
-    }
-
-    const products = await Product.find({}, 'ref updatedAt').lean();
-    const articles = await Article.find({ visible: true }, 'id date updatedAt').lean();
-
-    const staticPages = [
-      { loc: '/', priority: '1.0', changefreq: 'weekly' },
-      { loc: '/collection', priority: '0.9', changefreq: 'weekly' },
-      { loc: '/collection/demetrios',   priority: '0.85', changefreq: 'weekly' },
-      { loc: '/collection/cosmobella',  priority: '0.85', changefreq: 'weekly' },
-      { loc: '/collection/platinum',    priority: '0.85', changefreq: 'weekly' },
-      { loc: '/collection/destination', priority: '0.85', changefreq: 'weekly' },
-      { loc: '/collection/evening',     priority: '0.85', changefreq: 'weekly' },
-      { loc: '/collection/silueti/rusalka',   priority: '0.8', changefreq: 'weekly' },
-      { loc: '/collection/silueti/printsesa', priority: '0.8', changefreq: 'weekly' },
-      { loc: '/collection/silueti/a-siluet',  priority: '0.8', changefreq: 'weekly' },
-      { loc: '/collection/materii/dantela',   priority: '0.7', changefreq: 'monthly' },
-      { loc: '/collection/materii/tyul',      priority: '0.7', changefreq: 'monthly' },
-      { loc: '/collection/materii/saten',     priority: '0.7', changefreq: 'monthly' },
-      { loc: '/collection/materii/mikado',    priority: '0.7', changefreq: 'monthly' },
-      { loc: '/collection/2027',              priority: '0.8', changefreq: 'weekly' },
-      { loc: '/about', priority: '0.6', changefreq: 'monthly' },
-      { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
-      { loc: '/booking', priority: '0.8', changefreq: 'monthly' },
-      { loc: '/blog', priority: '0.7', changefreq: 'weekly' },
-      { loc: '/accessories', priority: '0.6', changefreq: 'monthly' },
-      { loc: '/demetrios', priority: '0.5', changefreq: 'monthly' },
-      { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
-      { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
-      { loc: '/cookies', priority: '0.3', changefreq: 'yearly' },
-    ];
-
-    const now = new Date().toISOString().split('T')[0];
-
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-`;
-    for (const p of staticPages) {
-      xml += `  <url>
-    <loc>${SITE_URL}${p.loc}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
-  </url>
-`;
-    }
-
-    for (const p of products) {
-      const mod = p.updatedAt ? new Date(p.updatedAt).toISOString().split('T')[0] : now;
-      xml += `  <url>
-    <loc>${SITE_URL}/product/${p.ref}</loc>
-    <lastmod>${mod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-`;
-    }
-
-    const clientSlugsSet = new Set(CLIENT_BLOG_SLUGS.map(b => b.slug));
-    const emittedBlogSlugs = new Set();
-    for (const a of articles) {
-      const blogPath = a.slug ? `/blog/${a.slug}` : null;
-      // Skip articles without slug (ObjectId URLs that likely 404)
-      // and articles whose slug is managed client-side (prefer CLIENT_BLOG_SLUGS dates)
-      if (!blogPath || clientSlugsSet.has(a.slug)) continue;
-      if (emittedBlogSlugs.has(a.slug)) continue;
-      emittedBlogSlugs.add(a.slug);
-      const mod = (a.updatedAt || a.date) ? new Date(a.updatedAt || a.date).toISOString().split('T')[0] : now;
-      xml += `  <url>
-    <loc>${SITE_URL}${blogPath}</loc>
-    <lastmod>${mod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-`;
-    }
-
-    for (const b of CLIENT_BLOG_SLUGS) {
-      xml += `  <url>
-    <loc>${SITE_URL}/blog/${b.slug}</loc>
-    <lastmod>${b.date}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-`;
-    }
-
-    xml += `</urlset>`;
-
-    res.set('Content-Type', 'application/xml');
-    res.set('Cache-Control', 'public, max-age=3600');
-    res.send(xml);
-  } catch (err) {
-    res.status(500).send('Error generating sitemap');
-  }
-});
-
-// ── Image Sitemap ──────────────────────────────────────────────────────────
-// Dedicated sitemap for Google Images — boosts image search discovery
-// for bridal products. Uses image:image extension per sitemaps.org spec.
-router.get('/sitemap-images.xml', async (req, res) => {
-  try {
-    const doc = await Setting.findOne({ key: 'site' });
-    const settings = doc?.value || {};
-    if (settings.sitemap_enabled === false) return res.status(404).send('Sitemap disabled');
-
-    const products = await Product.find({}, 'ref name_bg name_en img imgs collection').lean();
-    const now = new Date().toISOString().split('T')[0];
-
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-`;
-    for (const p of products) {
-      const allImgs = [...(p.imgs || []), p.img].filter(Boolean);
-      if (!allImgs.length) continue;
-      const title = p.name_bg || p.name_en || `Style ${p.ref}`;
-      xml += `  <url>
-    <loc>${xmlEscape(SITE_URL)}/product/${xmlEscape(p.ref)}</loc>
-    <lastmod>${now}</lastmod>
-`;
-      for (const imgUrl of allImgs) {
-        // Match the on-page <img src>: cdnImage() serves /wp-content/ JPEGs as
-        // WebP, so the sitemap must list the SAME .webp URL — otherwise Google
-        // Images sees a sitemap/page mismatch and suppresses indexing.
-        const webpUrl = imgUrl.startsWith('/wp-content/')
-          ? imgUrl.replace(/\.jpe?g$/i, '.webp')
-          : imgUrl;
-        const absUrl = webpUrl.startsWith('http') ? webpUrl : `${SITE_URL}${webpUrl}`;
-        xml += `    <image:image>
-      <image:loc>${xmlEscape(absUrl)}</image:loc>
-      <image:title>${xmlEscape(title)}</image:title>
-      <image:caption>${xmlEscape(`${title} — булчинска рокля Areti, Sofia`)}</image:caption>
-    </image:image>
-`;
-      }
-      xml += `  </url>\n`;
-    }
-    xml += `</urlset>`;
-
-    res.set('Content-Type', 'application/xml');
-    res.set('Cache-Control', 'public, max-age=3600');
-    res.send(xml);
-  } catch (err) {
-    res.status(500).send('Error generating image sitemap');
-  }
-});
-
-// ── Sitemap Index — points crawlers to both sitemaps ───────────────────────
-router.get('/sitemap-index.xml', async (req, res) => {
-  const now = new Date().toISOString();
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>${SITE_URL}/api/sitemap.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${SITE_URL}/api/sitemap-images.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-</sitemapindex>`;
-  res.set('Content-Type', 'application/xml');
-  res.set('Cache-Control', 'public, max-age=3600');
-  res.send(xml);
-});
+// The three legacy endpoints now answer 301 → the canonical file. They were
+// still serving a second, DB-driven sitemap with a different URL set (no /en
+// twins, no hreflang, a blog list frozen at 14 posts) — and SEO-CHECKLIST.md
+// told the client to submit exactly these to Search Console. Any old GSC
+// submission or cached fetch now lands on the real sitemap instead of a fork.
+router.get('/sitemap.xml',        (req, res) => res.redirect(301, '/sitemap.xml'));
+router.get('/sitemap-images.xml', (req, res) => res.redirect(301, '/sitemap.xml'));
+router.get('/sitemap-index.xml',  (req, res) => res.redirect(301, '/sitemap.xml'));
 
 router.get('/robots.txt', async (req, res) => {
   try {

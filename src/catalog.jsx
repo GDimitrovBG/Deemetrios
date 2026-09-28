@@ -1240,7 +1240,7 @@ function getRelatedDresses(current, count = 4) {
 // from all 111 dresses instead of only from the guide and the quiz.
 const SILHOUETTE_SLUG_BY_VALUE = { "Русалка": "rusalka", "Принцеса": "printsesa", "А-силует": "a-siluet" };
 
-function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct, goSilhouette }) {
+function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorite, goBooking, goProduct, goSilhouette, goMaterial }) {
   const t = i18n[lang];
   const [lightboxIdx, setLightboxIdx] = useState(null);
   const dress = DRESSES.find(d => d.ref === productRef) || DRESSES[0];
@@ -1273,7 +1273,13 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
     keywords: `булчинска рокля ${dress.ref}, ${dress.silhouette}, ${colData?.label || ''}, Demetrios, Арети София`,
     jsonLd: {
       "@graph": [
-        enhancedProductSchema(dress, lang),
+        // Product markup only where it can be VALID. Evening dresses have no
+        // published price, so their Offer carried availability but no price —
+        // and Search Console reported exactly those pages as the "14 invalid"
+        // rows under Merchant listings AND Product snippets (price is required
+        // in both). Markup that can never validate only accumulates errors, so
+        // evening pages ship breadcrumbs only; bridal keeps the priced schema.
+        ...(dress.collection === "evening" ? [] : [enhancedProductSchema(dress, lang)]),
         breadcrumbSchema([
           { name: "Арети",                         url: "/" },
           { name: isBg ? "Колекция" : "Collection", url: "/collection" },
@@ -1315,12 +1321,21 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
             <dl>
               {productSpecs.map((s) => {
                 const silSlug = s.label === (isBg ? "Силует" : "Silhouette") ? SILHOUETTE_SLUG_BY_VALUE[dress.silhouette] : null;
+                // The fabric row links its material hub the same way the
+                // silhouette row links its silhouette hub. The material pages
+                // sit in Search Console as "discovered — currently not
+                // indexed": their only inbound links were each other. Every
+                // product page linking its hub gives Google ~100 real paths in.
+                const matSlug = s.label === (isBg ? "Тъкан" : "Fabric")
+                  ? Object.keys(MATERIAL_MATCH).find(m => dressHasMaterial(dress, m))
+                  : null;
+                const hubHref = silSlug ? `/collection/silueti/${silSlug}` : matSlug ? `/collection/materii/${matSlug}` : null;
                 return (
                   <div className="spec-row" key={s.label}>
                     <dt>{s.label}</dt>
                     <dd>
-                      {silSlug
-                        ? <a href={withLang(`/collection/silueti/${silSlug}`, lang)} onClick={(e) => { e.preventDefault(); goSilhouette ? goSilhouette(silSlug) : setRoute("collection"); }} style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{s.value}</a>
+                      {hubHref
+                        ? <a href={withLang(hubHref, lang)} onClick={(e) => { e.preventDefault(); if (silSlug && goSilhouette) goSilhouette(silSlug); else if (matSlug && goMaterial) goMaterial(matSlug); else setRoute("collection"); }} style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{s.value}</a>
                         : s.value}
                     </dd>
                   </div>
