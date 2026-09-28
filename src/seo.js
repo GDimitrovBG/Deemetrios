@@ -207,12 +207,12 @@ export const REVIEW_RATING = 4.8;
 export const REVIEW_COUNT  = 266; // Google reviews — update when count changes
 
 /** Organization / LocalBusiness schema for the boutique */
-export function orgSchema() {
+export function orgSchema(lang = 'bg') {
   const schema = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
     "name": "Арети — Bridal Couture",
-    "alternateName": "Areti Wedding Salon",
+    "alternateName": lang === 'el' ? "Areti — Νυφικά Demetrios Σόφια" : "Areti Wedding Salon",
     "image": DEFAULT_IMG,
     "logo": { "@type": "ImageObject", "url": `${SITE_URL}/icons/icon-512.png`, "width": 512, "height": 512 },
     "url": SITE_URL,
@@ -236,11 +236,16 @@ export function orgSchema() {
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "10:00", "closes": "19:00" },
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "10:30", "closes": "18:00" },
     ],
-    "description": DEFAULT_DESC,
+    "description": lang === 'el'
+      ? "Επίσημος αντιπρόσωπος της Demetrios στη Βουλγαρία από το 1992. Αυθεντικά νυφικά στη Σόφια σε τιμές Βουλγαρίας — 1.000 έως 4.000 €. Εξυπηρέτηση στα ελληνικά, 3,5 ώρες από τη Θεσσαλονίκη."
+      : DEFAULT_DESC,
     "founder": "Арети",
     "foundingDate": "1992",
     "brand": { "@type": "Brand", "name": "Demetrios" },
-    "areaServed": { "@type": "Country", "name": "Bulgaria" },
+    // Greek brides cross the border for the prices, so the salon serves Greece too.
+    "areaServed": lang === 'el'
+      ? [{ "@type": "Country", "name": "Bulgaria" }, { "@type": "Country", "name": "Greece" }]
+      : { "@type": "Country", "name": "Bulgaria" },
     "sameAs": [
       "https://www.facebook.com/areti.bg/",
       "https://www.instagram.com/aretiweddingsalon/",
@@ -252,7 +257,9 @@ export function orgSchema() {
       "cssSelector": ["h1", ".lede", ".org-desc"],
     },
     "hasMap": "https://maps.google.com/?q=ул.+Крум+Попов+63,+Лозенец,+София",
-    "knowsAbout": ["Булчински рокли", "Demetrios", "Сватбени рокли", "Вечерни рокли", "Bridal couture"],
+    "knowsAbout": lang === 'el'
+      ? ["Νυφικά Βουλγαρία", "Νυφικά Σόφια", "Demetrios", "Νυφικά φορέματα", "Bridal couture"]
+      : ["Булчински рокли", "Demetrios", "Сватбени рокли", "Вечерни рокли", "Bridal couture"],
     "slogan": "Официален представител на Demetrios в България от 1992 г.",
   };
   if (REVIEW_COUNT > 0) {

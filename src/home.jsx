@@ -461,7 +461,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       en: "wedding dresses Sofia, bridal Bulgaria, Demetrios, Areti",
       el: "νυφικά Σόφια, νυφικά Βουλγαρία, Demetrios, τιμές νυφικών, Areti",
     }[lang],
-    jsonLd: { "@graph": [orgSchema(), websiteSchema()] },
+    jsonLd: { "@graph": [orgSchema(lang), websiteSchema()] },
     jsonLdId: "home",
   });
   return (
@@ -473,8 +473,39 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       <PriceRangesSection t={t} lang={lang} setRoute={setRoute} />
       <ServicesSection t={t} lang={lang} />
       <ReviewsSection t={t} />
+      {lang === "el" && <GreekSeoSection setRoute={setRoute} />}
       <CtaBand t={t} setRoute={setRoute} lang={lang} />
     </div>
+  );
+}
+
+// Greek-market SEO block, rendered only on /el/. Targets the exact queries
+// Greek brides use — "Νυφικά Βουλγαρία" and "Νυφικά Σόφια" — which competitors
+// already rank for. Real, crawlable copy with internal links into the Greek
+// section, not keyword stuffing.
+function GreekSeoSection({ setRoute }) {
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "64px 24px" }}>
+      <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 16 }}>— Για νύφες από την Ελλάδα</div>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(26px,3.6vw,38px)", fontWeight: 400, margin: "0 0 16px", textWrap: "balance" }}>
+        Νυφικά Βουλγαρία — γιατί οι νύφες από την Ελλάδα επιλέγουν τη Σόφια
+      </h2>
+      <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--ink-soft)", maxWidth: "64ch", marginBottom: 14 }}>
+        Όλο και περισσότερες νύφες αναζητούν <strong>νυφικά Βουλγαρία</strong> και <strong>νυφικά Σόφια</strong>, γιατί
+        τα ίδια αυθεντικά σχέδια Demetrios κοστίζουν σημαντικά λιγότερο από ό,τι στην Ελλάδα. Στην Areti — επίσημος
+        αντιπρόσωπος της Demetrios στη Βουλγαρία από το 1992 — θα βρείτε πάνω από 100 μοντέλα σε τιμές από 1.000 έως 4.000 €,
+        με εξυπηρέτηση στα ελληνικά.
+      </p>
+      <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--ink-soft)", maxWidth: "64ch", marginBottom: 24 }}>
+        Η Σόφια απέχει περίπου 3,5 ώρες οδικώς από τη Θεσσαλονίκη. Πολλές νύφες συνδυάζουν την πρόβα με ένα σαββατοκύριακο
+        στην πόλη — και φεύγουν με ένα αυθεντικό νυφικό Demetrios και τις προσαρμογές να γίνονται στο δικό μας ατελιέ.
+      </p>
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap", fontSize: 14 }}>
+        <a href="/el/collection" onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 3 }}>Δείτε τη συλλογή →</a>
+        <a href="/el/times/" style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 3 }}>Τιμές νυφικών →</a>
+        <a href="/el/odigos/" style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 3 }}>Οδηγός για νύφες από την Ελλάδα →</a>
+      </div>
+    </section>
   );
 }
 
