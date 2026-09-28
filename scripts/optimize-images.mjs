@@ -72,13 +72,19 @@ if (!dir) {
 // (see cdn.js) — those are the files that actually reach visitors, so they
 // are the ones worth shrinking.
 const EXT = /\.(jpe?g|png|webp)$/i;
+// Files this script itself wrote on a previous run. They must never be
+// treated as sources: the 2026-09-28 rerun optimised every "-480w.webp" as if
+// it were an original, wrote "-960w-480w.webp"-style variants OF variants,
+// and keyed the manifest by the variant paths — so srcsetFor() found no
+// original and every srcset on the site silently disappeared.
+const VARIANT_FILE = /-(?:480|960|1440)w\.(?:jpe?g|png|webp)$/i;
 let scanned = 0, changed = 0, beforeBytes = 0, afterBytes = 0, skipped = 0, errors = 0;
 
 async function walk(d) {
   for (const entry of await fs.readdir(d, { withFileTypes: true })) {
     const full = path.join(d, entry.name);
     if (entry.isDirectory()) await walk(full);
-    else if (EXT.test(entry.name)) await optimize(full);
+    else if (EXT.test(entry.name) && !VARIANT_FILE.test(entry.name)) await optimize(full);
   }
 }
 
@@ -103,20 +109,25 @@ async function optimize(file) {
 
     const buf = await pipe.toBuffer();
 
-    // Only keep it if we actually saved something meaningful (>3%).
-    if (buf.length >= before * 0.97) { skipped++; return; }
-
-    beforeBytes += before; afterBytes += buf.length; changed++;
-    const pct = Math.round((1 - buf.length / before) * 100);
-    console.log(`  ${tooWide ? 'resize+' : ''}recompress  -${pct}%  ${kb(before)}→${kb(buf.length)}  ${path.basename(file)}`);
-
-    if (!DRY) {
-      const tmp = file + '.tmp';
-      await fs.writeFile(tmp, buf);
-      await fs.rename(tmp, file);
+    // Only keep the recompressed copy if it actually saved something (>3%) —
+    // but variants are NOT gated on that. The manifest is rebuilt from scratch
+    // every run, so an already-optimised original (no further saving) must
+    // still get its variants recorded, or a rerun silently drops every srcset.
+    const saved = buf.length < before * 0.97;
+    if (saved) {
+      beforeBytes += before; afterBytes += buf.length; changed++;
+      const pct = Math.round((1 - buf.length / before) * 100);
+      console.log(`  ${tooWide ? 'resize+' : ''}recompress  -${pct}%  ${kb(before)}→${kb(buf.length)}  ${path.basename(file)}`);
+      if (!DRY) {
+        const tmp = file + '.tmp';
+        await fs.writeFile(tmp, buf);
+        await fs.rename(tmp, file);
+      }
+    } else {
+      skipped++;
     }
 
-    if (VARIANTS) await writeVariants(file, buf, meta.width || 0);
+    if (VARIANTS) await writeVariants(file, saved ? buf : await fs.readFile(file), meta.width || 0);
   } catch (e) {
     errors++;
     console.error(`  ! error: ${path.basename(file)} — ${e.message}`);
@@ -142,6 +153,10 @@ async function writeVariants(file, sourceBuf, sourceWidth) {
     if (sourceWidth && w >= sourceWidth) continue;   // never upscale
     const out = `${stem}-${w}w${ext}`;
     try {
+      // A variant that already exists is only recorded, not re-encoded —
+      // reruns before every deploy stay fast and don't churn 780+ files.
+      const existing = await fs.stat(out).catch(() => null);
+      if (existing && existing.size > 0) { made.push(w); continue; }
       const buf = await sharp(sourceBuf, { failOn: 'none' })
         .resize({ width: w, withoutEnlargement: true })
         .webp({ quality: QUALITY })
