@@ -157,6 +157,9 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
             <div className="lang-toggle">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}><span>BG</span></button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}><span>EN</span></button>
+              {/* Greek is a static landing (public/el/), not an SPA locale —
+                  a real link that leaves the app, not a setLang toggle. */}
+              <a href="/el/"><span>ΕΛ</span></a>
             </div>
           </div>
         </div>
@@ -221,6 +224,7 @@ function Nav({ route, setRoute, lang, setLang, transparent, goCollection, favori
             <div className="m-lang">
               <button className={lang === "bg" ? "active" : ""} onClick={() => setLang("bg")}>BG</button>
               <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}>EN</button>
+              <a href="/el/">ΕΛ</a>
             </div>
           </div>
         </div>
