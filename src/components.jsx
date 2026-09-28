@@ -308,7 +308,13 @@ function Footer({ lang, setRoute, goCollection }) {
         </div>
         <div className="bottom">
           <span>{t.copyright}</span>
-          <span>{t.lang_marker}</span>
+          <span>
+            {t.lang_marker}
+            {/* Crawlable path into the Greek landing (public/el/) — hreflang
+                alone lives only on the home pages; this link is site-wide. */}
+            {" · "}
+            <a href="/el/" style={{ color: "inherit" }}>Ελληνικά</a>
+          </span>
           <button
             onClick={() => setRoute("admin")}
             style={{ background:"none", border:"none", cursor:"default", color:"transparent", fontSize:"inherit", padding:"0 4px", userSelect:"none", opacity:0 }}

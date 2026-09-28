@@ -61,6 +61,9 @@ function setHreflangs(alternates) {
   };
   if (alternates.bg) add('bg', alternates.bg);
   if (alternates.en) add('en', alternates.en);
+  // The Greek landing (/el/, a static page in public/) exists only for the
+  // home cluster — hreflang must be reciprocal or Google drops the set.
+  if (alternates.el) add('el', alternates.el);
   // Bulgarian is the default/fallback locale for everyone else.
   if (alternates.bg) add('x-default', alternates.bg);
 }
@@ -143,7 +146,8 @@ export function useSeo({
     // Suppressed on noindex pages, which have nothing to cluster.
     const finalAlternates = alternates !== null ? alternates
       : (bgOnly || noindex) ? null
-      : { bg: bgPath, en: enPath };
+      // The home pages also point at the Greek landing (/el/ has only a home).
+      : { bg: bgPath, en: enPath, ...(bgPath === '/' ? { el: '/el/' } : {}) };
     const finalLocale = lang === 'en' ? 'en_US' : DEFAULT_LOCALE;
 
     document.title = finalTitle;

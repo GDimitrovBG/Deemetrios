@@ -89,6 +89,9 @@ function urlBlock(loc, meta, def, images = [], bgPath = null) {
     altXml =
       `\n    <xhtml:link rel="alternate" hreflang="bg" href="${bgUrl}"/>` +
       `\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>` +
+      // The Greek landing exists only as a home (/el/, static page in
+      // public/el/) — it joins the home cluster and no other.
+      (bgPath === '/' ? `\n    <xhtml:link rel="alternate" hreflang="el" href="${SITE}/el/"/>` : '') +
       `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${bgUrl}"/>`;
   }
   return `  <url>
@@ -123,6 +126,10 @@ async function run() {
 
   // --- Static pages -------------------------------------------------------
   pair('/', { lastmod: today, changefreq: 'weekly', priority: '1.0' });
+  // Greek landing — a single static page (public/el/index.html) in the home
+  // hreflang cluster. urlBlock's bgPath='/' emits the same bg/en/el set the
+  // BG and EN homes carry, keeping the cluster reciprocal.
+  out.push(urlBlock(`${SITE}/el/`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, [], '/'));
   pair('/collection', { lastmod: today, changefreq: 'weekly', priority: '0.9' });
   for (const id of COLLECTION_IDS) {
     pair(`/collection/${id}`, { lastmod: today, changefreq: 'weekly', priority: '0.8' });
