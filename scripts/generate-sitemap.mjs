@@ -130,6 +130,10 @@ async function run() {
   // hreflang cluster. urlBlock's bgPath='/' emits the same bg/en/el set the
   // BG and EN homes carry, keeping the cluster reciprocal.
   out.push(urlBlock(`${SITE}/el/`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, [], '/'));
+  // Greek-only support pages (prices, the travel guide) — no hreflang
+  // cluster, they exist in one language.
+  out.push(urlBlock(`${SITE}/el/times/`,  meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }));
+  out.push(urlBlock(`${SITE}/el/odigos/`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }));
   pair('/collection', { lastmod: today, changefreq: 'weekly', priority: '0.9' });
   for (const id of COLLECTION_IDS) {
     pair(`/collection/${id}`, { lastmod: today, changefreq: 'weekly', priority: '0.8' });

@@ -31,6 +31,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/"/>
   </url>
   <url>
+    <loc>https://demetriosbride-bg.com/el/times/</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://demetriosbride-bg.com/el/odigos/</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://demetriosbride-bg.com/collection</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
