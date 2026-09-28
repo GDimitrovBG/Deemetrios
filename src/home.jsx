@@ -445,7 +445,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
     // the reason Greek brides cross the border in the first place.
     title: {
       bg: "Булчински рокли София — салон Арети, Demetrios от 1992 г.",
-      en: "Wedding Dresses Sofia — Areti, Demetrios Bridal Salon since 1992",
+      en: "Wedding Dresses Sofia, Bulgaria — Areti · Demetrios since 1992",
       el: "Νυφικά Demetrios στη Σόφια σε τιμές Βουλγαρίας | Areti",
     }[lang],
     description: {
@@ -458,7 +458,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
     lang,
     keywords: {
       bg: "булчински рокли, сватбени рокли, Demetrios, София, Арети",
-      en: "wedding dresses Sofia, bridal Bulgaria, Demetrios, Areti",
+      en: "wedding dresses Bulgaria, wedding dresses Sofia, bridal shop Sofia, Demetrios Bulgaria, buy wedding dress Bulgaria",
       el: "νυφικά Σόφια, νυφικά Βουλγαρία, Demetrios, τιμές νυφικών, Areti",
     }[lang],
     jsonLd: { "@graph": [orgSchema(lang), websiteSchema()] },
@@ -474,8 +474,39 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
       <ServicesSection t={t} lang={lang} />
       <ReviewsSection t={t} />
       {lang === "el" && <GreekSeoSection setRoute={setRoute} />}
+      {lang === "en" && <EnglishSeoSection setRoute={setRoute} />}
       <CtaBand t={t} setRoute={setRoute} lang={lang} />
     </div>
+  );
+}
+
+// English-market SEO block, rendered only on /en/. Targets the queries
+// international and destination-wedding brides use — "wedding dresses Bulgaria",
+// "wedding dresses Sofia", "buy a wedding dress in Bulgaria" — with real,
+// crawlable copy and internal links, not keyword stuffing.
+function EnglishSeoSection({ setRoute }) {
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "64px 24px" }}>
+      <div className="t-eyebrow" style={{ color: "var(--champagne)", marginBottom: 16 }}>— For international brides</div>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(26px,3.6vw,38px)", fontWeight: 400, margin: "0 0 16px", textWrap: "balance" }}>
+        Wedding dresses in Bulgaria — authentic Demetrios in Sofia
+      </h2>
+      <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--ink-soft)", maxWidth: "64ch", marginBottom: 14 }}>
+        Brides searching for <strong>wedding dresses in Bulgaria</strong> and <strong>wedding dresses in Sofia</strong> choose
+        Areti because the same original Demetrios designs cost far less here than in Western Europe. As the official Demetrios
+        representative in Bulgaria since 1992, we carry over 100 gowns in Sofia, priced from €1,000 to €4,000, with alterations
+        done in our own atelier.
+      </p>
+      <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--ink-soft)", maxWidth: "64ch", marginBottom: 24 }}>
+        Whether you live in Bulgaria, are planning a destination wedding, or are travelling from abroad to buy your gown, our
+        team welcomes you in English by appointment. Every dress is an authentic Demetrios, delivered directly from the brand.
+      </p>
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap", fontSize: 14 }}>
+        <a href="/en/collection" onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 3 }}>Browse the collection →</a>
+        <a href="/en/booking" onClick={(e) => { e.preventDefault(); setRoute("booking"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 3 }}>Book a fitting →</a>
+        <a href="/en/demetrios" onClick={(e) => { e.preventDefault(); setRoute("demetrios"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 3 }}>About Demetrios →</a>
+      </div>
+    </section>
   );
 }
 

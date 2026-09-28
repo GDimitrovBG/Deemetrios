@@ -236,9 +236,12 @@ export function orgSchema(lang = 'bg') {
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "10:00", "closes": "19:00" },
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "10:30", "closes": "18:00" },
     ],
-    "description": lang === 'el'
-      ? "Επίσημος αντιπρόσωπος της Demetrios στη Βουλγαρία από το 1992. Αυθεντικά νυφικά στη Σόφια σε τιμές Βουλγαρίας — 1.000 έως 4.000 €. Εξυπηρέτηση στα ελληνικά, 3,5 ώρες από τη Θεσσαλονίκη."
-      : DEFAULT_DESC,
+    "description":
+      lang === 'el'
+        ? "Επίσημος αντιπρόσωπος της Demetrios στη Βουλγαρία από το 1992. Αυθεντικά νυφικά στη Σόφια σε τιμές Βουλγαρίας — 1.000 έως 4.000 €. Εξυπηρέτηση στα ελληνικά, 3,5 ώρες από τη Θεσσαλονίκη."
+      : lang === 'en'
+        ? "Official Demetrios representative in Bulgaria since 1992. Authentic wedding dresses in Sofia, priced €1,000 to €4,000 — over 100 gowns, consultation and free alterations. Book a fitting."
+        : DEFAULT_DESC,
     "founder": "Арети",
     "foundingDate": "1992",
     "brand": { "@type": "Brand", "name": "Demetrios" },
@@ -257,9 +260,12 @@ export function orgSchema(lang = 'bg') {
       "cssSelector": ["h1", ".lede", ".org-desc"],
     },
     "hasMap": "https://maps.google.com/?q=ул.+Крум+Попов+63,+Лозенец,+София",
-    "knowsAbout": lang === 'el'
-      ? ["Νυφικά Βουλγαρία", "Νυφικά Σόφια", "Demetrios", "Νυφικά φορέματα", "Bridal couture"]
-      : ["Булчински рокли", "Demetrios", "Сватбени рокли", "Вечерни рокли", "Bridal couture"],
+    "knowsAbout":
+      lang === 'el'
+        ? ["Νυφικά Βουλγαρία", "Νυφικά Σόφια", "Demetrios", "Νυφικά φορέματα", "Bridal couture"]
+      : lang === 'en'
+        ? ["Wedding dresses Bulgaria", "Wedding dresses Sofia", "Demetrios", "Bridal gowns", "Bridal couture"]
+        : ["Булчински рокли", "Demetrios", "Сватбени рокли", "Вечерни рокли", "Bridal couture"],
     "slogan": "Официален представител на Demetrios в България от 1992 г.",
   };
   if (REVIEW_COUNT > 0) {
