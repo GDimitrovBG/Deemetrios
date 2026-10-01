@@ -25,7 +25,7 @@ const OUT = path.join(ROOT, 'public', 'sitemap.xml');
 const COLLECTION_IDS = ['cosmobella', 'demetrios', 'platinum', 'destination', 'evening'];
 const SILHOUETTE_IDS = ['rusalka', 'printsesa', 'a-siluet'];
 const MATERIAL_IDS = ['dantela', 'tyul', 'saten', 'mikado'];
-const CITY_IDS = ['varna', 'plovdiv'];
+const CITY_IDS = ['varna', 'plovdiv', 'burgas'];
 
 // XML-escape text for use inside a tag.
 const esc = (s) => String(s ?? '')

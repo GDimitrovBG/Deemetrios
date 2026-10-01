@@ -55,6 +55,7 @@ async function loadRoutes() {
     // City landing pages are BG + EN only (see elRoutes filter below).
     '/collection/gradove/varna',
     '/collection/gradove/plovdiv',
+    '/collection/gradove/burgas',
     '/collection/2027',
     '/kviz',
     // Reachable from the nav heart and the mobile menu, and deliberately kept

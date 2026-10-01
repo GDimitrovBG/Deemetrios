@@ -190,7 +190,7 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette, goMaterial, goCity
       {isBg && (
         <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 40 }}>
           Идвате от друг град?{" "}
-          {[["varna", "булки от Варна"], ["plovdiv", "булки от Пловдив"]].map(([slug, label], i, arr) => (
+          {[["varna", "булки от Варна"], ["plovdiv", "булки от Пловдив"], ["burgas", "булки от Бургас"]].map(([slug, label], i, arr) => (
             <span key={slug}>
               <a href={withLang(`/collection/gradove/${slug}`, lang)} onClick={(e) => { e.preventDefault(); goCity && goCity(slug); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>{label}</a>{i < arr.length - 1 ? " · " : ""}
             </span>
@@ -725,6 +725,26 @@ const CITY_PAGES = {
       { q: "How far is the Sofia salon from Plovdiv?", a: "About 150 km, or an hour and a half by car on the Trakia motorway. Most Plovdiv brides come for the day — selection in the morning, a fitting and consultation, and back." },
       { q: "How many visits do I need if I'm from Plovdiv?", a: "Usually 2–3: selection and measurements, a fitting after alterations, and collection. Thanks to the short distance, most Plovdiv brides manage comfortably with day trips." },
       { q: "Do you do the alterations on site?", a: "Yes — all alterations (length, taking in, straps, neckline) are done in our Sofia atelier, by the same seamstress who works on the bridal gowns. No need to find a tailor in Plovdiv." },
+    ],
+  },
+  burgas: {
+    bg: "Бургас", en: "Burgas",
+    h1_bg: "Булчински рокли Бургас", h1_en: "Wedding Dresses for Burgas Brides",
+    intro_bg: "Булките от Бургас и Южното Черноморие все по-често идват в София за роклята си — заради достъпа до пълните оригинални колекции Demetrios, Cosmobella и Platinum на едно място. Салон Арети е официалният представител на Demetrios за България, в кв. Лозенец. Пътуването си заслужава: избор от над 100 модела, лична консултация със стилист и корекции в собственото ни ателие.",
+    intro_en: "Brides from Burgas and the southern Black Sea coast increasingly come to Sofia for their gown — for access to the full original Demetrios, Cosmobella and Platinum collections in one place. Areti is the official Demetrios representative for Bulgaria, in the Lozenets district. The trip is worth it: a choice of 100+ styles, a personal stylist consultation and alterations in our own atelier.",
+    meta_bg: "Булчински рокли за булки от Бургас — оригинални Demetrios в салон Арети, София. Над 100 модела, цени от 1 000 €. Как протича пробата, ако сте от Бургас.",
+    meta_en: "Wedding dresses for brides from Burgas — original Demetrios at Areti, Sofia. 100+ styles from €1,000. How a fitting works when you travel from Burgas.",
+    distance_bg: "около 390 км (4 ч. с кола)",
+    distance_en: "about 390 km (4 h by car)",
+    faq_bg: [
+      { q: "Струва ли си да пътувам от Бургас до София за булчинска рокля?", a: "За повечето наши клиентки от Бургас — да. В София имате пълните оригинални колекции Demetrios, Cosmobella и Platinum на едно място, с лична проба и корекции на място. Препоръчваме да планирате 2–3 посещения за целия процес." },
+      { q: "Колко посещения са нужни, ако съм от Бургас?", a: "Обикновено 2–3: първо за избор и премерване, второ за проба след корекциите и трето за финалното взимане. Много булки от Бургас комбинират първите две в един уикенд." },
+      { q: "Може ли да поръчам рокля, без да идвам всеки път?", a: "Избор и първо премерване правим на място — за да сме сигурни в размера и силуета. След това координираме корекциите така, че да идвате възможно най-малко пъти. Свържете се с нас, за да уточним график според разстоянието." },
+    ],
+    faq_en: [
+      { q: "Is it worth travelling from Burgas to Sofia for a wedding dress?", a: "For most of our Burgas clients — yes. In Sofia you get the full original Demetrios, Cosmobella and Platinum collections in one place, with a personal fitting and on-site alterations. We suggest planning 2–3 visits for the whole process." },
+      { q: "How many visits do I need if I'm from Burgas?", a: "Usually 2–3: first for selection and measurements, second for a fitting after alterations, third to collect. Many Burgas brides combine the first two into one weekend." },
+      { q: "Can I order a dress without coming every time?", a: "Selection and the first measurement are done in person — so we're sure of the size and silhouette. After that we coordinate the alterations to minimise your trips. Contact us to plan a schedule that fits the distance." },
     ],
   },
 };

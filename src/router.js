@@ -78,7 +78,7 @@ const MATERIAL_IDS = ['dantela','tyul','saten','mikado'];
 // City landing pages — /collection/gradove/<slug>. BG + EN only (Greek brides
 // don't search Bulgarian city names). Slugs kept in sync with CITY_PAGES in
 // catalog.jsx.
-const CITY_IDS = ['varna','plovdiv'];
+const CITY_IDS = ['varna','plovdiv','burgas'];
 
 function normalize(pathname) {
   let p = pathname || '/';
