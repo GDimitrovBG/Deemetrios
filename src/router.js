@@ -75,6 +75,10 @@ const SILHOUETTE_IDS = ['rusalka','printsesa','a-siluet'];
 // Material landing pages — /collection/materii/<slug>. Slugs kept in sync
 // with MATERIAL_PAGES in catalog.jsx.
 const MATERIAL_IDS = ['dantela','tyul','saten','mikado'];
+// City landing pages — /collection/gradove/<slug>. BG + EN only (Greek brides
+// don't search Bulgarian city names). Slugs kept in sync with CITY_PAGES in
+// catalog.jsx.
+const CITY_IDS = ['varna','plovdiv'];
 
 function normalize(pathname) {
   let p = pathname || '/';
@@ -180,6 +184,12 @@ function pathToStateInner(pathname) {
   }
   if (p === '/collection/materii') return { redirect: '/collection' };
 
+  const cityMatch = p.match(/^\/collection\/gradove\/([a-z-]+)$/);
+  if (cityMatch && CITY_IDS.includes(cityMatch[1])) {
+    return { route: 'collection', collectionId: null, cityId: cityMatch[1] };
+  }
+  if (p === '/collection/gradove') return { redirect: '/collection' };
+
   // Season landing page rides in the collectionId slot — see SEASON_ID in catalog.jsx.
   if (p === '/collection/2027') return { route: 'collection', collectionId: '2027' };
 
@@ -243,18 +253,19 @@ function pathToStateInner(pathname) {
   return { route: 'not-found' };
 }
 
-export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId, materialId, lang = 'bg' }) {
-  const path = stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId, materialId });
+export function stateToPath({ route, collectionId, productRef, blogPostId, silhouetteId, materialId, cityId, lang = 'bg' }) {
+  const path = stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId, materialId, cityId });
   // Untranslated posts never take a locale prefix; everything else localizes.
   return NOT_IN_LANG(route, blogPostId, lang) ? path : withLang(path, lang);
 }
 
-function stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId, materialId }) {
+function stateToPathInner({ route, collectionId, productRef, blogPostId, silhouetteId, materialId, cityId }) {
   switch (route) {
     case 'home':        return '/';
     case 'collection':
       if (silhouetteId) return `/collection/silueti/${silhouetteId}`;
       if (materialId) return `/collection/materii/${materialId}`;
+      if (cityId) return `/collection/gradove/${cityId}`;
       return collectionId ? `/collection/${collectionId}` : '/collection';
     case 'product':     return productRef ? `/product/${productRef}` : '/collection';
     case 'quiz':        return '/kviz';

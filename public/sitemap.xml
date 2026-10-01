@@ -433,6 +433,42 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/collection/materii/mikado"/>
   </url>
   <url>
+    <loc>https://demetriosbride-bg.com/collection/gradove/varna</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://demetriosbride-bg.com/collection/gradove/varna"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://demetriosbride-bg.com/en/collection/gradove/varna"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/collection/gradove/varna"/>
+  </url>
+  <url>
+    <loc>https://demetriosbride-bg.com/en/collection/gradove/varna</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://demetriosbride-bg.com/collection/gradove/varna"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://demetriosbride-bg.com/en/collection/gradove/varna"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/collection/gradove/varna"/>
+  </url>
+  <url>
+    <loc>https://demetriosbride-bg.com/collection/gradove/plovdiv</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://demetriosbride-bg.com/collection/gradove/plovdiv"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://demetriosbride-bg.com/en/collection/gradove/plovdiv"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/collection/gradove/plovdiv"/>
+  </url>
+  <url>
+    <loc>https://demetriosbride-bg.com/en/collection/gradove/plovdiv</loc>
+    <lastmod>2026-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="bg" href="https://demetriosbride-bg.com/collection/gradove/plovdiv"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://demetriosbride-bg.com/en/collection/gradove/plovdiv"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://demetriosbride-bg.com/collection/gradove/plovdiv"/>
+  </url>
+  <url>
     <loc>https://demetriosbride-bg.com/collection/2027</loc>
     <lastmod>2026-09-13</lastmod>
     <changefreq>weekly</changefreq>
