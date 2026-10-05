@@ -110,6 +110,7 @@ export default function App() {
   const [activeCollection, setActiveCollection] = useState(initialState.collectionId || null);
   const [activeSilhouette, setActiveSilhouette] = useState(initialState.silhouetteId || null);
   const [activeMaterial, setActiveMaterial] = useState(initialState.materialId || null);
+  const [activeCity, setActiveCity] = useState(initialState.cityId || null);
   const [activeProduct, setActiveProduct] = useState(initialState.productRef || null);
   const [activeBlogPost, setActiveBlogPost] = useState(initialState.blogPostId || null);
   const [favorites, setFavorites] = useState(readFavorites);
@@ -120,11 +121,11 @@ export default function App() {
   useEffect(() => {
     if (firstSync.current) { firstSync.current = false; return; }
     if (route === "admin" || route === "not-found") return;
-    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost, silhouetteId: activeSilhouette, materialId: activeMaterial, lang });
+    const path = stateToPath({ route, collectionId: activeCollection, productRef: activeProduct, blogPostId: activeBlogPost, silhouetteId: activeSilhouette, materialId: activeMaterial, cityId: activeCity, lang });
     if (window.location.pathname !== path) {
       window.history.pushState({}, "", path);
     }
-  }, [route, activeCollection, activeSilhouette, activeMaterial, activeProduct, activeBlogPost, lang]);
+  }, [route, activeCollection, activeSilhouette, activeMaterial, activeCity, activeProduct, activeBlogPost, lang]);
 
   // Sync URL → state on back/forward
   useEffect(() => {
@@ -142,6 +143,7 @@ export default function App() {
           setActiveCollection(next.collectionId || null);
           setActiveSilhouette(next.silhouetteId || null);
           setActiveMaterial(next.materialId || null);
+          setActiveCity(next.cityId || null);
           setActiveProduct(next.productRef || null);
           setActiveBlogPost(next.blogPostId || null);
         }
@@ -151,6 +153,7 @@ export default function App() {
         setActiveCollection(s.collectionId || null);
         setActiveSilhouette(s.silhouetteId || null);
         setActiveMaterial(s.materialId || null);
+        setActiveCity(s.cityId || null);
         setActiveProduct(s.productRef || null);
         setActiveBlogPost(s.blogPostId || null);
       }
@@ -174,12 +177,14 @@ export default function App() {
     setActiveCollection(id);
     setActiveSilhouette(null);
     setActiveMaterial(null);
+    setActiveCity(null);
     setRoute("collection");
   };
 
   const goSilhouette = (id) => {
     setActiveCollection(null);
     setActiveMaterial(null);
+    setActiveCity(null);
     setActiveSilhouette(id);
     setRoute("collection");
   };
@@ -187,7 +192,16 @@ export default function App() {
   const goMaterial = (id) => {
     setActiveCollection(null);
     setActiveSilhouette(null);
+    setActiveCity(null);
     setActiveMaterial(id);
+    setRoute("collection");
+  };
+
+  const goCity = (id) => {
+    setActiveCollection(null);
+    setActiveSilhouette(null);
+    setActiveMaterial(null);
+    setActiveCity(id);
     setRoute("collection");
   };
 
@@ -212,7 +226,7 @@ export default function App() {
   const Page = pageFor(route);
   let page = null;
   switch (route) {
-    case "collection": page = <Page lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} initMaterial={activeMaterial} goSilhouette={goSilhouette} goMaterial={goMaterial} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
+    case "collection": page = <Page lang={lang} setRoute={setRoute} initCollection={activeCollection} initSilhouette={activeSilhouette} initMaterial={activeMaterial} initCity={activeCity} goSilhouette={goSilhouette} goMaterial={goMaterial} goCity={goCity} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />; break;
     case "product": page = <Page lang={lang} setRoute={setRoute} productRef={activeProduct} favorites={favorites} toggleFavorite={toggleFavorite} goBooking={goBooking} goProduct={goProduct} goSilhouette={goSilhouette} goMaterial={goMaterial} />; break;
     case "booking": page = <Page lang={lang} setRoute={setRoute} dress={bookingDress} />; break;
     case "quiz": page = <Page lang={lang} setRoute={setRoute} goProduct={goProduct} goSilhouette={goSilhouette} favorites={favorites} toggleFavorite={toggleFavorite} />; break;

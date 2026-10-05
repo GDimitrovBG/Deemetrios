@@ -116,7 +116,7 @@ const SILHOUETTE_INFO = {
 // Guide silhouette keys → landing-page slugs (only the 3 with real stock).
 const GUIDE_KEY_TO_SLUG = { aline: "a-siluet", mermaid: "rusalka", ballgown: "printsesa" };
 
-function CollectionSeoContent({ lang, setRoute, goSilhouette, goMaterial }) {
+function CollectionSeoContent({ lang, setRoute, goSilhouette, goMaterial, goCity }) {
   const isBg = lang === "bg";
   const faq = COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg;
   const sil = SILHOUETTE_INFO[lang] || SILHOUETTE_INFO.bg;
@@ -184,6 +184,20 @@ function CollectionSeoContent({ lang, setRoute, goSilhouette, goMaterial }) {
           </span>
         ))}
       </p>
+
+      {/* City landing pages — Varna & Plovdiv are the biggest markets after
+          Sofia (GA4). Entry point + internal links into the city pages. */}
+      {isBg && (
+        <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 40 }}>
+          Идвате от друг град?{" "}
+          {[["varna", "булки от Варна"], ["plovdiv", "булки от Пловдив"], ["burgas", "булки от Бургас"]].map(([slug, label], i, arr) => (
+            <span key={slug}>
+              <a href={withLang(`/collection/gradove/${slug}`, lang)} onClick={(e) => { e.preventDefault(); goCity && goCity(slug); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>{label}</a>{i < arr.length - 1 ? " · " : ""}
+            </span>
+          ))}
+          {" "}— вижте как протича изборът и пробата.
+        </p>
+      )}
 
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
         {isBg ? "Цени на булчинските рокли" : "Wedding dress prices"}
@@ -681,7 +695,139 @@ function MaterialSeo({ lang, setRoute, goMaterial, slug, count }) {
   );
 }
 
-function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, initMaterial = null, goSilhouette, goMaterial, favorites = [], toggleFavorite, goProduct }) {
+// -----------------------------------------------------------------------------
+//  City landing pages — /collection/gradove/<slug>. Target "булчински рокли
+//  <град>" queries. GA4 shows Varna (13%) and Plovdiv (10%) are the biggest
+//  markets after Sofia; those brides travel to the Sofia salon, so the page's
+//  job is to rank for the city query AND answer "is it worth the trip / how
+//  does it work from out of town". BG + EN only (Greek brides don't search
+//  Bulgarian city names). A city page shows the full collection — the unique
+//  value is the travel/logistics copy, not a filtered grid.
+//  Slugs kept in sync with CITY_IDS in router.js.
+// -----------------------------------------------------------------------------
+const CITY_PAGES = {
+  varna: {
+    bg: "Варна", en: "Varna",
+    h1_bg: "Булчински рокли Варна", h1_en: "Wedding Dresses for Varna Brides",
+    intro_bg: "Все повече булки от Варна и Черноморието избират да подберат роклята си в София — за да имат достъп до оригиналните колекции Demetrios, Cosmobella и Platinum на едно място. Салон Арети е официалният представител на Demetrios за България и се намира в кв. Лозенец, София. Пътуването си заслужава: избор от над 100 модела, лична консултация със стилист и корекции в собственото ни ателие.",
+    intro_en: "More and more brides from Varna and the Black Sea coast choose to select their gown in Sofia — for one-stop access to the original Demetrios, Cosmobella and Platinum collections. Areti is the official Demetrios representative for Bulgaria, in the Lozenets district of Sofia. The trip is worth it: a choice of 100+ styles, a personal stylist consultation and alterations in our own atelier.",
+    meta_bg: "Булчински рокли за булки от Варна — оригинални Demetrios в салон Арети, София. Над 100 модела, цени от 1 000 €. Как протича пробата, ако сте от Варна.",
+    meta_en: "Wedding dresses for brides from Varna — original Demetrios at Areti, Sofia. 100+ styles from €1,000. How a fitting works when you travel from Varna.",
+    distance_bg: "около 450 км (4–5 ч. с кола или влак)",
+    distance_en: "about 450 km (4–5 h by car or train)",
+    faq_bg: [
+      { q: "Струва ли си да пътувам от Варна до София за булчинска рокля?", a: "За повечето наши клиентки от Варна — да. В София имате достъп до пълните оригинални колекции Demetrios, Cosmobella и Platinum на едно място, с лична проба и корекции на място. Препоръчваме да планирате 2–3 посещения общо за целия процес." },
+      { q: "Колко посещения са нужни, ако съм от Варна?", a: "Обикновено 2–3: първо за избор и премерване, второ за проба след корекциите и трето за финалното взимане. Много булки от Варна комбинират първите две в един уикенд." },
+      { q: "Може ли да поръчам рокля, без да идвам всеки път?", a: "Избор и първо премерване правим на място — за да сме сигурни в размера и силуета. След това координираме корекциите така, че да идвате възможно най-малко пъти. Свържете се с нас, за да уточним график според разстоянието." },
+    ],
+    faq_en: [
+      { q: "Is it worth travelling from Varna to Sofia for a wedding dress?", a: "For most of our Varna clients — yes. In Sofia you get the full original Demetrios, Cosmobella and Platinum collections in one place, with a personal fitting and on-site alterations. We suggest planning 2–3 visits for the whole process." },
+      { q: "How many visits do I need if I'm from Varna?", a: "Usually 2–3: first for selection and measurements, second for a fitting after alterations, third to collect. Many Varna brides combine the first two into one weekend." },
+      { q: "Can I order a dress without coming every time?", a: "Selection and the first measurement are done in person — so we're sure of the size and silhouette. After that we coordinate the alterations to minimise your trips. Contact us to plan a schedule that fits the distance." },
+    ],
+  },
+  plovdiv: {
+    bg: "Пловдив", en: "Plovdiv",
+    h1_bg: "Булчински рокли Пловдив", h1_en: "Wedding Dresses for Plovdiv Brides",
+    intro_bg: "Пловдив е само на час и половина от София, затова много булки от града избират да подберат роклята си при нас — с достъп до пълните оригинални колекции Demetrios, Cosmobella и Platinum. Салон Арети е официалният представител на Demetrios за България, в кв. Лозенец. Близостта прави всичко лесно: идвате за избор и проба, а корекциите правим на място в собственото ни ателие.",
+    intro_en: "Plovdiv is just an hour and a half from Sofia, so many brides from the city choose to select their gown with us — with access to the full original Demetrios, Cosmobella and Platinum collections. Areti is the official Demetrios representative for Bulgaria, in the Lozenets district. The short distance makes it easy: you come for selection and fitting, and we do alterations on site in our own atelier.",
+    meta_bg: "Булчински рокли за булки от Пловдив — оригинални Demetrios в салон Арети, София, на 1,5 ч. Над 100 модела, цени от 1 000 €. Запазете час за проба.",
+    meta_en: "Wedding dresses for brides from Plovdiv — original Demetrios at Areti, Sofia, 1.5 h away. 100+ styles from €1,000. Book a fitting.",
+    distance_bg: "около 150 км (1,5 ч. с кола)",
+    distance_en: "about 150 km (1.5 h by car)",
+    faq_bg: [
+      { q: "Колко път е от Пловдив до салона в София?", a: "Около 150 км, или час и половина с кола по магистрала „Тракия“. Повечето булки от Пловдив идват за деня — избор сутрин, проба и консултация, и обратно." },
+      { q: "Колко посещения са нужни, ако съм от Пловдив?", a: "Обикновено 2–3: за избор и премерване, за проба след корекциите и за финалното взимане. Заради близостта повечето булки от Пловдив се справят спокойно с дневни посещения." },
+      { q: "Правите ли корекциите на място?", a: "Да — всички корекции (дължина, стесняване, презрамки, деколте) се правят в нашето ателие в София, от същата шивачка, която работи по булчинските рокли. Не е нужно да търсите шивач в Пловдив." },
+    ],
+    faq_en: [
+      { q: "How far is the Sofia salon from Plovdiv?", a: "About 150 km, or an hour and a half by car on the Trakia motorway. Most Plovdiv brides come for the day — selection in the morning, a fitting and consultation, and back." },
+      { q: "How many visits do I need if I'm from Plovdiv?", a: "Usually 2–3: selection and measurements, a fitting after alterations, and collection. Thanks to the short distance, most Plovdiv brides manage comfortably with day trips." },
+      { q: "Do you do the alterations on site?", a: "Yes — all alterations (length, taking in, straps, neckline) are done in our Sofia atelier, by the same seamstress who works on the bridal gowns. No need to find a tailor in Plovdiv." },
+    ],
+  },
+  burgas: {
+    bg: "Бургас", en: "Burgas",
+    h1_bg: "Булчински рокли Бургас", h1_en: "Wedding Dresses for Burgas Brides",
+    intro_bg: "Булките от Бургас и Южното Черноморие все по-често идват в София за роклята си — заради достъпа до пълните оригинални колекции Demetrios, Cosmobella и Platinum на едно място. Салон Арети е официалният представител на Demetrios за България, в кв. Лозенец. Пътуването си заслужава: избор от над 100 модела, лична консултация със стилист и корекции в собственото ни ателие.",
+    intro_en: "Brides from Burgas and the southern Black Sea coast increasingly come to Sofia for their gown — for access to the full original Demetrios, Cosmobella and Platinum collections in one place. Areti is the official Demetrios representative for Bulgaria, in the Lozenets district. The trip is worth it: a choice of 100+ styles, a personal stylist consultation and alterations in our own atelier.",
+    meta_bg: "Булчински рокли за булки от Бургас — оригинални Demetrios в салон Арети, София. Над 100 модела, цени от 1 000 €. Как протича пробата, ако сте от Бургас.",
+    meta_en: "Wedding dresses for brides from Burgas — original Demetrios at Areti, Sofia. 100+ styles from €1,000. How a fitting works when you travel from Burgas.",
+    distance_bg: "около 390 км (4 ч. с кола)",
+    distance_en: "about 390 km (4 h by car)",
+    faq_bg: [
+      { q: "Струва ли си да пътувам от Бургас до София за булчинска рокля?", a: "За повечето наши клиентки от Бургас — да. В София имате пълните оригинални колекции Demetrios, Cosmobella и Platinum на едно място, с лична проба и корекции на място. Препоръчваме да планирате 2–3 посещения за целия процес." },
+      { q: "Колко посещения са нужни, ако съм от Бургас?", a: "Обикновено 2–3: първо за избор и премерване, второ за проба след корекциите и трето за финалното взимане. Много булки от Бургас комбинират първите две в един уикенд." },
+      { q: "Може ли да поръчам рокля, без да идвам всеки път?", a: "Избор и първо премерване правим на място — за да сме сигурни в размера и силуета. След това координираме корекциите така, че да идвате възможно най-малко пъти. Свържете се с нас, за да уточним график според разстоянието." },
+    ],
+    faq_en: [
+      { q: "Is it worth travelling from Burgas to Sofia for a wedding dress?", a: "For most of our Burgas clients — yes. In Sofia you get the full original Demetrios, Cosmobella and Platinum collections in one place, with a personal fitting and on-site alterations. We suggest planning 2–3 visits for the whole process." },
+      { q: "How many visits do I need if I'm from Burgas?", a: "Usually 2–3: first for selection and measurements, second for a fitting after alterations, third to collect. Many Burgas brides combine the first two into one weekend." },
+      { q: "Can I order a dress without coming every time?", a: "Selection and the first measurement are done in person — so we're sure of the size and silhouette. After that we coordinate the alterations to minimise your trips. Contact us to plan a schedule that fits the distance." },
+    ],
+  },
+};
+
+function CitySeo({ lang, setRoute, goCity, slug, count }) {
+  const isBg = lang === "bg";
+  const data = CITY_PAGES[slug];
+  if (!data) return null;
+  const others = Object.entries(CITY_PAGES).filter(([s]) => s !== slug);
+  const city = isBg ? data.bg : data.en;
+  const faq = isBg ? data.faq_bg : data.faq_en;
+  return (
+    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
+        {isBg ? `Как протича пробата, ако сте от ${city}` : `How a fitting works when you're from ${city}`}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
+        {isBg
+          ? `Салон Арети е в кв. Лозенец, София — ${data.distance_bg} от ${city}. Първото посещение е за избор и премерване; след това коригираме роклята в нашето ателие и идвате за проба и финално взимане. Планираме графика според разстоянието, за да идвате възможно най-малко пъти.`
+          : `Areti is in the Lozenets district of Sofia — ${data.distance_en} from ${city}. The first visit is for selection and measurements; we then alter the gown in our atelier and you return for a fitting and collection. We plan the schedule around the distance to keep your trips to a minimum.`}
+      </p>
+      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
+        <span>{count} {isBg ? "модела в салона" : "styles in store"}</span>
+        <span>{isBg ? "Цени от 1 000 €" : "Prices from €1,000"}</span>
+        <span>{isBg ? "Оригинални Demetrios" : "Original Demetrios"}</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
+        <button className="btn btn-solid" onClick={() => setRoute("booking")}>
+          {isBg ? "Запази проба →" : "Book a fitting →"}
+        </button>
+        <button className="btn" onClick={() => setRoute("collection")}>
+          {isBg ? "Всички булчински рокли" : "All wedding dresses"}
+        </button>
+      </div>
+
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(22px, 2.6vw, 30px)", fontWeight: 400, marginBottom: 16 }}>
+        {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
+      </h2>
+      <div style={{ marginBottom: 24 }}>
+        {faq.map((item, i) => (
+          <div key={i} style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{item.q}</div>
+            <div style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)" }}>{item.a}</div>
+          </div>
+        ))}
+      </div>
+
+      {others.length > 0 && (
+        <div style={{ fontSize: 14, color: "var(--ink-soft)" }}>
+          <strong>{isBg ? "От друг град?" : "From another city?"}</strong>{" "}
+          {others.map(([s, d], i) => (
+            <span key={s}>
+              <a href={withLang(`/collection/gradove/${s}`, lang)} onClick={(e) => { e.preventDefault(); goCity && goCity(s); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+                {isBg ? d.h1_bg : `Wedding dresses ${d.en}`}
+              </a>{i < others.length - 1 ? " · " : ""}
+            </span>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, initMaterial = null, initCity = null, goSilhouette, goMaterial, goCity, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
   // Locale-aware field picker for the landing-page data objects: prefers a
@@ -698,6 +844,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   const matData = initMaterial ? MATERIAL_PAGES[initMaterial] : null;
   const matDresses = matData ? DRESSES.filter(d => dressHasMaterial(d, initMaterial)) : [];
   const matCount = matDresses.length;
+  // City landing pages show the full catalogue — the differentiation is the
+  // travel/logistics copy in CitySeo, not a filtered grid.
+  const cityData = initCity ? CITY_PAGES[initCity] : null;
+  const cityCount = DRESSES.length;
   const isEvening = initCollection === "evening";
   // CTR-optimized titles: pages already earn impressions, but generic titles
   // win few clicks (GSC: /collection/demetrios 1% CTR at 506 impressions).
@@ -730,6 +880,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   useSeo({
     title: seasonData
       ? (lang === "el" ? seasonData.title_el(seasonDresses.length) : isBg ? seasonData.title_bg(seasonDresses.length) : seasonData.title_en(seasonDresses.length))
+      : cityData
+      ? (isBg ? `Булчински рокли ${cityData.bg} — салон Арети, София | Demetrios` : `Wedding Dresses for ${cityData.en} Brides — Areti, Sofia`)
       : matData
       ? L3(`${matData.h1_bg} в София — ${matCount} модела Demetrios | Арети`, `${matData.h1_en} in Sofia — ${matCount} Demetrios styles | Areti`, `${matData.h1_el} στη Σόφια — ${matCount} μοντέλα Demetrios | Areti`)
       : silData
@@ -744,6 +896,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         : L3("Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети", "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti", "Νυφικά στη Σόφια — 100+ μοντέλα Demetrios από 1.000 € | Areti"),
     description: seasonData
       ? (pk(seasonData, "meta"))
+      : cityData
+      ? (isBg ? cityData.meta_bg : cityData.meta_en)
       : matData
       ? (pk(matData, "meta"))
       : silData
@@ -760,10 +914,15 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
             "Over 100 wedding dresses in Sofia — from €1,000 to €4,000. Demetrios, Cosmobella, Platinum, Destination Romance. Fittings at Areti.",
             "Πάνω από 100 νυφικά στη Σόφια — τιμές 1.000 έως 4.000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Πρόβα με ραντεβού στην Areti."),
     image: DRESSES[0]?.imgs?.[0] || DRESSES[0]?.img,
-    url: matData ? `/collection/materii/${initMaterial}` : silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
+    url: cityData ? `/collection/gradove/${initCity}` : matData ? `/collection/materii/${initMaterial}` : silData ? `/collection/silueti/${initSilhouette}` : initCollection ? `/collection/${initCollection}` : "/collection",
+    // City pages are BG + EN only; pass explicit alternates (no el) so the
+    // hreflang set does not advertise a Greek twin that is not prerendered.
+    ...(cityData ? { alternates: { bg: `/collection/gradove/${initCity}`, en: `/en/collection/gradove/${initCity}` } } : {}),
     lang,
     keywords: seasonData
       ? (isBg ? "булчински рокли 2027, сватбени рокли 2027, нова колекция Demetrios, булчински рокли София" : "wedding dresses 2027, new Demetrios collection, bridal Sofia")
+      : cityData
+      ? (isBg ? `булчински рокли ${cityData.bg}, сватбени рокли ${cityData.bg}, булчинска рокля ${cityData.bg}, Арети София` : `wedding dresses ${cityData.en}, bridal ${cityData.en} Bulgaria, Areti Sofia`)
       : matData
       ? (isBg ? `булчинска рокля ${matData.bg}, булчински рокли от ${matData.bg} София, Demetrios` : `${matData.en} wedding dress, ${matData.en} bridal Sofia`)
       : silData
@@ -776,18 +935,21 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
         ...(silData ? [{ name: pk(silData, "h1"), url: `/collection/silueti/${initSilhouette}` }] : []),
         ...(matData ? [{ name: pk(matData, "h1"), url: `/collection/materii/${initMaterial}` }] : []),
+        ...(cityData ? [{ name: isBg ? cityData.h1_bg : cityData.h1_en, url: `/collection/gradove/${initCity}` }] : []),
         ...(seasonData ? [{ name: isBg ? "Колекция 2027" : "2027 Collection", url: `/collection/${SEASON_ID}` }] : []),
       ]),
       ...(seasonData ? [faqSchema(SEASON_FAQ[isBg ? "bg" : "en"])] : []),
       collectionItemListSchema(
         (seasonData ? seasonDresses
+          : cityData ? DRESSES
           : matData ? matDresses
           : silData ? DRESSES.filter(d => d.silhouette === silData.bg)
           : initCollection ? DRESSES.filter(d => d.collection === initCollection)
           : DRESSES),
         lang,
       ),
-      ...(!initCollection && !silData ? [faqSchema(COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg)] : []),
+      ...(!initCollection && !silData && !matData && !cityData ? [faqSchema(COLLECTION_FAQ[lang] || COLLECTION_FAQ.bg)] : []),
+      ...(cityData ? [faqSchema(isBg ? cityData.faq_bg : cityData.faq_en)] : []),
       // Evening collection has its own FAQ block on the page — declare it too.
       ...(initCollection === "evening" ? [faqSchema(EVENING_FAQ[lang] || EVENING_FAQ.bg)] : []),
     ]},
@@ -820,6 +982,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && dressHasMaterial(d, initMaterial)));
       return applyFiltersAndSort(ordered, filters, sortBy);
     }
+    if (cityData) {
+      const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id));
+      return applyFiltersAndSort(ordered, filters, sortBy);
+    }
     if (seasonData) {
       // Before the first 2027 delivery: the twelve highest style numbers of the
       // main line stand in, so the page is never an empty grid.
@@ -840,13 +1006,15 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       DRESSES.filter(d => d.collection === COLLECTIONS[i].id).forEach(d => ordered.push(d));
     }
     return applyFiltersAndSort(ordered, filters, sortBy);
-  }, [activeCol, filters, sortBy, initSilhouette, initMaterial]);
+  }, [activeCol, filters, sortBy, initSilhouette, initMaterial, initCity]);
 
   // How many dresses the heading is actually talking about. NOT displayList —
   // that intentionally continues into the following collections so "Виж още"
   // flows on, which would have the Demetrios page claim 99 styles instead of 53.
   const headingCount = seasonData
     ? seasonDresses.length
+    : cityData
+    ? cityCount
     : matData
     ? matCount
     : silData
@@ -897,6 +1065,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               carried none of them. */}
           <h1>
             {seasonData ? (pk(seasonData, "h1"))
+              : cityData ? (isBg ? cityData.h1_bg : cityData.h1_en)
               : matData ? (pk(matData, "h1"))
               : silData ? (pk(silData, "h1"))
               : activeCol === "evening"
@@ -919,6 +1088,13 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
                 </p>
               )}
             </>
+          ) : cityData ? (
+            <p className="collection-intro">
+              {isBg ? cityData.intro_bg : cityData.intro_en}{' '}
+              <a href={withLang("/booking", lang)} onClick={(e) => { e.preventDefault(); setRoute("booking"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
+                {isBg ? "Запазете час за проба →" : "Book a fitting →"}
+              </a>
+            </p>
           ) : matData ? (
             <p className="collection-intro">
               {pk(matData, "intro")}{' '}
@@ -961,7 +1137,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         </div>
       </div>
 
-      {!silData && !seasonData && !matData && (
+      {!silData && !seasonData && !matData && !cityData && (
         <div className="collection-tabs">
           <button className={`col-tab ${!activeCol ? 'active' : ''}`} onClick={() => setActiveCol(null)}>
             {isBg ? 'Всички' : 'All'}
@@ -1097,11 +1273,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         )}
       </div>
 
-      {!initCollection && !silData && !matData && !seasonData && <CollectionSeoContent lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} goMaterial={goMaterial} />}
+      {!initCollection && !silData && !matData && !cityData && !seasonData && <CollectionSeoContent lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} goMaterial={goMaterial} goCity={goCity} />}
       {initCollection === "evening" && <EveningSeoContent lang={lang} setRoute={setRoute} />}
       {initCollection && <SubCollectionSeo lang={lang} setRoute={setRoute} colId={initCollection} />}
       {silData && <SilhouetteSeo lang={lang} setRoute={setRoute} goSilhouette={goSilhouette} slug={initSilhouette} count={silCount} />}
       {matData && <MaterialSeo lang={lang} setRoute={setRoute} goMaterial={goMaterial} slug={initMaterial} count={matCount} />}
+      {cityData && <CitySeo lang={lang} setRoute={setRoute} goCity={goCity} slug={initCity} count={cityCount} />}
       {seasonData && <SeasonSeo lang={lang} setRoute={setRoute} count={seasonDresses.length} />}
 
       {/* Mobile filter FAB + bottom sheet via portal (avoids page-enter transform) */}

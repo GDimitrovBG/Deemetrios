@@ -25,6 +25,7 @@ const OUT = path.join(ROOT, 'public', 'sitemap.xml');
 const COLLECTION_IDS = ['cosmobella', 'demetrios', 'platinum', 'destination', 'evening'];
 const SILHOUETTE_IDS = ['rusalka', 'printsesa', 'a-siluet'];
 const MATERIAL_IDS = ['dantela', 'tyul', 'saten', 'mikado'];
+const CITY_IDS = ['varna', 'plovdiv', 'burgas'];
 
 // XML-escape text for use inside a tag.
 const esc = (s) => String(s ?? '')
@@ -143,6 +144,10 @@ async function run() {
   }
   for (const id of MATERIAL_IDS) {
     pair(`/collection/materii/${id}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' });
+  }
+  // City pages are BG + EN only — Greek brides don't search Bulgarian cities.
+  for (const id of CITY_IDS) {
+    pair(`/collection/gradove/${id}`, { lastmod: today, changefreq: 'monthly', priority: '0.7' }, [], { hasEl: false });
   }
   // Season landing page — changes with every delivery, so weekly.
   pair('/collection/2027', { lastmod: today, changefreq: 'weekly', priority: '0.8' });

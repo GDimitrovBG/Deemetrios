@@ -52,6 +52,10 @@ async function loadRoutes() {
     '/collection/materii/tyul',
     '/collection/materii/saten',
     '/collection/materii/mikado',
+    // City landing pages are BG + EN only (see elRoutes filter below).
+    '/collection/gradove/varna',
+    '/collection/gradove/plovdiv',
+    '/collection/gradove/burgas',
     '/collection/2027',
     '/kviz',
     // Reachable from the nav heart and the mobile menu, and deliberately kept
@@ -86,7 +90,7 @@ async function loadRoutes() {
   // Greek yet, so /el/blog is the (Greek-chrome) listing only; individual posts
   // fold back to the Bulgarian original, exactly like an untranslated /en post.
   const elBlogRoutes = ['/blog'];
-  const elRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog')), ...productRoutes, ...elBlogRoutes]
+  const elRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog') && !r.startsWith('/collection/gradove')), ...productRoutes, ...elBlogRoutes]
     .map(r => (r === '/' ? '/el' : `/el${r}`));
 
   return [...bgRoutes, ...enRoutes, ...elRoutes, NOT_FOUND_ROUTE];
