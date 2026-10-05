@@ -120,13 +120,19 @@ function AboutPage({ lang, setRoute }) {
   const t = i18n[lang].about;
   const isBg = lang === "bg";
   useSeo({
-    title: isBg ? "За Арети — сватбен салон в София от 1992 г. ★ 4.8 (266 отзива)" : "About Areti — Bridal Salon in Sofia since 1992 ★ 4.8 (266 reviews)",
-    description: isBg
-      ? "Арети е луксозен булчински салон в София, основан през 1992 г. — официален представител на Demetrios в България. Над 30 години обличаме булки."
-      : "Areti is a luxury bridal salon in Sofia, founded in 1992 — the official Demetrios representative in Bulgaria. Dressing brides for over 30 years.",
+    title: {
+      bg: "За Арети — сватбен салон в София от 1992 г. ★ 4.8 (266 отзива)",
+      en: "About Areti — Bridal Salon in Sofia since 1992 ★ 4.8",
+      el: "Για την Areti — νυφικό κατάστημα στη Σόφια από το 1992 ★ 4.8",
+    }[lang],
+    description: {
+      bg: "Арети е луксозен булчински салон в София, основан през 1992 г. — официален представител на Demetrios в България. Над 30 години обличаме булки.",
+      en: "Areti is a luxury bridal salon in Sofia, founded in 1992 — the official Demetrios representative in Bulgaria. Dressing brides for over 30 years.",
+      el: "Η Areti είναι πολυτελές νυφικό κατάστημα στη Σόφια, ιδρυμένο το 1992 — επίσημος αντιπρόσωπος της Demetrios στη Βουλγαρία. Ντύνουμε νύφες πάνω από 30 χρόνια.",
+    }[lang],
     image: IMG.about, url: "/about", lang,
     keywords: "Арети, сватбен салон София, булчински салон Лозенец, история Demetrios България",
-    jsonLd: orgSchema(),
+    jsonLd: orgSchema(lang),
     jsonLdId: "about",
   });
   return (
@@ -270,10 +276,16 @@ function DemetriosPage({ lang, setRoute }) {
   const t = i18n[lang].demetrios;
   const isBg = lang === "bg";
   useSeo({
-    title: isBg ? "Кой е Demetrios — историята на марката" : "Demetrios James Elias — the story of the brand",
-    description: isBg
-      ? "Деметриос Джеймс Елиас — гръцки дизайнер, основал Demetrios Bridal през 1982 г. Колекциите му в Арети — официален представител на Demetrios в България."
-      : "Demetrios James Elias — Greek-American designer who founded Demetrios Bridal in 1982. His collections at Areti, official Demetrios representative in Bulgaria.",
+    title: {
+      bg: "Кой е Demetrios — историята на марката",
+      en: "Demetrios James Elias — the story of the brand",
+      el: "Ποιος είναι ο Demetrios — η ιστορία της μάρκας",
+    }[lang],
+    description: {
+      bg: "Деметриос Джеймс Елиас — гръцки дизайнер, основал Demetrios Bridal през 1982 г. Колекциите му в Арети — официален представител на Demetrios в България.",
+      en: "Demetrios James Elias — Greek-American designer who founded Demetrios Bridal in 1982. His collections at Areti, official Demetrios representative in Bulgaria.",
+      el: "Demetrios James Elias — ο ελληνοαμερικανός σχεδιαστής που ίδρυσε την Demetrios Bridal το 1982. Οι συλλογές του στην Areti, επίσημο αντιπρόσωπο στη Βουλγαρία.",
+    }[lang],
     url: "/demetrios", lang,
     keywords: "Demetrios James Elias, Деметриос дизайнер, Demetrios Bridal, Demetrios колекции, Cosmobella, Platinum",
     jsonLd: { "@graph": [
@@ -444,13 +456,19 @@ function ContactPage({ lang, setRoute }) {
   const t = i18n[lang].contact;
   const isBg = lang === "bg";
   useSeo({
-    title: isBg ? "Контакти — Арети, ул. Крум Попов 63, Лозенец, София" : "Contact — Areti, 63 Krum Popov St, Lozenets, Sofia",
-    description: isBg
-      ? "Контакти на булчински салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време пн–пт 10–19 ч., сб 10:30–18 ч."
-      : "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours Mon–Fri 10–19, Sat 10:30–18.",
+    title: {
+      bg: "Контакти — Арети, ул. Крум Попов 63, Лозенец, София",
+      en: "Contact — Areti, 63 Krum Popov St, Lozenets, Sofia",
+      el: "Επικοινωνία — Areti, Krum Popov 63, Λόζενετς, Σόφια",
+    }[lang],
+    description: {
+      bg: "Контакти на булчински салон Арети — ул. Крум Попов 63, Лозенец, София. Тел. +359 878 521 660. Работно време пн–пт 10–19 ч., сб 10:30–18 ч.",
+      en: "Contact Areti bridal salon — 63 Krum Popov St, Lozenets, Sofia. Tel. +359 878 521 660. Hours Mon–Fri 10–19, Sat 10:30–18.",
+      el: "Επικοινωνία με το νυφικό κατάστημα Areti — Krum Popov 63, Λόζενετς, Σόφια. Τηλ. +359 878 521 660. Δευ–Παρ 10–19, Σάβ 10:30–18. Μιλάμε ελληνικά.",
+    }[lang],
     url: "/contact", lang,
     keywords: "Арети контакти, сватбен салон Лозенец, телефон булчински салон София, адрес Арети",
-    jsonLd: orgSchema(),
+    jsonLd: orgSchema(lang),
     jsonLdId: "contact",
   });
   return (
@@ -510,10 +528,16 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
     .map(p => localizePost(p, lang));
   const [featured, ...rest] = posts;
   useSeo({
-    title: isBg ? "Блог — статии за булчински рокли и сватбен стил" : "Blog — Wedding Dress & Style Articles | Areti Sofia",
-    description: isBg
-      ? "Блогът на Арети — съвети за избор на булчинска рокля, силуети, материи, тенденции и истории зад марката Demetrios. Полезни статии за всяка булка."
-      : "The Areti blog — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
+    title: {
+      bg: "Блог — статии за булчински рокли и сватбен стил",
+      en: "Blog — Wedding Dress & Style Articles | Areti Sofia",
+      el: "Blog — άρθρα για νυφικά και νυφικό στιλ | Areti Σόφια",
+    }[lang],
+    description: {
+      bg: "Блогът на Арети — съвети за избор на булчинска рокля, силуети, материи, тенденции и истории зад марката Demetrios. Полезни статии за всяка булка.",
+      en: "The Areti blog — advice on choosing a wedding dress, silhouettes, fabrics, trends and stories behind the Demetrios brand. Useful articles for every bride.",
+      el: "Το blog της Areti — συμβουλές για την επιλογή νυφικού, σιλουέτες, υφάσματα, τάσεις και ιστορίες πίσω από τη μάρκα Demetrios. Χρήσιμα άρθρα για κάθε νύφη.",
+    }[lang],
     image: featured?.image, url: "/blog", lang,
     keywords: "блог булчински рокли, съвети за булки, сватбен стил, тенденции 2026, Demetrios истории",
     jsonLd: breadcrumbSchema([

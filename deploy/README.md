@@ -217,6 +217,11 @@ header @uploads Cache-Control "public, max-age=31536000, immutable"
 
 @fonts path /fonts/*
 header @fonts Cache-Control "public, max-age=31536000, immutable"
+
+# Favicon/лого (public/icons/) — без хеш в името, затова 30 дни, не година.
+# Проверено 2026-10-05: в момента отговарят изобщо без Cache-Control.
+@icons path /icons/*
+header @icons Cache-Control "public, max-age=2592000"
 ```
 
 `/fonts/*` е ново: шрифтовете вече се хостват от нас, а не от Google.

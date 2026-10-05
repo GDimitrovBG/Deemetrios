@@ -66,8 +66,8 @@
        Must match the DEFAULT hero variant ("split" → HomeHeroV2, which renders
        hero2). Preloading a non-displayed image just wastes the high-priority
        fetch and delays the real LCP element on mobile. -->
-  <!-- imagesrcset lets the browser preload the SAME candidate the hero <img>
-       will pick: ~28KB (480w) on a phone instead of the ~150KB original. The
+  <!-- imagesrcset lets the browser preload the SAME candidate the hero image
+       element will pick: ~28KB (480w) on a phone instead of the ~150KB original. The
        -480w/-960w files are written on the server by
        scripts/optimize-images.mjs --variants (see deploy/README.md). -->
   <link rel="preload" as="image"

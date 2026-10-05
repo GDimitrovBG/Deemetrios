@@ -113,8 +113,11 @@ export function useSeo({
     // full SITE_NAME there produced a double-"Арети" 90+ char title. Detect the
     // brand token (any case/locale) and skip the suffix in that case.
     const hasBrand = title && /Арети|Areti/i.test(title);
+    // The suffix follows the page language — an English or Greek title used to
+    // get "| Арети София" appended (seen on /en/demetrios).
+    const brandSuffix = lang === 'en' ? 'Areti Sofia' : lang === 'el' ? 'Areti Σόφια' : TITLE_BRAND;
     const finalTitle = title
-      ? (hasBrand ? title : `${title} | ${TITLE_BRAND}`)
+      ? (hasBrand ? title : `${title} | ${brandSuffix}`)
       : SITE_NAME;
     const finalDesc  = description || DEFAULT_DESC;
     // og:image / twitter:image must be ABSOLUTE URLs (Facebook & Twitter reject

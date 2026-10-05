@@ -323,27 +323,33 @@ function SubCollectionSeo({ lang, setRoute, colId }) {
 const SILHOUETTE_PAGES = {
   rusalka: {
     bg: "Русалка", en: "Mermaid",
-    h1_bg: "Булчински рокли русалка", h1_en: "Mermaid Wedding Dresses",
+    h1_bg: "Булчински рокли русалка", h1_en: "Mermaid Wedding Dresses", h1_el: "Νυφικά γοργόνα",
     intro_bg: "Булчинската рокля тип русалка приляга плътно по тялото от бюста до коляното, след което се разширява във фина пола. Силуетът подчертава извивките и е идеален за булки, които искат чувствена, драматична визия. В Арети предлагаме оригинални модели Demetrios с този силует.",
     intro_en: "A mermaid wedding dress fits closely from the bust to the knee, then flares into a dramatic skirt. The silhouette accentuates the curves and suits brides who want a sensual, striking look. Areti offers original Demetrios mermaid gowns in Sofia.",
+    intro_el: "Το νυφικό γοργόνα εφαρμόζει στενά από το μπούστο ως το γόνατο και ανοίγει σε μια δραματική φούστα. Η σιλουέτα τονίζει τις καμπύλες και ταιριάζει σε νύφες που θέλουν μια αισθησιακή, εντυπωσιακή εμφάνιση. Η Areti προσφέρει αυθεντικά νυφικά γοργόνα Demetrios στη Σόφια.",
     meta_bg: "Булчински рокли русалка в София — прилепнал силует, който подчертава извивките. Оригинални модели Demetrios, цени от 1 000 €.",
     meta_en: "Mermaid wedding dresses in Sofia — a fitted silhouette that accentuates the curves. Original Demetrios styles from €1,000.",
+    meta_el: "Νυφικά γοργόνα στη Σόφια — εφαρμοστή σιλουέτα που τονίζει τις καμπύλες. Αυθεντικά μοντέλα Demetrios, τιμές από 1.000 €.",
   },
   printsesa: {
     bg: "Принцеса", en: "Ball gown",
-    h1_bg: "Булчински рокли принцеса", h1_en: "Princess Ball Gown Wedding Dresses",
+    h1_bg: "Булчински рокли принцеса", h1_en: "Ball Gown Wedding Dresses", h1_el: "Νυφικά πριγκίπισσα",
     intro_bg: "Булчинската рокля тип принцеса има прилепнал корсет и обемна пола, която създава класическа, приказна визия. Този силует е сред най-желаните за традиционни сватби и подхожда на почти всяка фигура. Разгледайте оригиналните модели принцеса на Demetrios в салон Арети, София.",
     intro_en: "A princess (ball gown) wedding dress pairs a fitted bodice with a full skirt for a classic, fairy-tale look. It is one of the most requested silhouettes for traditional weddings and flatters almost every body type. Explore original Demetrios ball gowns at Areti, Sofia.",
+    intro_el: "Το νυφικό πριγκίπισσα συνδυάζει εφαρμοστό μπούστο με πλούσια φούστα για μια κλασική, παραμυθένια εμφάνιση. Είναι από τις πιο περιζήτητες σιλουέτες για παραδοσιακούς γάμους και κολακεύει σχεδόν κάθε σωματότυπο. Ανακαλύψτε τα αυθεντικά μπαλ γκάουν της Demetrios στην Areti, Σόφια.",
     meta_bg: "Булчински рокли принцеса в София — корсет и обемна пола за класическа визия. Оригинални модели Demetrios, цени от 1 000 €.",
     meta_en: "Princess ball gown wedding dresses in Sofia — fitted bodice, full skirt, classic look. Original Demetrios styles from €1,000.",
+    meta_el: "Νυφικά πριγκίπισσα στη Σόφια — εφαρμοστό μπούστο και πλούσια φούστα για κλασική εμφάνιση. Αυθεντικά μοντέλα Demetrios, από 1.000 €.",
   },
   "a-siluet": {
     bg: "А-силует", en: "A-line",
-    h1_bg: "Булчински рокли А-силует", h1_en: "A-Line Wedding Dresses",
+    h1_bg: "Булчински рокли А-силует", h1_en: "A-Line Wedding Dresses", h1_el: "Νυφικά γραμμή Α",
     intro_bg: "Булчинската рокля с А-силует е прилепнала в горната част и плавно се разширява от талията надолу, оформяйки буквата „А“. Това е най-универсалният силует — балансиран, елегантен и ласкав за всяка фигура. В Арети това е най-голямата ни група модели Demetrios.",
     intro_en: "An A-line wedding dress is fitted through the top and flows out gently from the waist, forming an “A” shape. It is the most versatile silhouette — balanced, elegant and flattering on every body type. It is our largest group of Demetrios styles at Areti.",
+    intro_el: "Το νυφικό γραμμή Α είναι εφαρμοστό στο πάνω μέρος και ανοίγει απαλά από τη μέση, σχηματίζοντας το γράμμα «Α». Είναι η πιο ευέλικτη σιλουέτα — ισορροπημένη, κομψή και κολακευτική για κάθε σωματότυπο. Είναι η μεγαλύτερη ομάδα μοντέλων Demetrios στην Areti.",
     meta_bg: "Булчински рокли А-силует в София — най-универсалната кройка, ласкава за всяка фигура. Оригинални модели Demetrios, цени от 1 000 €.",
     meta_en: "A-line wedding dresses in Sofia — the most versatile cut, flattering on every figure. Original Demetrios styles from €1,000.",
+    meta_el: "Νυφικά γραμμή Α στη Σόφια — η πιο ευέλικτη κοπή, κολακευτική για κάθε σιλουέτα. Αυθεντικά μοντέλα Demetrios, από 1.000 €.",
   },
 };
 
@@ -402,9 +408,14 @@ const SEASON_2027 = {
   h1_bg: <>Булчински рокли <em>2027</em> — новата колекция Demetrios</>,
   h1_en: <>Wedding Dresses <em>2027</em> — the new Demetrios collection</>,
   title_bg: (n) => n ? `Булчински рокли 2027 — ${n} нови модела Demetrios в София | Арети` : "Булчински рокли 2027 — новата колекция Demetrios в София | Арети",
-  title_en: (n) => n ? `Wedding Dresses 2027 — ${n} new Demetrios styles in Sofia | Areti` : "Wedding Dresses 2027 — the new Demetrios collection in Sofia | Areti",
+  title_en: (n) => n ? `Wedding Dresses 2027 — ${n} new Demetrios styles in Sofia | Areti` : "Wedding Dresses 2027 — new Demetrios collection in Sofia | Areti",
+  title_el: (n) => n ? `Νυφικά 2027 — ${n} νέα μοντέλα Demetrios στη Σόφια | Areti` : "Νυφικά 2027 — η νέα συλλογή Demetrios στη Σόφια | Areti",
   meta_bg: "Булчински рокли 2027 в София — новата колекция Demetrios пристига в салон Арети в края на септември. Първи проби по предварителен час, цени от 1 000 €.",
   meta_en: "Wedding dresses 2027 in Sofia — the new Demetrios collection arrives at Areti in late September. First fittings by appointment, prices from €1,000.",
+  meta_el: "Νυφικά 2027 στη Σόφια — η νέα συλλογή Demetrios φτάνει στην Areti τέλη Σεπτεμβρίου. Πρώτες πρόβες με ραντεβού, τιμές από 1.000 €.",
+  h1_el: <>Νυφικά <em>2027</em> — η νέα συλλογή Demetrios</>,
+  intro_el: "Η συλλογή 2027 της Demetrios φτάνει στην Areti τέλη Σεπτεμβρίου 2026. Τα πρώτα μοντέλα της νέας σεζόν δοκιμάζονται στο κατάστημά μας στο Λόζενετς πριν εμφανιστούν οπουδήποτε αλλού στη Βουλγαρία. Κάθε φόρεμα προστίθεται σε αυτή τη σελίδα την ημέρα που φτάνει.",
+  notice_el: "Τα πρώτα νυφικά της συλλογής 2027 φτάνουν έως τέλη Σεπτεμβρίου. Κλείστε ραντεβού για πρώτη πρόβα — θα σας δείξουμε τα νέα μοντέλα την εβδομάδα που θα φτάσουν.",
   intro_bg: "Колекция 2027 на Demetrios пристига в Арети в края на септември 2026 г. Първите модели от новия сезон се пробват на живо в салона в Лозенец, преди да се появят другаде в България. Добавяме всяка рокля на тази страница в деня, в който влезе в салона.",
   intro_en: "The Demetrios 2027 collection arrives at Areti in late September 2026. The first styles of the new season can be tried on in our Lozenets salon before they appear anywhere else in Bulgaria. Every gown is added to this page the day it reaches the salon.",
   waiting_bg: "Докато пристигат — най-новите модели в салона",
@@ -590,35 +601,43 @@ export const dressHasMaterial = (d, slug) => MATERIAL_MATCH[slug]?.test(d.fabric
 const MATERIAL_PAGES = {
   dantela: {
     bg: "дантела", en: "lace",
-    h1_bg: "Булчински рокли с дантела", h1_en: "Lace Wedding Dresses",
+    h1_bg: "Булчински рокли с дантела", h1_en: "Lace Wedding Dresses", h1_el: "Νυφικά με δαντέλα",
     intro_bg: "Дантелата е най-романтичната материя за булчинска рокля — смекчава линията, добавя дълбочина и текстура и изглежда еднакво добре на класическа и на модерна визия. В Арети предлагаме оригинални модели Demetrios с фина, ръчно бродирана и 3D дантела, често съчетана с тюл или сатен.",
     intro_en: "Lace is the most romantic fabric for a wedding dress — it softens the line, adds depth and texture, and looks equally at home on a classic or a modern gown. Areti offers original Demetrios styles in delicate, hand-embroidered and 3D lace, often paired with tulle or satin.",
+    intro_el: "Η δαντέλα είναι το πιο ρομαντικό ύφασμα για νυφικό — απαλύνει τη γραμμή, προσθέτει βάθος και υφή και ταιριάζει εξίσου σε κλασικό και σε μοντέρνο φόρεμα. Η Areti προσφέρει αυθεντικά μοντέλα Demetrios σε λεπτή, κεντημένη στο χέρι και 3D δαντέλα, συχνά σε συνδυασμό με τούλι ή σατέν.",
     meta_bg: "Булчински рокли с дантела в София — фина, бродирана и 3D дантела. Оригинални модели Demetrios, цени от 1 000 €. Проба по час в Арети.",
     meta_en: "Lace wedding dresses in Sofia — delicate, embroidered and 3D lace. Original Demetrios styles from €1,000. Fittings at Areti.",
+    meta_el: "Νυφικά με δαντέλα στη Σόφια — λεπτή, κεντημένη και 3D δαντέλα. Αυθεντικά μοντέλα Demetrios, από 1.000 €. Πρόβα με ραντεβού στην Areti.",
   },
   tyul: {
     bg: "тюл", en: "tulle",
-    h1_bg: "Булчински рокли от тюл", h1_en: "Tulle Wedding Dresses",
+    h1_bg: "Булчински рокли от тюл", h1_en: "Tulle Wedding Dresses", h1_el: "Νυφικά από τούλι",
     intro_bg: "Тюлът дава на роклята лекота и обем без тежест — затова е сред най-обичаните материи за булчинска рокля. Блестящият тюл и тюлът с мъниста улавят светлината и са особено ефектни на снимка. В Арети имаме широк избор оригинални модели Demetrios от тюл, във всички силуети.",
     intro_en: "Tulle gives a gown lightness and volume without weight — which is why it is one of the best-loved bridal fabrics. Sparkling tulle and beaded tulle catch the light and are especially striking in photographs. Areti carries a wide choice of original Demetrios tulle gowns across every silhouette.",
+    intro_el: "Το τούλι δίνει στο φόρεμα ελαφρότητα και όγκο χωρίς βάρος — γι’ αυτό είναι από τα πιο αγαπημένα νυφικά υφάσματα. Το αστραφτερό τούλι και το τούλι με χάντρες πιάνουν το φως και είναι ιδιαίτερα εντυπωσιακά στις φωτογραφίες. Η Areti διαθέτει μεγάλη ποικιλία αυθεντικών νυφικών Demetrios από τούλι σε κάθε σιλουέτα.",
     meta_bg: "Булчински рокли от тюл в София — блестящ тюл и тюл с мъниста, лек и обемен силует. Оригинални модели Demetrios, цени от 1 000 €. Проба в Арети.",
     meta_en: "Tulle wedding dresses in Sofia — sparkling and beaded tulle, light and voluminous. Original Demetrios styles from €1,000. Fittings at Areti.",
+    meta_el: "Νυφικά από τούλι στη Σόφια — αστραφτερό τούλι και τούλι με χάντρες, ελαφριά σιλουέτα. Αυθεντικά μοντέλα Demetrios, από 1.000 €.",
   },
   saten: {
     bg: "сатен", en: "satin",
-    h1_bg: "Булчински рокли от сатен", h1_en: "Satin Wedding Dresses",
+    h1_bg: "Булчински рокли от сатен", h1_en: "Satin Wedding Dresses", h1_el: "Νυφικά από σατέν",
     intro_bg: "Сатенът е плътна, изчистена материя, която пада красиво и изглежда скъпо с минимум украса. Идеален е за модерна, елегантна булка, която търси чиста линия без излишен блясък. Разгледайте оригиналните сатенени модели Demetrios в салон Арети, София.",
     intro_en: "Satin is a dense, clean fabric that drapes beautifully and looks expensive with minimal embellishment. It is ideal for a modern, elegant bride who wants a clean line without excess sparkle. Explore the original Demetrios satin gowns at Areti, Sofia.",
+    intro_el: "Το σατέν είναι ένα πυκνό, καθαρό ύφασμα που πέφτει όμορφα και δείχνει πολυτελές με ελάχιστη διακόσμηση. Ιδανικό για μια μοντέρνα, κομψή νύφη που θέλει καθαρή γραμμή χωρίς υπερβολική λάμψη. Ανακαλύψτε τα αυθεντικά σατέν νυφικά Demetrios στην Areti, Σόφια.",
     meta_bg: "Булчински рокли от сатен в София — плътна, изчистена материя с красив пад. Оригинални модели Demetrios, цени от 1 000 €. Проба в Арети.",
     meta_en: "Satin wedding dresses in Sofia — a dense, clean fabric with a beautiful drape. Original Demetrios styles from €1,000. Fittings at Areti.",
+    meta_el: "Νυφικά από σατέν στη Σόφια — πυκνό, καθαρό ύφασμα με όμορφη πτώση. Αυθεντικά μοντέλα Demetrios, από 1.000 €. Πρόβα στην Areti.",
   },
   mikado: {
     bg: "микадо", en: "mikado",
-    h1_bg: "Булчински рокли от микадо", h1_en: "Mikado Wedding Dresses",
+    h1_bg: "Булчински рокли от микадо", h1_en: "Mikado Wedding Dresses", h1_el: "Νυφικά από μικάντο",
     intro_bg: "Микадото е плътен, структуриран копринен плат, който държи формата и създава архитектурни, скулптурни силуети. За булка, която иска изчистена, но впечатляваща визия, микадото е сред най-луксозните избори. В Арети предлагаме оригинални модели Demetrios от микадо.",
     intro_en: "Mikado is a dense, structured silk-blend fabric that holds its shape and creates architectural, sculptural silhouettes. For a bride who wants a clean yet commanding look, mikado is one of the most luxurious choices. Areti offers original Demetrios mikado gowns.",
+    intro_el: "Το μικάντο είναι ένα πυκνό, δομημένο μεταξωτό ύφασμα που κρατά το σχήμα του και δημιουργεί αρχιτεκτονικές, γλυπτές σιλουέτες. Για μια νύφη που θέλει καθαρή αλλά επιβλητική εμφάνιση, το μικάντο είναι από τις πιο πολυτελείς επιλογές. Η Areti προσφέρει αυθεντικά νυφικά Demetrios από μικάντο.",
     meta_bg: "Булчински рокли от микадо в София — плътен, структуриран плат за скулптурен силует. Оригинални модели Demetrios, цени от 1 000 €. Проба в Арети.",
     meta_en: "Mikado wedding dresses in Sofia — a dense, structured fabric for a sculptural silhouette. Original Demetrios styles from €1,000. Fittings at Areti.",
+    meta_el: "Νυφικά από μικάντο στη Σόφια — δομημένο ύφασμα για γλυπτή σιλουέτα. Αυθεντικά μοντέλα Demetrios, από 1.000 €. Πρόβα στην Areti.",
   },
 };
 
@@ -665,6 +684,9 @@ function MaterialSeo({ lang, setRoute, goMaterial, slug, count }) {
 function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette = null, initMaterial = null, goSilhouette, goMaterial, favorites = [], toggleFavorite, goProduct }) {
   const t = i18n[lang];
   const isBg = lang === "bg";
+  // Locale-aware field picker for the landing-page data objects: prefers a
+  // Greek *_el field when present, otherwise bg/en.
+  const pk = (o, k) => (lang === "el" && o[k + "_el"]) ? o[k + "_el"] : isBg ? o[k + "_bg"] : o[k + "_en"];
   // "2027" travels through the collectionId slot so App.jsx needs no new state;
   // it is a landing page, not a COLLECTIONS entry, so colData stays null.
   const seasonData = initCollection === SEASON_ID ? SEASON_2027 : null;
@@ -707,11 +729,11 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   const L3 = (bg, en, el) => (lang === "el" ? el : isBg ? bg : en);
   useSeo({
     title: seasonData
-      ? (isBg ? seasonData.title_bg(seasonDresses.length) : seasonData.title_en(seasonDresses.length))
+      ? (lang === "el" ? seasonData.title_el(seasonDresses.length) : isBg ? seasonData.title_bg(seasonDresses.length) : seasonData.title_en(seasonDresses.length))
       : matData
-      ? (isBg ? `${matData.h1_bg} в София — ${matCount} модела Demetrios | Арети` : `${matData.h1_en} in Sofia — ${matCount} Demetrios styles | Areti`)
+      ? L3(`${matData.h1_bg} в София — ${matCount} модела Demetrios | Арети`, `${matData.h1_en} in Sofia — ${matCount} Demetrios styles | Areti`, `${matData.h1_el} στη Σόφια — ${matCount} μοντέλα Demetrios | Areti`)
       : silData
-      ? (isBg ? `${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети` : `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`)
+      ? L3(`${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети`, `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`, `${silData.h1_el} στη Σόφια — ${silCount} μοντέλα Demetrios | Areti`)
       : isEvening
       // "бални рокли 2027" is the fastest-growing evening query; the year goes
       // in the title, and "бални" leads so it does not mirror the blog post
@@ -719,20 +741,20 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       ? L3("Бални и абитуриентски рокли 2027 в София — колекция | Арети", "Prom & Evening Dresses 2027 in Sofia | Areti", "Βραδινά & φορέματα αποφοίτησης 2027 στη Σόφια | Areti")
       : colData
         ? ((CTR_TITLES[lang] || CTR_TITLES.en)[initCollection] || L3(`Луксозни булчински рокли ${colData.label} в София | Арети`, `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`, `Πολυτελή νυφικά ${colData.label} στη Σόφια | Areti`))
-        : L3("Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети", "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti", "Νυφικά & βραδινά φορέματα στη Σόφια — 100+ μοντέλα από 1.000 € | Areti"),
+        : L3("Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети", "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti", "Νυφικά στη Σόφια — 100+ μοντέλα Demetrios από 1.000 € | Areti"),
     description: seasonData
-      ? (isBg ? seasonData.meta_bg : seasonData.meta_en)
+      ? (pk(seasonData, "meta"))
       : matData
-      ? (isBg ? matData.meta_bg : matData.meta_en)
+      ? (pk(matData, "meta"))
       : silData
-      ? (isBg ? silData.meta_bg : silData.meta_en)
+      ? (pk(silData, "meta"))
       : isEvening
       ? L3(
           `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Проба по предварителен час, корекции на място.`,
           `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Fitting by appointment, in-house alterations.`,
           `Φορέματα αποφοίτησης, μπαλ και επίσημα στη Σόφια — ${colCount} μοντέλα στην Areti. Πρόβα με ραντεβού, προσαρμογές επιτόπου.`)
       : colData
-        ? (isBg ? (colData.seo_desc_bg || colData.desc_bg) : (colData.seo_desc_en || colData.desc_en))
+        ? L3(colData.seo_desc_bg || colData.desc_bg, colData.seo_desc_en || colData.desc_en, colData.seo_desc_el || colData.seo_desc_en || colData.desc_en)
         : L3(
             "Над 100 булчински и сватбени рокли в София — цени от 1 000 до 4 000 €. Demetrios, Cosmobella, Platinum, Destination Romance. Проба по час в Арети.",
             "Over 100 wedding dresses in Sofia — from €1,000 to €4,000. Demetrios, Cosmobella, Platinum, Destination Romance. Fittings at Areti.",
@@ -752,8 +774,8 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         { name: isBg ? "Начало" : "Home", url: "/" },
         { name: isBg ? "Колекция" : "Collection", url: "/collection" },
         ...(colData ? [{ name: colData.label, url: `/collection/${colData.id}` }] : []),
-        ...(silData ? [{ name: isBg ? silData.h1_bg : silData.h1_en, url: `/collection/silueti/${initSilhouette}` }] : []),
-        ...(matData ? [{ name: isBg ? matData.h1_bg : matData.h1_en, url: `/collection/materii/${initMaterial}` }] : []),
+        ...(silData ? [{ name: pk(silData, "h1"), url: `/collection/silueti/${initSilhouette}` }] : []),
+        ...(matData ? [{ name: pk(matData, "h1"), url: `/collection/materii/${initMaterial}` }] : []),
         ...(seasonData ? [{ name: isBg ? "Колекция 2027" : "2027 Collection", url: `/collection/${SEASON_ID}` }] : []),
       ]),
       ...(seasonData ? [faqSchema(SEASON_FAQ[isBg ? "bg" : "en"])] : []),
@@ -874,9 +896,9 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               title carried the keywords and the strongest heading on the page
               carried none of them. */}
           <h1>
-            {seasonData ? (isBg ? seasonData.h1_bg : seasonData.h1_en)
-              : matData ? (isBg ? matData.h1_bg : matData.h1_en)
-              : silData ? (isBg ? silData.h1_bg : silData.h1_en)
+            {seasonData ? (pk(seasonData, "h1"))
+              : matData ? (pk(matData, "h1"))
+              : silData ? (pk(silData, "h1"))
               : activeCol === "evening"
                 ? (lang === "el" ? <>Βραδινά, μπαλ και <em>φορέματα αποφοίτησης</em></> : isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
               : activeColData
@@ -887,10 +909,10 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           </h1>
           {seasonData ? (
             <>
-              <p className="collection-intro">{isBg ? seasonData.intro_bg : seasonData.intro_en}</p>
+              <p className="collection-intro">{pk(seasonData, "intro")}</p>
               {seasonDresses.length === 0 && (
                 <p className="collection-intro" style={{ borderLeft: "2px solid var(--champagne-deep)", paddingLeft: 16 }}>
-                  {isBg ? seasonData.notice_bg : seasonData.notice_en}{' '}
+                  {pk(seasonData, "notice")}{' '}
                   <a href={withLang("/booking", lang)} onClick={(e) => { e.preventDefault(); setRoute("booking"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
                     {isBg ? "Запази час →" : "Book a fitting →"}
                   </a>
@@ -899,14 +921,14 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
             </>
           ) : matData ? (
             <p className="collection-intro">
-              {isBg ? matData.intro_bg : matData.intro_en}{' '}
+              {pk(matData, "intro")}{' '}
               <a href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
                 {isBg ? "Вижте всички булчински рокли →" : "See all wedding dresses →"}
               </a>
             </p>
           ) : silData ? (
             <p className="collection-intro">
-              {isBg ? silData.intro_bg : silData.intro_en}{' '}
+              {pk(silData, "intro")}{' '}
               <a href={withLang("/collection", lang)} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink-soft)", textDecoration: "underline" }}>
                 {isBg ? "Вижте всички булчински рокли →" : "See all wedding dresses →"}
               </a>
@@ -997,7 +1019,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
           does not: how many, and where. */}
       <h2 className="grid-heading">
         {seasonData && seasonDresses.length === 0
-          ? (isBg ? seasonData.waiting_bg : seasonData.waiting_en)
+          ? (pk(seasonData, "waiting"))
           : <>
               {isBg ? `${headingCount} модела` : `${headingCount} styles`}
               <span className="grid-heading-count">

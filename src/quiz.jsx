@@ -151,12 +151,16 @@ function QuizPage({ lang, setRoute, goProduct, goSilhouette, favorites = [], tog
   const [done, setDone] = useState(false);
 
   useSeo({
-    title: isBg
-      ? 'Коя булчинска рокля ти отива? — тест за силует | Арети'
-      : 'Which Wedding Dress Suits You? — Silhouette Quiz | Areti',
-    description: isBg
-      ? 'Безплатен тест: 5 въпроса и виждате кои булчински рокли Demetrios подхождат на вашата фигура и бюджет — с реални модели от салон Арети, София.'
-      : 'Free quiz: answer 5 questions and see which Demetrios wedding dresses suit your figure, style and budget. Results show real styles from Areti salon in Sofia.',
+    title: {
+      bg: 'Коя булчинска рокля ти отива? — тест за силует | Арети',
+      en: 'Which Wedding Dress Suits You? — Silhouette Quiz | Areti',
+      el: 'Ποιο νυφικό σας ταιριάζει; — τεστ σιλουέτας | Areti',
+    }[lang],
+    description: {
+      bg: 'Безплатен тест: 5 въпроса и виждате кои булчински рокли Demetrios подхождат на вашата фигура и бюджет — с реални модели от салон Арети, София.',
+      en: 'Free quiz: answer 5 questions and see which Demetrios wedding dresses suit your figure, style and budget. Results show real styles from Areti salon in Sofia.',
+      el: 'Δωρεάν τεστ: 5 ερωτήσεις και βλέπετε ποια νυφικά Demetrios ταιριάζουν στη σιλουέτα και τον προϋπολογισμό σας — με πραγματικά μοντέλα από την Areti, Σόφια.',
+    }[lang],
     url: '/kviz',
     lang,
     keywords: isBg

@@ -437,10 +437,16 @@ function Confirmation({ t, data, setRoute, lang, dressRefs = [] }) {
 function BookingPage({ lang, setRoute, dress = null }) {
   const t = i18n[lang];
   useSeo({
-    title: lang === "bg" ? "Запази час за проба — консултация в Арети" : "Book a Fitting — Consultation at Areti",
-    description: lang === "bg"
-      ? "Запазете безплатен час за проба на булчински рокли в Арети, София. Лична консултация с експерт, без обвързване. Изберете дата, час и тип консултация."
-      : "Book a free wedding dress fitting at Areti, Sofia. Personal consultation with an expert, no obligation. Choose date, time and consultation type.",
+    title: {
+      bg: "Запази час за проба — консултация в Арети",
+      en: "Book a Fitting — Consultation at Areti",
+      el: "Κλείστε ραντεβού για πρόβα — συμβουλευτική στην Areti",
+    }[lang],
+    description: {
+      bg: "Запазете безплатен час за проба на булчински рокли в Арети, София. Лична консултация с експерт, без обвързване. Изберете дата, час и тип консултация.",
+      en: "Book a free wedding dress fitting at Areti, Sofia. Personal consultation with an expert, no obligation. Choose date, time and consultation type.",
+      el: "Κλείστε ραντεβού για πρόβα νυφικών στην Areti, Σόφια. Προσωπική συμβουλευτική, χωρίς δέσμευση. Επιλέξτε ημερομηνία και ώρα. Μιλάμε ελληνικά.",
+    }[lang],
     url: "/booking", lang,
     keywords: "запази час булчинска рокля, проба сватбена рокля София, консултация Арети",
     jsonLd: { "@graph": [
