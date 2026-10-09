@@ -276,3 +276,23 @@ curl -sI https://demetriosbride-bg.com/ | grep -io "font-src[^;]*"   # → font-
 заради който Lighthouse отчиташе целия файл като невалиден.
 
 Промяната е в `server/`, значи изисква `systemctl restart demetrios-backend`.
+
+## Нови снимки на продукти (`deploy/uploads-inbox/`)
+
+Снимките на сайта живеят на сървъра в `wp-content/uploads`, извън репото.
+Когато в репото влязат нови продукти, техните снимки пристигат в
+`deploy/uploads-inbox/<година>/<месец>/` — вече оптимизирани, с `.jpg` **и**
+`.webp` близнак (приложението винаги иска `.webp`; `data.js` сочи `.jpg`).
+
+При деплой, преди `npm run build`, копирайте ги в uploads и пуснете скрипта
+за вариантите — той прескача вече обработените файлове:
+
+```bash
+rsync -a deploy/uploads-inbox/ /path/to/wp-content/uploads/
+node scripts/optimize-images.mjs /path/to/wp-content/uploads --variants
+npm run build
+```
+
+Проверка след деплой: `curl -I https://demetriosbride-bg.com/wp-content/uploads/2026/10/<име>.webp`
+трябва да върне 200. Папката в репото може да се изтрие след като снимките са
+на сървъра и са в backup-а.

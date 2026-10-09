@@ -610,7 +610,12 @@ export const MATERIAL_MATCH = {
   saten:   /satin|charmeuse|сатен|шармюз/i,
   mikado:  /mikado|микадо/i,
 };
-export const dressHasMaterial = (d, slug) => MATERIAL_MATCH[slug]?.test(d.fabric || '') || false;
+// Silhouette hubs are bridal pages too ("Булчински рокли русалка"): the evening
+// collection carries the same silhouette values but must not populate them.
+export const isBridalSilhouette = (d, sil) => d.collection !== 'evening' && d.silhouette === sil;
+// Fabric hubs are bridal pages ("Булчински рокли от сатен"), so evening wear
+// never qualifies however its fabric is spelled.
+export const dressHasMaterial = (d, slug) => d.collection !== 'evening' && (MATERIAL_MATCH[slug]?.test(d.fabric || '') || false);
 
 const MATERIAL_PAGES = {
   dantela: {
@@ -840,7 +845,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
   const colData = initCollection && !seasonData ? COLLECTIONS.find(c => c.id === initCollection) : null;
   const silData = initSilhouette ? SILHOUETTE_PAGES[initSilhouette] : null;
   const silName = silData ? (isBg ? silData.bg : silData.en) : null;
-  const silCount = silData ? DRESSES.filter(d => d.silhouette === silData.bg).length : 0;
+  const silCount = silData ? DRESSES.filter(d => isBridalSilhouette(d, silData.bg)).length : 0;
   const matData = initMaterial ? MATERIAL_PAGES[initMaterial] : null;
   const matDresses = matData ? DRESSES.filter(d => dressHasMaterial(d, initMaterial)) : [];
   const matCount = matDresses.length;
@@ -943,7 +948,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
         (seasonData ? seasonDresses
           : cityData ? DRESSES
           : matData ? matDresses
-          : silData ? DRESSES.filter(d => d.silhouette === silData.bg)
+          : silData ? DRESSES.filter(d => isBridalSilhouette(d, silData.bg))
           : initCollection ? DRESSES.filter(d => d.collection === initCollection)
           : DRESSES),
         lang,
@@ -975,7 +980,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
     // Silhouette landing page: show every dress with this silhouette, in
     // collection order, then apply any extra user filters/sort on top.
     if (silData) {
-      const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && d.silhouette === silData.bg));
+      const ordered = COLLECTIONS.flatMap(c => DRESSES.filter(d => d.collection === c.id && isBridalSilhouette(d, silData.bg)));
       return applyFiltersAndSort(ordered, filters, sortBy);
     }
     if (matData) {
@@ -1018,7 +1023,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
     : matData
     ? matCount
     : silData
-    ? DRESSES.filter(d => d.silhouette === silData.bg).length
+    ? DRESSES.filter(d => isBridalSilhouette(d, silData.bg)).length
     : activeCol
       ? DRESSES.filter(d => d.collection === activeCol).length
       : DRESSES.length;
@@ -1482,7 +1487,9 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
     url: `/product/${dress.ref}`,
     type: "product",
     lang,
-    keywords: `булчинска рокля ${dress.ref}, ${dress.silhouette}, ${colData?.label || ''}, Demetrios, Арети София`,
+    keywords: dress.collection === "evening"
+      ? `вечерна рокля ${dress.ref}, бална рокля, абитуриентска рокля, ${dress.silhouette}, ${dress.brand || ''}, Арети София`
+      : `булчинска рокля ${dress.ref}, ${dress.silhouette}, ${colData?.label || ''}, Demetrios, Арети София`,
     jsonLd: {
       "@graph": [
         // Product markup only where it can be VALID. Evening dresses have no

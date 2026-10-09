@@ -86,6 +86,13 @@ const FABRIC_BG = {
   'taffeta': 'тафта',
   'feathers': 'пера',
   'organza': 'органза',
+  // Evening-wear fabrics (Colors Dress / Marsoni styles).
+  'jersey': 'жарсе',
+  'sequins': 'пайети',
+  'beaded mesh': 'тюл с мъниста',
+  'glitter mesh': 'блестящ тюл',
+  'stretch satin': 'еластичен сатен',
+  '3d flowers': '3D цветя',
 };
 
 const FABRIC_EL = {
@@ -111,6 +118,12 @@ const FABRIC_EL = {
   'taffeta': 'ταφτάς',
   'feathers': 'φτερά',
   'organza': 'οργάντζα',
+  'jersey': 'ζέρσεϊ',
+  'sequins': 'παγιέτες',
+  'beaded mesh': 'τούλι με χάντρες',
+  'glitter mesh': 'αστραφτερό τούλι',
+  'stretch satin': 'ελαστικό σατέν',
+  '3d flowers': '3D λουλούδια',
 };
 
 /** Translate a comma-separated fabric string for the given language.
@@ -192,6 +205,13 @@ const DESC_POOLS = {
       "Създадена за вечерните моменти — бал, тържество или официално събитие в София.",
       "Подходяща за абитуриентки и дами, които търсят елегантна официална визия.",
     ],
+    // Evening styles are not Demetrios (Colors Dress / Marsoni), so their
+    // closer must not vouch for "Demetrios quality".
+    closerEvening: [
+      "Запазете час за проба в салон Арети, София — ще я видите на живо и ще получите съвет от стилист.",
+      "Пробвайте я лично в Арети — корекциите се правят в собственото ни ателие.",
+      "Запазете час и открийте дали Style {ref} е вашата рокля за събитието.",
+    ],
     closer: [
       "Запазете час за проба в Арети — официален представител на Demetrios в България от 1992 г.",
       "Пробвайте я лично в салон Арети в София и усетете качеството на Demetrios.",
@@ -243,6 +263,11 @@ const DESC_POOLS = {
       "A great choice for a ball, cocktail party or special occasion where you want to shine.",
       "Made for evening moments — a prom, celebration or formal event in Sofia.",
       "Suited to graduates and women seeking an elegant formal look.",
+    ],
+    closerEvening: [
+      "Book a fitting at the Areti salon in Sofia — see it in person and get a stylist's advice.",
+      "Try it on in person at Areti — alterations are done in our own atelier.",
+      "Book an appointment and find out whether Style {ref} is your dress for the occasion.",
     ],
     closer: [
       "Book a fitting at Areti — the official Demetrios representative in Bulgaria since 1992.",
@@ -299,6 +324,11 @@ const DESC_POOLS = {
       "Δημιουργημένο για τις βραδινές στιγμές — χορό, γιορτή ή επίσημη εκδήλωση στη Σόφια.",
       "Κατάλληλο για αποφοίτους και κυρίες που αναζητούν μια κομψή, επίσημη εμφάνιση.",
     ],
+    closerEvening: [
+      "Κλείστε ραντεβού για πρόβα στην Areti, Σόφια — δείτε το από κοντά με συμβουλή στυλίστριας.",
+      "Δοκιμάστε το στην Areti — οι προσαρμογές γίνονται στο δικό μας ατελιέ.",
+      "Κλείστε ραντεβού και ανακαλύψτε αν το Style {ref} είναι το φόρεμά σας για την περίσταση.",
+    ],
     closer: [
       "Κλείστε ραντεβού για πρόβα στην Areti — επίσημος αντιπρόσωπος της Demetrios στη Βουλγαρία από το 1992.",
       "Δοκιμάστε το από κοντά στο κατάστημα Areti στη Σόφια και νιώστε την ποιότητα Demetrios.",
@@ -335,12 +365,17 @@ export function buildProductDescription(p, lang = 'bg') {
   parts.push(fill(pick(L.openers, h)));
 
   const silPool = L.silhouette[silKey];
-  if (silPool) parts.push(fill(pick(silPool, h >>> 3)));
+  // The silhouette sentences were written for bridal pages; on evening wear
+  // the "brides" phrasing contradicts the occasion sentence that follows.
+  const deBride = str => evening
+    ? str.replace(/за булки/g, 'за дами').replace(/for brides/g, 'for those').replace(/για νύφες/g, 'για όσες')
+    : str;
+  if (silPool) parts.push(deBride(fill(pick(silPool, h >>> 3))));
 
   if (fabric) parts.push(fill(pick(L.fabric, h >>> 5)));
 
   parts.push(fill(pick(evening ? L.occasionEvening : L.occasion, h >>> 7)));
-  parts.push(fill(pick(L.closer, h >>> 9)));
+  parts.push(fill(pick((evening && L.closerEvening) || L.closer, h >>> 9)));
 
   return parts.join(' ');
 }
@@ -368,7 +403,7 @@ export function buildProductSpecs(p, lang = 'bg') {
     { label: L.silhouette, value: silhouette },
     fabric ? { label: L.fabric, value: fabric } : null,
     { label: L.collection, value: collLabel },
-    { label: L.brand, value: 'Demetrios' },
+    { label: L.brand, value: p.brand || 'Demetrios' },
   ];
   return rows.filter(Boolean);
 }
@@ -432,7 +467,9 @@ export function buildProductTitle(p, lang = 'bg') {
     if (fabric) base += ` με ${fabric}`;
   } else {
     base = [kind, sil].filter(Boolean).join(' ');
-    if (fabric) base += ` с ${fabric}`;
+    // "с сатен" is a spelling error in Bulgarian: before с/з the preposition
+    // is "със".
+    if (fabric) base += ` ${/^[сз]/i.test(fabric) ? 'със' : 'с'} ${fabric}`;
   }
   base += ` — ${p.ref}`;
 
@@ -535,7 +572,7 @@ export function enhancedProductSchema(p, lang = 'bg') {
     "color": "ivory",
     "brand": {
       "@type": "Brand",
-      "name": "Demetrios",
+      "name": p.brand || "Demetrios",
     },
     "isRelatedTo": {
       "@type": "ProductCollection",
