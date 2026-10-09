@@ -549,7 +549,7 @@ function EveningSeoContent({ lang, setRoute }) {
   ];
 
   return (
-    <section className="collection-seo">
+    <section className="collection-seo" style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
         {isBg ? "Как да изберете бална рокля" : "How to choose an evening dress"}
       </h2>
