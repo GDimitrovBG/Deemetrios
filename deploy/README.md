@@ -296,3 +296,33 @@ npm run build
 Проверка след деплой: `curl -I https://demetriosbride-bg.com/wp-content/uploads/2026/10/<име>.webp`
 трябва да върне 200. Папката в репото може да се изтрие след като снимките са
 на сървъра и са в backup-а.
+
+## Колекция 2027 — нови модели (снимки от Google Drive)
+
+В `src/data.js` са добавени 7 нови модела Demetrios (1564, 1566, 1567,
+1574, 1581, 1585, 1589). Данните и текстовете са готови; остават **само
+снимките**. Оригиналите са в клиентската Google Drive папка „Колекция 2027",
+по една подпапка на модел (`1564/1564_1.jpg`, `1564_2.jpg` …).
+
+Стъпки на сървъра, от папката на репото:
+
+```bash
+# 1. Свали папката „Колекция 2027" от Drive някъде, напр. ~/drive-2027/
+#    (структура: drive-2027/1564/1564_1.jpg, 1564_2.jpg, …)
+
+# 2. Оптимизирай + преименувай в SEO имена (прави .jpg И .webp близнак)
+npm i sharp            # ако липсва
+node scripts/prepare-2027-images.mjs ~/drive-2027
+#    → резултат в deploy/uploads-inbox/2027/
+
+# 3. Качи в uploads и направи вариантите, после build (както при вечерните)
+rsync -a deploy/uploads-inbox/ /path/to/wp-content/uploads/
+node scripts/optimize-images.mjs /path/to/wp-content/uploads --variants
+npm run build
+#    → rsync dist в нова директория + atomic swap
+```
+
+Проверка: `curl -I https://demetriosbride-bg.com/wp-content/uploads/2027/булчинска-рокля-Demetrios-1564-София_1.webp` → 200,
+и https://demetriosbride-bg.com/product/1564 да показва снимките.
+Имената на файловете в `scripts/prepare-2027-images.mjs` съвпадат точно с
+пътищата в `data.js` — не ги преименувай ръчно.

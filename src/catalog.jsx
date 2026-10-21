@@ -1465,7 +1465,9 @@ function ProductPage({ lang, setRoute, productRef, favorites = [], toggleFavorit
   const isBg = lang === "bg";
   const heading = getProductHeading(dress, lang);
   const cardName = `Style ${dress.ref}`;
-  const productDescription = buildProductDescription(dress, lang) || t.product.desc;
+  // 2027 models carry the salon's own Bulgarian copy (story_bg); everything
+  // else uses the deterministic generated description.
+  const productDescription = (lang === "bg" && dress.story_bg) ? dress.story_bg : (buildProductDescription(dress, lang) || t.product.desc);
   const productSpecs = buildProductSpecs(dress, lang);
   const colData = COLLECTIONS.find(c => c.id === dress.collection);
 
