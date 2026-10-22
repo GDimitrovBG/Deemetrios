@@ -568,49 +568,53 @@ function EveningSeoContent({ lang, setRoute }) {
   ];
 
   return (
-    <section className="collection-seo" style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
-        {isBg ? "Как да изберете бална рокля" : "How to choose an evening dress"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
-        {isBg
-          ? "Изборът на бална рокля започва от силуета, а не от цвета. А-силуетът е най-универсален и ласкае почти всяка фигура; русалката подчертава извивките; принцесата акцентира талията и създава обем. След това идват тъканта и детайлите — сатенът изглежда по-плътен и структуриран, тюлът с мъниста улавя светлината, дантелата придава мекота. В салона можете да пробвате неограничен брой модели, а корекциите се правят на място в ателието."
-          : "Choosing an evening dress starts with the silhouette, not the colour. The A-line is the most universal and flatters almost every figure; the mermaid accentuates curves; the ball gown emphasises the waist and adds volume. Fabric and detail come next — satin reads denser and more structured, beaded tulle catches the light, lace softens the line. You can try on as many styles as you like, and alterations happen in our own atelier."}
-      </p>
-
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12, marginTop: 40 }}>
-        {isBg ? "Тенденции при балните рокли 2027" : "Ball & prom dress trends 2027"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
-        {isBg
-          ? "За сезон 2027 балните рокли залагат на наситени цветове — изумрудено, виолетово, бордо и тъмносиньо изглеждат скъпо на снимка и подхождат на повечето тенове. Силуетите са два водещи: ефектната русалка за по-смела визия и чистата А-линия с баска талия за елегантна, универсална линия. При материите блести тюлът с мъниста, а структурното сатен и микадо дават модерна, изчистена визия. Разгледайте актуалните бални и абитуриентски рокли 2027 по-долу и ги пробвайте на място в София."
-          : "For the 2027 season, ball and prom dresses lean into rich colours — emerald, violet, burgundy and navy read expensive in photos and suit most skin tones. Two silhouettes lead: the striking mermaid for a bolder look and the clean A-line with a basque waist for an elegant, versatile line. In fabrics, beaded tulle shines, while structured satin and mikado give a modern, clean look. Browse the current 2027 ball and prom dresses below and try them on in Sofia."}
-      </p>
-
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 40 }}>
-        {isBg ? "За какви поводи" : "For which occasions"}
-      </h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 16 }}>
-        {occasions.map(o => (
-          <div key={o.t} style={{ background: "var(--surface)", padding: "18px 20px", borderRadius: 8 }}>
-            <h3 style={{ fontFamily: "var(--f-serif)", fontSize: 18, fontWeight: 400, marginBottom: 8 }}>{o.t}</h3>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{o.d}</p>
-          </div>
-        ))}
+    <section className="collection-seo seo-ed">
+      <div className="seo-ed-block">
+        <div className="seo-ed-kicker">{isBg ? "Съвети" : "Advice"}</div>
+        <h2 className="seo-ed-h">{isBg ? "Как да изберете бална рокля" : "How to choose an evening dress"}</h2>
+        <p className="seo-ed-p">
+          {isBg
+            ? "Изборът на бална рокля започва от силуета, а не от цвета. А-силуетът е най-универсален и ласкае почти всяка фигура; русалката подчертава извивките; принцесата акцентира талията и създава обем. След това идват тъканта и детайлите — сатенът изглежда по-плътен и структуриран, тюлът с мъниста улавя светлината, дантелата придава мекота. В салона можете да пробвате неограничен брой модели, а корекциите се правят на място в ателието."
+            : "Choosing an evening dress starts with the silhouette, not the colour. The A-line is the most universal and flatters almost every figure; the mermaid accentuates curves; the ball gown emphasises the waist and adds volume. Fabric and detail come next — satin reads denser and more structured, beaded tulle catches the light, lace softens the line. You can try on as many styles as you like, and alterations happen in our own atelier."}
+        </p>
       </div>
 
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginTop: 24 }}>
-        {isBg ? "Търсите булчинска, а не официална рокля? " : "Looking for a wedding dress rather than a formal one? "}
-        <a href={isBg ? "/collection" : "/en/collection"} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
-          {isBg ? "Вижте булчинската колекция →" : "See the bridal collection →"}
-        </a>
-        {isBg ? " Или направете " : " Or take the "}
-        <a href={isBg ? "/kviz" : "/en/kviz"} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
-          {isBg ? "безплатния тест за силует →" : "free silhouette quiz →"}
-        </a>
-      </p>
+      <div className="seo-ed-rule" />
 
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 48 }}>
+      <div className="seo-ed-block">
+        <div className="seo-ed-kicker">{isBg ? "Сезон 2027" : "2027 season"}</div>
+        <h2 className="seo-ed-h">{isBg ? "Тенденции при балните рокли 2027" : "Ball & prom dress trends 2027"}</h2>
+        <p className="seo-ed-p">
+          {isBg
+            ? "За сезон 2027 балните рокли залагат на наситени цветове — изумрудено, виолетово, бордо и тъмносиньо изглеждат скъпо на снимка и подхождат на повечето тенове. Силуетите са два водещи: ефектната русалка за по-смела визия и чистата А-линия с баска талия за елегантна, универсална линия. При материите блести тюлът с мъниста, а структурното сатен и микадо дават модерна, изчистена визия. Разгледайте актуалните бални и абитуриентски рокли 2027 по-долу и ги пробвайте на място в София."
+            : "For the 2027 season, ball and prom dresses lean into rich colours — emerald, violet, burgundy and navy read expensive in photos and suit most skin tones. Two silhouettes lead: the striking mermaid for a bolder look and the clean A-line with a basque waist for an elegant, versatile line. In fabrics, beaded tulle shines, while structured satin and mikado give a modern, clean look. Browse the current 2027 ball and prom dresses below and try them on in Sofia."}
+        </p>
+      </div>
+
+      <div className="seo-ed-block">
+        <div className="seo-ed-kicker">{isBg ? "Поводи" : "Occasions"}</div>
+        <h2 className="seo-ed-h">{isBg ? "За какви поводи" : "For which occasions"}</h2>
+        <div className="seo-ed-cards">
+          {occasions.map(o => (
+            <div key={o.t} className="seo-ed-card">
+              <h3>{o.t}</h3>
+              <p>{o.d}</p>
+            </div>
+          ))}
+        </div>
+        <p className="seo-ed-note">
+          {isBg ? "Търсите булчинска, а не официална рокля? " : "Looking for a wedding dress rather than a formal one? "}
+          <a href={isBg ? "/collection" : "/en/collection"} onClick={(e) => { e.preventDefault(); setRoute("collection"); }}>
+            {isBg ? "Вижте булчинската колекция →" : "See the bridal collection →"}
+          </a>
+          {isBg ? " Или направете " : " Or take the "}
+          <a href={isBg ? "/kviz" : "/en/kviz"} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }}>
+            {isBg ? "безплатния тест за силует →" : "free silhouette quiz →"}
+          </a>
+        </p>
+      </div>
+
+      <h2 className="seo-ed-faq-head">
         {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
       </h2>
       <div className="collection-faq">

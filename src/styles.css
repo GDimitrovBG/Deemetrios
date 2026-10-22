@@ -1876,6 +1876,50 @@ a { color: inherit; text-decoration: none; }
   .season-stat:first-child { border-top: none; }
 }
 
+/* --- Editorial SEO content (evening & other long-form SEO sections) ------- */
+.seo-ed { max-width: 880px; margin: 0 auto; padding: 72px 24px 0; }
+.seo-ed-block { margin-bottom: 56px; }
+.seo-ed-kicker {
+  font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--champagne-text); margin-bottom: 14px;
+}
+.seo-ed-h {
+  font-family: var(--f-display); font-weight: 400; line-height: 1.14;
+  font-size: clamp(27px, 3.6vw, 42px); margin: 0 0 20px;
+}
+.seo-ed-p { font-size: 16px; line-height: 1.85; color: var(--ink-soft); margin: 0; }
+.seo-ed-rule {
+  height: 1px; width: 90px; margin: 56px auto;
+  background: color-mix(in srgb, var(--champagne) 60%, transparent);
+}
+.seo-ed-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px; margin-top: 10px;
+}
+.seo-ed-card {
+  background: var(--bg-soft);
+  border: 1px solid color-mix(in srgb, var(--ink-mute) 14%, transparent);
+  border-radius: 12px; padding: 28px 26px;
+  transition: border-color .2s, transform .2s;
+}
+.seo-ed-card:hover { border-color: color-mix(in srgb, var(--champagne) 55%, transparent); transform: translateY(-2px); }
+.seo-ed-card h3 {
+  font-family: var(--f-serif); font-style: italic; font-weight: 400;
+  font-size: 22px; margin-bottom: 10px; color: var(--ink);
+}
+.seo-ed-card p { font-size: 14.5px; line-height: 1.72; color: var(--ink-soft); }
+.seo-ed-note { font-size: 16px; line-height: 1.85; color: var(--ink-soft); margin-top: 28px; }
+.seo-ed-note a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+.seo-ed-faq-head {
+  font-family: var(--f-display); font-weight: 400;
+  font-size: clamp(26px, 3.4vw, 40px); margin: 56px 0 24px;
+}
+@media (max-width: 640px) {
+  .seo-ed { padding-top: 52px; }
+  .seo-ed-block { margin-bottom: 44px; }
+  .seo-ed-card { padding: 22px 20px; }
+}
+
 .timeline {
   padding: var(--s-9) var(--gutter);
   max-width: var(--maxw); margin: 0 auto;
