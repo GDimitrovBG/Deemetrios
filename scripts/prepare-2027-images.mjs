@@ -44,10 +44,13 @@ const Q_JPEG = 82;
 const Q_WEBP = 80;
 
 // model → number of photos. Must match the imgs arrays in src/data.js.
-const MODELS = { '1564': 3, '1566': 2, '1567': 3, '1574': 2, '1581': 3, '1585': 2, '1589': 3, '1594': 4, '1596': 3, '1598': 3 };
+const MODELS = { '1564': 3, '1566': 2, '1567': 3, '1574': 2, '1581': 3, '1585': 2, '1589': 3, '1594': 4, '1596': 3, '1598': 3,
+  '200177': 5, '200182': 2, '200189': 3, '8287': 2, '8289': 5, '8293': 2, '8295': 2, '8297': 3, '8299': 2, '8307': 2, '8315': 2 };
 
 // The SEO filename stem used in src/data.js (without the _<n> index or extension).
-const stem = (model) => `булчинска-рокля-Demetrios-${model}-София`;
+// 8xxx models are Cosmobella; everything else (1xxx, 200xxx) is Demetrios.
+const brandOf = (model) => model.startsWith('8') ? 'Cosmobella' : 'Demetrios';
+const stem = (model) => `булчинска-рокля-${brandOf(model)}-${model}-София`;
 
 const src = process.argv[2];
 if (!src) {
