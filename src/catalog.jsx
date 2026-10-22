@@ -459,29 +459,47 @@ function SeasonSeo({ lang, setRoute, count }) {
   const isPrerender = typeof window !== 'undefined' && window.__PRERENDER__;
   const faq = SEASON_FAQ[isBg ? "bg" : "en"];
   return (
-    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
-        {isBg ? "Какво носи новият сезон" : "What the new season brings"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
-        {isBg
-          ? "Demetrios представя нова колекция всяка есен, а Арети — официалният представител за България от 1992 г. — избира моделите, които влизат в салона в София. Кои точно рокли ще пристигнат, решаваме, когато видим колекцията на живо, затова тази страница се обновява с всяка нова доставка, вместо да обещава предварително. Постоянното е друго: трите силуета, с които работим — А-силует, русалка и принцеса, — оригиналните материи на Demetrios и корекциите в собственото ни ателие."
-          : "Demetrios presents a new collection every autumn, and Areti — the official representative for Bulgaria since 1992 — selects the styles that come to the Sofia salon. Which gowns arrive is decided when we see the collection in person, so this page is updated with each delivery rather than promising in advance. What stays constant: the three silhouettes we work with — A-line, mermaid and ball gown — original Demetrios fabrics, and alterations in our own atelier."}
-      </p>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12, marginTop: 40 }}>
-        {isBg ? "Кога да изберете рокля за сватба през 2027 г." : "When to choose a dress for a 2027 wedding"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
-        {isBg
-          ? "Идеалното начало е 6 до 9 месеца преди сватбата. Ако избраният модел е на склад, го взимате след корекциите — 1–2 седмици. Ако се поръчва от Demetrios, доставката отнема 3–4 месеца и следват пробни срещи за корекции. За сватба през лятото на 2027 г. това означава избор до януари–февруари; за есенна сватба — до април. Цените остават по колекции: от 1 000 € за Cosmobella до 4 000 € за Platinum."
-          : "The ideal start is 6 to 9 months before the wedding. If the style you choose is in stock, you take it after alterations — 1–2 weeks. If it is ordered from Demetrios, delivery takes 3–4 months, followed by fitting sessions for alterations. For a summer 2027 wedding that means choosing by January–February; for an autumn wedding, by April. Prices stay by collection: from €1,000 for Cosmobella to €4,000 for Platinum."}
-      </p>
-      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
-        <span>{count ? `${count} ${isBg ? "нови модела в салона" : "new styles in store"}` : (isBg ? "Пристигат до края на септември" : "Arriving by end of September")}</span>
-        <span>{isBg ? "Цени от 1 000 €" : "Prices from €1,000"}</span>
-        <span>{isBg ? "Оригинални Demetrios" : "Original Demetrios"}</span>
+    <section className="season-seo">
+      <div className="season-eyebrow">{isBg ? "Колекция 2027 · Demetrios" : "2027 Collection · Demetrios"}</div>
+
+      <div className="season-stats">
+        <div className="season-stat">
+          <span className="s-num">{count || "—"}</span>
+          <span className="s-label">{isBg ? "нови модела в салона" : "new styles in store"}</span>
+        </div>
+        <div className="season-stat">
+          <span className="s-num">{isBg ? "от 1 000 €" : "from €1,000"}</span>
+          <span className="s-label">{isBg ? "начална цена" : "starting price"}</span>
+        </div>
+        <div className="season-stat">
+          <span className="s-num">1992</span>
+          <span className="s-label">{isBg ? "официален представител" : "official representative"}</span>
+        </div>
       </div>
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
+
+      <div className="season-block">
+        <div className="season-kicker">{isBg ? "Новият сезон" : "The new season"}</div>
+        <h2>{isBg ? "Какво носи новият сезон" : "What the new season brings"}</h2>
+        <p>
+          {isBg
+            ? "Demetrios представя нова колекция всяка есен, а Арети — официалният представител за България от 1992 г. — избира моделите, които влизат в салона в София. Кои точно рокли ще пристигнат, решаваме, когато видим колекцията на живо, затова тази страница се обновява с всяка нова доставка, вместо да обещава предварително. Постоянното е друго: трите силуета, с които работим — А-силует, русалка и принцеса, — оригиналните материи на Demetrios и корекциите в собственото ни ателие."
+            : "Demetrios presents a new collection every autumn, and Areti — the official representative for Bulgaria since 1992 — selects the styles that come to the Sofia salon. Which gowns arrive is decided when we see the collection in person, so this page is updated with each delivery rather than promising in advance. What stays constant: the three silhouettes we work with — A-line, mermaid and ball gown — original Demetrios fabrics, and alterations in our own atelier."}
+        </p>
+      </div>
+
+      <div className="season-rule" />
+
+      <div className="season-block">
+        <div className="season-kicker">{isBg ? "Планиране" : "Planning"}</div>
+        <h2>{isBg ? "Кога да изберете рокля за сватба през 2027 г." : "When to choose a dress for a 2027 wedding"}</h2>
+        <p>
+          {isBg
+            ? "Идеалното начало е 6 до 9 месеца преди сватбата. Ако избраният модел е на склад, го взимате след корекциите — 1–2 седмици. Ако се поръчва от Demetrios, доставката отнема 3–4 месеца и следват пробни срещи за корекции. За сватба през лятото на 2027 г. това означава избор до януари–февруари; за есенна сватба — до април. Цените остават по колекции: от 1 000 € за Cosmobella до 4 000 € за Platinum."
+            : "The ideal start is 6 to 9 months before the wedding. If the style you choose is in stock, you take it after alterations — 1–2 weeks. If it is ordered from Demetrios, delivery takes 3–4 months, followed by fitting sessions for alterations. For a summer 2027 wedding that means choosing by January–February; for an autumn wedding, by April. Prices stay by collection: from €1,000 for Cosmobella to €4,000 for Platinum."}
+        </p>
+      </div>
+
+      <div className="season-cta">
         <button className="btn btn-solid" onClick={() => setRoute("booking")}>
           {isBg ? "Запази първа проба →" : "Book a first-look fitting →"}
         </button>
@@ -489,7 +507,8 @@ function SeasonSeo({ lang, setRoute, count }) {
           {isBg ? "Всички булчински рокли" : "All wedding dresses"}
         </a>
       </div>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 48 }}>
+
+      <h2 className="season-faq-head">
         {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
       </h2>
       <div className="collection-faq">
