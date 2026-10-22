@@ -244,7 +244,7 @@ export default function App() {
     case "admin": page = null; break;
     default: {
       const Home = pageFor("home");
-      page = <Home lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />;
+      page = <Home lang={lang} setRoute={setRoute} heroVariant={tweaks.heroVariant} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} goCollection={goCollection} />;
       break;
     }
   }
