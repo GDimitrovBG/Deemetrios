@@ -89,7 +89,7 @@ async function loadRoutes() {
   // Greek mirrors the same set as English. No blog posts are translated to
   // Greek yet, so /el/blog is the (Greek-chrome) listing only; individual posts
   // fold back to the Bulgarian original, exactly like an untranslated /en post.
-  const elBlogRoutes = ['/blog'];
+  const elBlogRoutes = ['/blog', ...blog.BLOG_POSTS.filter(b => b.title_el).map(b => `/blog/${b.slug}`)];
   const elRoutes = [...staticRoutes.filter(r => !r.startsWith('/blog') && !r.startsWith('/collection/gradove')), ...productRoutes, ...elBlogRoutes]
     .map(r => (r === '/' ? '/el' : `/el${r}`));
 

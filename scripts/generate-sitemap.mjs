@@ -73,7 +73,7 @@ function heading(d) {
  * bg and en entries. Each URL must list itself as well, or Google discards
  * the whole cluster.
  */
-function urlBlock(loc, meta, def, images = [], bgPath = null, hasEl = true) {
+function urlBlock(loc, meta, def, images = [], bgPath = null, hasEl = true, hasEn = true) {
   const m = meta[loc] || {};
   const lastmod    = m.lastmod    || def.lastmod;
   const changefreq = m.changefreq || def.changefreq;
@@ -90,7 +90,7 @@ function urlBlock(loc, meta, def, images = [], bgPath = null, hasEl = true) {
     const elUrl = `${SITE}${bgPath === '/' ? '/el/' : `/el${bgPath}`}`;
     altXml =
       `\n    <xhtml:link rel="alternate" hreflang="bg" href="${bgUrl}"/>` +
-      `\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>` +
+      (hasEn ? `\n    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}"/>` : '') +
       // el is a full locale for every page EXCEPT blog posts (no Greek twin
       // yet), which pass hasEl=false so their cluster stays bg/en only.
       (hasEl ? `\n    <xhtml:link rel="alternate" hreflang="el" href="${elUrl}"/>` : '') +
@@ -114,18 +114,20 @@ async function run() {
   // Emits the Bulgarian URL and its English + Greek twins, each carrying the
   // full hreflang set. Pass { hasEl: false } for pages that exist only in
   // bg/en (translated blog posts).
-  const pair = (path, def, images = [], { hasEl = true } = {}) => {
-    out.push(urlBlock(`${SITE}${path}`, meta, def, images, path, hasEl));
+  const pair = (path, def, images = [], { hasEl = true, hasEn = true } = {}) => {
+    out.push(urlBlock(`${SITE}${path}`, meta, def, images, path, hasEl, hasEn));
     // '/en/' and '/el/' keep the trailing slash — the server 301s /en → /en/,
     // and a sitemap entry that redirects is reported as "Page with redirect".
-    const enPath = path === '/' ? '/en/' : `/en${path}`;
     // Secondary locales get a slightly lower priority so crawl budget favours
     // the primary market. Images are listed once, on the Bulgarian entry.
     const secPriority = String(Math.max(0.1, Number(def.priority) - 0.1).toFixed(1));
-    out.push(urlBlock(`${SITE}${enPath}`, meta, { ...def, priority: secPriority }, [], path, hasEl));
+    if (hasEn) {
+      const enPath = path === '/' ? '/en/' : `/en${path}`;
+      out.push(urlBlock(`${SITE}${enPath}`, meta, { ...def, priority: secPriority }, [], path, hasEl, hasEn));
+    }
     if (hasEl) {
       const elPath = path === '/' ? '/el/' : `/el${path}`;
-      out.push(urlBlock(`${SITE}${elPath}`, meta, { ...def, priority: secPriority }, [], path, hasEl));
+      out.push(urlBlock(`${SITE}${elPath}`, meta, { ...def, priority: secPriority }, [], path, hasEl, hasEn));
     }
   };
 
@@ -178,9 +180,12 @@ async function run() {
   for (const b of BLOG_POSTS) {
     const slug = b.slug ? `/blog/${b.slug}` : `/blog/${b.id}`;
     const images = b.image ? [{ loc: absImg(b.image), title: esc(b.title || 'Блог — Арети') }] : [];
-    // Blog posts have no Greek twin yet → bg/en only (hasEl:false).
-    if (b.title_en) pair(slug, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images, { hasEl: false });
-    else out.push(urlBlock(`${SITE}${slug}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images));
+    // bg always; en when title_en; el when title_el. Build the alt set to match.
+    if (b.title_en || b.title_el) {
+      pair(slug, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images, { hasEl: !!b.title_el, hasEn: !!b.title_en });
+    } else {
+      out.push(urlBlock(`${SITE}${slug}`, meta, { lastmod: today, changefreq: 'monthly', priority: '0.6' }, images));
+    }
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
