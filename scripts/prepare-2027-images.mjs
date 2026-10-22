@@ -44,7 +44,7 @@ const Q_JPEG = 82;
 const Q_WEBP = 80;
 
 // model → number of photos. Must match the imgs arrays in src/data.js.
-const MODELS = { '1564': 3, '1566': 2, '1567': 3, '1574': 2, '1581': 3, '1585': 2, '1589': 3 };
+const MODELS = { '1564': 3, '1566': 2, '1567': 3, '1574': 2, '1581': 3, '1585': 2, '1589': 3, '1594': 4, '1596': 3, '1598': 3 };
 
 // The SEO filename stem used in src/data.js (without the _<n> index or extension).
 const stem = (model) => `булчинска-рокля-Demetrios-${model}-София`;
