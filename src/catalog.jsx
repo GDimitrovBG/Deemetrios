@@ -559,6 +559,15 @@ function EveningSeoContent({ lang, setRoute }) {
           : "Choosing an evening dress starts with the silhouette, not the colour. The A-line is the most universal and flatters almost every figure; the mermaid accentuates curves; the ball gown emphasises the waist and adds volume. Fabric and detail come next — satin reads denser and more structured, beaded tulle catches the light, lace softens the line. You can try on as many styles as you like, and alterations happen in our own atelier."}
       </p>
 
+      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12, marginTop: 40 }}>
+        {isBg ? "Тенденции при балните рокли 2027" : "Ball & prom dress trends 2027"}
+      </h2>
+      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
+        {isBg
+          ? "За сезон 2027 балните рокли залагат на наситени цветове — изумрудено, виолетово, бордо и тъмносиньо изглеждат скъпо на снимка и подхождат на повечето тенове. Силуетите са два водещи: ефектната русалка за по-смела визия и чистата А-линия с баска талия за елегантна, универсална линия. При материите блести тюлът с мъниста, а структурното сатен и микадо дават модерна, изчистена визия. Разгледайте актуалните бални и абитуриентски рокли 2027 по-долу и ги пробвайте на място в София."
+          : "For the 2027 season, ball and prom dresses lean into rich colours — emerald, violet, burgundy and navy read expensive in photos and suit most skin tones. Two silhouettes lead: the striking mermaid for a bolder look and the clean A-line with a basque waist for an elegant, versatile line. In fabrics, beaded tulle shines, while structured satin and mikado give a modern, clean look. Browse the current 2027 ball and prom dresses below and try them on in Sofia."}
+      </p>
+
       <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 40 }}>
         {isBg ? "За какви поводи" : "For which occasions"}
       </h2>
