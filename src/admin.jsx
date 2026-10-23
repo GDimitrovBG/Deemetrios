@@ -477,7 +477,13 @@ function Dashboard({ bookings, phoneCalls = [], products, articles, user }) {
   };
   const sourceCounts = bookings.reduce((acc,b)=>{ const k=kindOf(b); acc[k]=(acc[k]||0)+1; return acc; },{});
   const sourceRows = Object.entries(sourceCounts).sort((a,b)=>b[1]-a[1]);
-  const withData = bookings.filter(b=>b.attribution?.label).length;
+  const trackedBookings = bookings.filter(b=>b.attribution?.label);
+  const withData = trackedBookings.length;
+  const trackedDates = trackedBookings.map(b=>new Date(b.createdAt)).filter(d=>!isNaN(d));
+  const fmtDate = d => d.toLocaleDateString("bg-BG", { day:"numeric", month:"short", year:"numeric" });
+  const trackedRange = trackedDates.length
+    ? `${fmtDate(new Date(Math.min(...trackedDates)))} – ${fmtDate(new Date(Math.max(...trackedDates)))}`
+    : "";
 
   return (
     <div className="adm-section">
@@ -497,7 +503,12 @@ function Dashboard({ bookings, phoneCalls = [], products, articles, user }) {
 
       {/* Marketing source stats are owner-level — hidden from editor accounts,
           same privacy boundary the panel uses for Settings and Users. */}
-      {isOwner && <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>}
+      {isOwner && <h3 className="adm-subtitle" style={{ marginTop:40, marginBottom:4 }}>Източник на запитванията</h3>}
+      {isOwner && withData > 0 && (
+        <p style={{ color:"#888", fontSize:12, margin:"0 0 14px" }}>
+          За цялото време{trackedRange ? ` · ${trackedRange}` : ""} · {withData} проследени запитвания
+        </p>
+      )}
       {isOwner && (withData === 0 ? (
         <p className="adm-empty">
           Все още няма запитвания с данни за източник. Появяват се автоматично от следващото ново запитване насам —
