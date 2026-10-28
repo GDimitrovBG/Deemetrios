@@ -475,9 +475,21 @@ function Dashboard({ bookings, phoneCalls = [], products, articles, user }) {
     if (l.startsWith("Директно")) return "direct";
     return "unknown";
   };
-  const sourceCounts = bookings.reduce((acc,b)=>{ const k=kindOf(b); acc[k]=(acc[k]||0)+1; return acc; },{});
+  // Period filter for the lead-source breakdown: 0 = all time, 30 = last month.
+  const [srcDays, setSrcDays] = useState(0);
+  const srcNow = Date.now();
+  const srcBookings = srcDays
+    ? bookings.filter(b => srcNow - new Date(b.createdAt).getTime() < srcDays * 864e5)
+    : bookings;
+  const sourceCounts = srcBookings.reduce((acc,b)=>{ const k=kindOf(b); acc[k]=(acc[k]||0)+1; return acc; },{});
   const sourceRows = Object.entries(sourceCounts).sort((a,b)=>b[1]-a[1]);
-  const withData = bookings.filter(b=>b.attribution?.label).length;
+  const trackedBookings = srcBookings.filter(b=>b.attribution?.label);
+  const withData = trackedBookings.length;
+  const trackedDates = trackedBookings.map(b=>new Date(b.createdAt)).filter(d=>!isNaN(d));
+  const fmtDate = d => d.toLocaleDateString("bg-BG", { day:"numeric", month:"short", year:"numeric" });
+  const trackedRange = trackedDates.length
+    ? `${fmtDate(new Date(Math.min(...trackedDates)))} – ${fmtDate(new Date(Math.max(...trackedDates)))}`
+    : "";
 
   return (
     <div className="adm-section">
@@ -497,11 +509,32 @@ function Dashboard({ bookings, phoneCalls = [], products, articles, user }) {
 
       {/* Marketing source stats are owner-level — hidden from editor accounts,
           same privacy boundary the panel uses for Settings and Users. */}
-      {isOwner && <h3 className="adm-subtitle" style={{ marginTop:40 }}>Източник на запитванията</h3>}
+      {isOwner && (
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10, marginTop:40, marginBottom:4 }}>
+          <h3 className="adm-subtitle" style={{ margin:0 }}>Източник на запитванията</h3>
+          <div style={{ display:"flex", gap:6 }}>
+            {[[30,"30 дни"],[0,"Всичко"]].map(([d,label]) => (
+              <button key={d} onClick={() => setSrcDays(d)}
+                style={{ cursor:"pointer", fontSize:12, padding:"6px 14px", borderRadius:999,
+                  border:"1px solid "+(srcDays===d ? "var(--champagne, #c4a373)" : "#3a352d"),
+                  background: srcDays===d ? "var(--champagne, #c4a373)" : "transparent",
+                  color: srcDays===d ? "#1a1612" : "#999" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {isOwner && withData > 0 && (
+        <p style={{ color:"#888", fontSize:12, margin:"0 0 14px" }}>
+          {srcDays ? `Последните ${srcDays} дни` : `За цялото време${trackedRange ? ` · ${trackedRange}` : ""}`} · {withData} проследени запитвания
+        </p>
+      )}
       {isOwner && (withData === 0 ? (
         <p className="adm-empty">
-          Все още няма запитвания с данни за източник. Появяват се автоматично от следващото ново запитване насам —
-          по-старите резервации ({bookings.length}) са отпреди включването на проследяването.
+          {srcDays
+            ? `Няма проследени запитвания през последните ${srcDays} дни.`
+            : <>Все още няма запитвания с данни за източник. Появяват се автоматично от следващото ново запитване насам — по-старите резервации ({bookings.length}) са отпреди включването на проследяването.</>}
         </p>
       ) : (
         <>

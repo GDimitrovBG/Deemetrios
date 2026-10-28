@@ -459,29 +459,47 @@ function SeasonSeo({ lang, setRoute, count }) {
   const isPrerender = typeof window !== 'undefined' && window.__PRERENDER__;
   const faq = SEASON_FAQ[isBg ? "bg" : "en"];
   return (
-    <section style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
-        {isBg ? "Какво носи новият сезон" : "What the new season brings"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
-        {isBg
-          ? "Demetrios представя нова колекция всяка есен, а Арети — официалният представител за България от 1992 г. — избира моделите, които влизат в салона в София. Кои точно рокли ще пристигнат, решаваме, когато видим колекцията на живо, затова тази страница се обновява с всяка нова доставка, вместо да обещава предварително. Постоянното е друго: трите силуета, с които работим — А-силует, русалка и принцеса, — оригиналните материи на Demetrios и корекциите в собственото ни ателие."
-          : "Demetrios presents a new collection every autumn, and Areti — the official representative for Bulgaria since 1992 — selects the styles that come to the Sofia salon. Which gowns arrive is decided when we see the collection in person, so this page is updated with each delivery rather than promising in advance. What stays constant: the three silhouettes we work with — A-line, mermaid and ball gown — original Demetrios fabrics, and alterations in our own atelier."}
-      </p>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12, marginTop: 40 }}>
-        {isBg ? "Кога да изберете рокля за сватба през 2027 г." : "When to choose a dress for a 2027 wedding"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 16 }}>
-        {isBg
-          ? "Идеалното начало е 6 до 9 месеца преди сватбата. Ако избраният модел е на склад, го взимате след корекциите — 1–2 седмици. Ако се поръчва от Demetrios, доставката отнема 3–4 месеца и следват пробни срещи за корекции. За сватба през лятото на 2027 г. това означава избор до януари–февруари; за есенна сватба — до април. Цените остават по колекции: от 1 000 € за Cosmobella до 4 000 € за Platinum."
-          : "The ideal start is 6 to 9 months before the wedding. If the style you choose is in stock, you take it after alterations — 1–2 weeks. If it is ordered from Demetrios, delivery takes 3–4 months, followed by fitting sessions for alterations. For a summer 2027 wedding that means choosing by January–February; for an autumn wedding, by April. Prices stay by collection: from €1,000 for Cosmobella to €4,000 for Platinum."}
-      </p>
-      <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 24, fontSize: 14, color: "var(--ink-mute)" }}>
-        <span>{count ? `${count} ${isBg ? "нови модела в салона" : "new styles in store"}` : (isBg ? "Пристигат до края на септември" : "Arriving by end of September")}</span>
-        <span>{isBg ? "Цени от 1 000 €" : "Prices from €1,000"}</span>
-        <span>{isBg ? "Оригинални Demetrios" : "Original Demetrios"}</span>
+    <section className="season-seo">
+      <div className="season-eyebrow">{isBg ? "Колекция 2027 · Demetrios" : "2027 Collection · Demetrios"}</div>
+
+      <div className="season-stats">
+        <div className="season-stat">
+          <span className="s-num">{count || "—"}</span>
+          <span className="s-label">{isBg ? "нови модела в салона" : "new styles in store"}</span>
+        </div>
+        <div className="season-stat">
+          <span className="s-num">{isBg ? "от 1 000 €" : "from €1,000"}</span>
+          <span className="s-label">{isBg ? "начална цена" : "starting price"}</span>
+        </div>
+        <div className="season-stat">
+          <span className="s-num">1992</span>
+          <span className="s-label">{isBg ? "официален представител" : "official representative"}</span>
+        </div>
       </div>
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
+
+      <div className="season-block">
+        <div className="season-kicker">{isBg ? "Новият сезон" : "The new season"}</div>
+        <h2>{isBg ? "Какво носи новият сезон" : "What the new season brings"}</h2>
+        <p>
+          {isBg
+            ? "Demetrios представя нова колекция всяка есен, а Арети — официалният представител за България от 1992 г. — избира моделите, които влизат в салона в София. Кои точно рокли ще пристигнат, решаваме, когато видим колекцията на живо, затова тази страница се обновява с всяка нова доставка, вместо да обещава предварително. Постоянното е друго: трите силуета, с които работим — А-силует, русалка и принцеса, — оригиналните материи на Demetrios и корекциите в собственото ни ателие."
+            : "Demetrios presents a new collection every autumn, and Areti — the official representative for Bulgaria since 1992 — selects the styles that come to the Sofia salon. Which gowns arrive is decided when we see the collection in person, so this page is updated with each delivery rather than promising in advance. What stays constant: the three silhouettes we work with — A-line, mermaid and ball gown — original Demetrios fabrics, and alterations in our own atelier."}
+        </p>
+      </div>
+
+      <div className="season-rule" />
+
+      <div className="season-block">
+        <div className="season-kicker">{isBg ? "Планиране" : "Planning"}</div>
+        <h2>{isBg ? "Кога да изберете рокля за сватба през 2027 г." : "When to choose a dress for a 2027 wedding"}</h2>
+        <p>
+          {isBg
+            ? "Идеалното начало е 6 до 9 месеца преди сватбата. Ако избраният модел е на склад, го взимате след корекциите — 1–2 седмици. Ако се поръчва от Demetrios, доставката отнема 3–4 месеца и следват пробни срещи за корекции. За сватба през лятото на 2027 г. това означава избор до януари–февруари; за есенна сватба — до април. Цените остават по колекции: от 1 000 € за Cosmobella до 4 000 € за Platinum."
+            : "The ideal start is 6 to 9 months before the wedding. If the style you choose is in stock, you take it after alterations — 1–2 weeks. If it is ordered from Demetrios, delivery takes 3–4 months, followed by fitting sessions for alterations. For a summer 2027 wedding that means choosing by January–February; for an autumn wedding, by April. Prices stay by collection: from €1,000 for Cosmobella to €4,000 for Platinum."}
+        </p>
+      </div>
+
+      <div className="season-cta">
         <button className="btn btn-solid" onClick={() => setRoute("booking")}>
           {isBg ? "Запази първа проба →" : "Book a first-look fitting →"}
         </button>
@@ -489,7 +507,8 @@ function SeasonSeo({ lang, setRoute, count }) {
           {isBg ? "Всички булчински рокли" : "All wedding dresses"}
         </a>
       </div>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 48 }}>
+
+      <h2 className="season-faq-head">
         {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
       </h2>
       <div className="collection-faq">
@@ -549,40 +568,53 @@ function EveningSeoContent({ lang, setRoute }) {
   ];
 
   return (
-    <section className="collection-seo" style={{ maxWidth: 820, margin: "0 auto", padding: "48px 24px 0" }}>
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 12 }}>
-        {isBg ? "Как да изберете бална рокля" : "How to choose an evening dress"}
-      </h2>
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginBottom: 24 }}>
-        {isBg
-          ? "Изборът на бална рокля започва от силуета, а не от цвета. А-силуетът е най-универсален и ласкае почти всяка фигура; русалката подчертава извивките; принцесата акцентира талията и създава обем. След това идват тъканта и детайлите — сатенът изглежда по-плътен и структуриран, тюлът с мъниста улавя светлината, дантелата придава мекота. В салона можете да пробвате неограничен брой модели, а корекциите се правят на място в ателието."
-          : "Choosing an evening dress starts with the silhouette, not the colour. The A-line is the most universal and flatters almost every figure; the mermaid accentuates curves; the ball gown emphasises the waist and adds volume. Fabric and detail come next — satin reads denser and more structured, beaded tulle catches the light, lace softens the line. You can try on as many styles as you like, and alterations happen in our own atelier."}
-      </p>
-
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 40 }}>
-        {isBg ? "За какви поводи" : "For which occasions"}
-      </h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 16 }}>
-        {occasions.map(o => (
-          <div key={o.t} style={{ background: "var(--surface)", padding: "18px 20px", borderRadius: 8 }}>
-            <h3 style={{ fontFamily: "var(--f-serif)", fontSize: 18, fontWeight: 400, marginBottom: 8 }}>{o.t}</h3>
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-soft)" }}>{o.d}</p>
-          </div>
-        ))}
+    <section className="collection-seo seo-ed">
+      <div className="seo-ed-block">
+        <div className="seo-ed-kicker">{isBg ? "Съвети" : "Advice"}</div>
+        <h2 className="seo-ed-h">{isBg ? "Как да изберете бална рокля" : "How to choose an evening dress"}</h2>
+        <p className="seo-ed-p">
+          {isBg
+            ? "Изборът на бална рокля започва от силуета, а не от цвета. А-силуетът е най-универсален и ласкае почти всяка фигура; русалката подчертава извивките; принцесата акцентира талията и създава обем. След това идват тъканта и детайлите — сатенът изглежда по-плътен и структуриран, тюлът с мъниста улавя светлината, дантелата придава мекота. В салона можете да пробвате неограничен брой модели, а корекциите се правят на място в ателието."
+            : "Choosing an evening dress starts with the silhouette, not the colour. The A-line is the most universal and flatters almost every figure; the mermaid accentuates curves; the ball gown emphasises the waist and adds volume. Fabric and detail come next — satin reads denser and more structured, beaded tulle catches the light, lace softens the line. You can try on as many styles as you like, and alterations happen in our own atelier."}
+        </p>
       </div>
 
-      <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--ink-soft)", marginTop: 24 }}>
-        {isBg ? "Търсите булчинска, а не официална рокля? " : "Looking for a wedding dress rather than a formal one? "}
-        <a href={isBg ? "/collection" : "/en/collection"} onClick={(e) => { e.preventDefault(); setRoute("collection"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
-          {isBg ? "Вижте булчинската колекция →" : "See the bridal collection →"}
-        </a>
-        {isBg ? " Или направете " : " Or take the "}
-        <a href={isBg ? "/kviz" : "/en/kviz"} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }} style={{ color: "var(--ink)", textDecoration: "underline", textUnderlineOffset: 4 }}>
-          {isBg ? "безплатния тест за силует →" : "free silhouette quiz →"}
-        </a>
-      </p>
+      <div className="seo-ed-rule" />
 
-      <h2 style={{ fontFamily: "var(--f-display)", fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 400, marginBottom: 20, marginTop: 48 }}>
+      <div className="seo-ed-block">
+        <div className="seo-ed-kicker">{isBg ? "Сезон 2027" : "2027 season"}</div>
+        <h2 className="seo-ed-h">{isBg ? "Тенденции при балните рокли 2027" : "Ball & prom dress trends 2027"}</h2>
+        <p className="seo-ed-p">
+          {isBg
+            ? "За сезон 2027 балните рокли залагат на наситени цветове — изумрудено, виолетово, бордо и тъмносиньо изглеждат скъпо на снимка и подхождат на повечето тенове. Силуетите са два водещи: ефектната русалка за по-смела визия и чистата А-линия с баска талия за елегантна, универсална линия. При материите блести тюлът с мъниста, а структурното сатен и микадо дават модерна, изчистена визия. Разгледайте актуалните бални и абитуриентски рокли 2027 по-долу и ги пробвайте на място в София."
+            : "For the 2027 season, ball and prom dresses lean into rich colours — emerald, violet, burgundy and navy read expensive in photos and suit most skin tones. Two silhouettes lead: the striking mermaid for a bolder look and the clean A-line with a basque waist for an elegant, versatile line. In fabrics, beaded tulle shines, while structured satin and mikado give a modern, clean look. Browse the current 2027 ball and prom dresses below and try them on in Sofia."}
+        </p>
+      </div>
+
+      <div className="seo-ed-block">
+        <div className="seo-ed-kicker">{isBg ? "Поводи" : "Occasions"}</div>
+        <h2 className="seo-ed-h">{isBg ? "За какви поводи" : "For which occasions"}</h2>
+        <div className="seo-ed-cards">
+          {occasions.map(o => (
+            <div key={o.t} className="seo-ed-card">
+              <h3>{o.t}</h3>
+              <p>{o.d}</p>
+            </div>
+          ))}
+        </div>
+        <p className="seo-ed-note">
+          {isBg ? "Търсите булчинска, а не официална рокля? " : "Looking for a wedding dress rather than a formal one? "}
+          <a href={isBg ? "/collection" : "/en/collection"} onClick={(e) => { e.preventDefault(); setRoute("collection"); }}>
+            {isBg ? "Вижте булчинската колекция →" : "See the bridal collection →"}
+          </a>
+          {isBg ? " Или направете " : " Or take the "}
+          <a href={isBg ? "/kviz" : "/en/kviz"} onClick={(e) => { e.preventDefault(); setRoute("quiz"); }}>
+            {isBg ? "безплатния тест за силует →" : "free silhouette quiz →"}
+          </a>
+        </p>
+      </div>
+
+      <h2 className="seo-ed-faq-head">
         {isBg ? "Често задавани въпроси" : "Frequently asked questions"}
       </h2>
       <div className="collection-faq">

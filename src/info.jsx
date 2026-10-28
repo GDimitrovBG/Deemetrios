@@ -7,6 +7,7 @@ import { BLOG_POSTS } from './blog_data';
 import { useSeo, orgSchema, articleSchema, breadcrumbSchema, blogPostPath } from './seo';
 import { faqSchema } from './seo-helpers';
 import { cdnImage, srcsetFor } from './cdn';
+import { blogHref, withLang } from './router';
 
 function sanitizeHTML(html) {
   if (!html) return '';
@@ -260,7 +261,7 @@ function AboutPage({ lang, setRoute }) {
           </div>
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 12 }}>
             <button className="btn" onClick={() => setRoute("booking")}>
-              {isBg ? "Запази проба →" : "Book a fitting →"}
+              {lang === "bg" ? "Запази проба →" : lang === "el" ? "Κλείστε ραντεβού →" : "Book a fitting →"}
             </button>
             <button className="btn-outline" onClick={() => setRoute("contact")}>
               {isBg ? "Контакти" : "Contact"}
@@ -506,16 +507,18 @@ function ContactPage({ lang, setRoute }) {
 // Posts without title_en simply have no English version (router redirects
 // /en/blog/<slug> to the Bulgarian original for those).
 function localizePost(post, lang) {
-  if (lang !== 'en' || !post?.title_en) return post;
+  if (lang === 'bg' || !post) return post;
+  const s = `_${lang}`;            // _en or _el
+  if (!post[`title${s}`]) return post;
   return {
     ...post,
-    title: post.title_en,
-    seo_title: post.seo_title_en || post.title_en,
-    seo_description: post.seo_description_en || post.excerpt_en || post.seo_description,
-    excerpt: post.excerpt_en || post.excerpt,
-    category: post.category_en || post.category,
-    date: post.date_en || post.date,
-    faq: post.faq_en || [],
+    title: post[`title${s}`],
+    seo_title: post[`seo_title${s}`] || post[`title${s}`],
+    seo_description: post[`seo_description${s}`] || post[`excerpt${s}`] || post.seo_description,
+    excerpt: post[`excerpt${s}`] || post.excerpt,
+    category: post[`category${s}`] || post.category,
+    date: post[`date${s}`] || post.date,
+    faq: post[`faq${s}`] || [],
   };
 }
 
@@ -524,7 +527,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
   // English blog lists only translated posts — publishing untranslated pages
   // under /en would be worse than not having them.
   const posts = getActivePosts(lang)
-    .filter(p => isBg || p.title_en)
+    .filter(p => isBg || p[`title_${lang}`])
     .map(p => localizePost(p, lang));
   const [featured, ...rest] = posts;
   useSeo({
@@ -565,7 +568,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
             </div>
             <div>
               <div className="meta">{featured.category} · {featured.date}</div>
-              <h2><a href={`${isBg ? "" : "/en"}${featured.slug ? `/blog/${featured.slug}` : `/blog/${featured.id}`}`} onClick={(e) => e.preventDefault()}>{featured.title}</a></h2>
+              <h2><a href={featured.slug ? blogHref(featured.slug, lang) : withLang(`/blog/${featured.id}`, lang)} onClick={(e) => e.preventDefault()}>{featured.title}</a></h2>
               <p>{featured.excerpt}</p>
               <button className="btn" onClick={e => { e.stopPropagation(); goBlogPost(featured.id); }}>
                 {isBg ? "Прочети →" : "Read →"}
@@ -590,7 +593,7 @@ function BlogPage({ lang, setRoute, goBlogPost }) {
                 }
               </div>
               <div className="meta">{post.category} · {post.date}</div>
-              <h3><a href={`${isBg ? "" : "/en"}${post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`}`} onClick={(e) => e.preventDefault()}>{post.title}</a></h3>
+              <h3><a href={post.slug ? blogHref(post.slug, lang) : withLang(`/blog/${post.id}`, lang)} onClick={(e) => e.preventDefault()}>{post.title}</a></h3>
               <p>{post.excerpt}</p>
             </article>
           ))}
@@ -606,7 +609,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
   const rawPost = allPosts.find(p => p.id === postId || String(p.id) === String(postId)) || allPosts[0];
   const post = localizePost(rawPost, lang);
   const others = allPosts
-    .filter(p => p.id !== post.id && (isBg || p.title_en))
+    .filter(p => p.id !== post.id && (isBg || p[`title_${lang}`]))
     .map(p => localizePost(p, lang))
     .slice(0, 3);
 
@@ -620,7 +623,8 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
     if (post.content) { setBodyHtml(post.content); return; }
     let alive = true;
     import('./blog_content.js').then(m => {
-      const key = (lang === 'en' && rawPost?.title_en) ? `${post.id}-en` : String(post.id);
+      const suf = (lang === 'en' && rawPost?.title_en) ? '-en' : (lang === 'el' && rawPost?.title_el) ? '-el' : '';
+      const key = `${post.id}${suf}`;
       if (alive) setBodyHtml(m.BLOG_CONTENT[key] || m.BLOG_CONTENT[String(post.id)] || '');
     });
     return () => { alive = false; };
@@ -642,7 +646,11 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
     image: post.image, url: postPath, type: "article", lang,
     // Translated posts declare the bg↔en pair from BOTH sides (Google drops
     // one-directional hreflang). Untranslated posts keep the default (none).
-    alternates: rawPost?.title_en ? { bg: postPath, en: `/en${postPath}` } : null,
+    alternates: (rawPost?.title_en || rawPost?.title_el) ? {
+      bg: postPath,
+      ...(rawPost?.title_en ? { en: `/en${postPath}` } : {}),
+      ...(rawPost?.title_el ? { el: `/el${postPath}` } : {}),
+    } : null,
     keywords: `${post.title}, ${post.category}, блог Арети, булчински рокли`,
     jsonLd: {
       "@graph": [
@@ -685,19 +693,19 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
             style={{ marginBottom: 40, display: "inline-flex", alignItems: "center", gap: 8 }}
             onClick={() => setRoute("blog")}
           >
-            ← {isBg ? "Обратно към дневника" : "Back to journal"}
+            ← {lang === "bg" ? "Обратно към дневника" : lang === "el" ? "Πίσω στα άρθρα" : "Back to journal"}
           </button>
 
           {/* Mobile sidebar — horizontal scroll strip */}
           {relatedProducts.length > 0 && (
             <div className="blog-sidebar-mobile">
-              <h2 className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</h2>
+              <h2 className="blog-sidebar-label">{lang === "bg" ? "Препоръчани рокли" : lang === "el" ? "Προτεινόμενα φορέματα" : "Recommended gowns"}</h2>
               <div className="blog-sidebar-scroll">
                 {relatedProducts.map(p => (
                   <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                     <img src={cdnImage(p.imgs?.[0] || p.img)} srcSet={srcsetFor(p.imgs?.[0] || p.img, 1600) || undefined} sizes="(max-width: 768px) 45vw, 140px" alt={dressName(p)} loading="lazy" decoding="async" />
                     <div className="blog-sidebar-card-info">
-                      <h3><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
+                      <h3><a href={withLang(`/product/${p.ref}`, lang)} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
                       <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
                     </div>
                   </article>
@@ -714,7 +722,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
 
           <div style={{ marginTop: 64, paddingTop: 40, borderTop: "1px solid var(--champagne)" }}>
             <button className="btn" onClick={() => setRoute("booking")}>
-              {isBg ? "Запази проба →" : "Book a fitting →"}
+              {lang === "bg" ? "Запази проба →" : lang === "el" ? "Κλείστε ραντεβού →" : "Book a fitting →"}
             </button>
           </div>
         </div>
@@ -723,18 +731,18 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
         {relatedProducts.length > 0 && (
           <aside className="blog-sidebar">
             <div className="blog-sidebar-sticky">
-              <h2 className="blog-sidebar-label">{isBg ? "Препоръчани рокли" : "Recommended gowns"}</h2>
+              <h2 className="blog-sidebar-label">{lang === "bg" ? "Препоръчани рокли" : lang === "el" ? "Προτεινόμενα φορέματα" : "Recommended gowns"}</h2>
               {relatedProducts.map(p => (
                 <article key={p.ref} className="blog-sidebar-card" onClick={() => goProduct && goProduct(p.ref)}>
                   <img src={cdnImage(p.imgs?.[0] || p.img)} srcSet={srcsetFor(p.imgs?.[0] || p.img, 1600) || undefined} sizes="(max-width: 768px) 45vw, 140px" alt={dressName(p)} loading="lazy" decoding="async" />
                   <div className="blog-sidebar-card-info">
-                    <h3><a href={`${isBg ? "" : "/en"}/product/${p.ref}`} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
+                    <h3><a href={withLang(`/product/${p.ref}`, lang)} onClick={(e) => e.preventDefault()}>{dressName(p)}</a></h3>
                     <span>{isBg ? p.silhouette : (p.silhouette_en || p.silhouette)}</span>
                   </div>
                 </article>
               ))}
               <button className="btn" style={{ width: "100%", marginTop: 16 }} onClick={() => goBooking && goBooking()}>
-                {isBg ? "Запази проба →" : "Book a fitting →"}
+                {lang === "bg" ? "Запази проба →" : lang === "el" ? "Κλείστε ραντεβού →" : "Book a fitting →"}
               </button>
             </div>
           </aside>
@@ -747,7 +755,7 @@ function BlogPostPage({ lang, setRoute, postId, goBlogPost, goProduct, goBooking
           <div className="sec-head" style={{ marginBottom: 40 }}>
             <div className="left">—</div>
             <h2 style={{ fontSize: "clamp(28px, 3vw, 44px)" }}>
-              {isBg ? "Още" : "More"} <em>{isBg ? "статии" : "articles"}</em>
+              {lang === "bg" ? "Още" : lang === "el" ? "Περισσότερα" : "More"} <em>{lang === "bg" ? "статии" : lang === "el" ? "άρθρα" : "articles"}</em>
             </h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}>

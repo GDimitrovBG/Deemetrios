@@ -37,7 +37,7 @@ function HomeHeroV1({ t, setRoute }) {
           </div>
           <div style={{ textAlign: "right", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.85 }}>
             <div>Demetrios</div>
-            <div style={{ fontFamily: "var(--f-serif)", fontSize: 13, fontStyle: "italic", letterSpacing: "0.05em", textTransform: "none", marginTop: 4 }}>Арети · колекция 2026 · София</div>
+            <div style={{ fontFamily: "var(--f-serif)", fontSize: 13, fontStyle: "italic", letterSpacing: "0.05em", textTransform: "none", marginTop: 4 }}>Арети · колекция 2027 · София</div>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ function HomeHeroV2({ t, lang, setRoute }) {
         </div>
         <div className="meta-row fade-up delay-3">
           <div className="meta-stack">
-            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>{{ bg: "Колекция Demetrios 2026", en: "Demetrios Collection 2026", el: "Συλλογή Demetrios 2026" }[lang]}</span>
+            <span style={{ fontFamily: "var(--f-serif)", fontSize: 22, fontStyle: "italic" }}>{{ bg: "Колекция Demetrios 2027", en: "Demetrios Collection 2027", el: "Συλλογή Demetrios 2027" }[lang]}</span>
             <span className="t-meta">{t.home.hero_meta}</span>
           </div>
           <button className="btn btn-solid" onClick={() => setRoute("collection")}>
@@ -100,7 +100,7 @@ function HomeHeroV3({ t, setRoute }) {
       <div className="hero-content">
         <div className="top-strip fade-in" style={{ display: "flex", justifyContent: "space-between", width: "100%", fontSize: 10, letterSpacing: "0.32em", textTransform: "uppercase", opacity: 0.85 }}>
           <span>—— Atelier Areti</span>
-          <span>The Bridal Edit · 2026</span>
+          <span>The Bridal Edit · 2027</span>
         </div>
         <div style={{ flex: 1 }}></div>
         <h1 className="marquee fade-up">
@@ -124,7 +124,7 @@ function HomeHeroV3({ t, setRoute }) {
   );
 }
 
-function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, goProduct }) {
+function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, goProduct, goCollection }) {
   const [activeCol, setActiveCol] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
 
@@ -197,7 +197,10 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
         ))}
       </div>
 
-      <div style={{ textAlign: "center", marginTop: 48 }}>
+      <div style={{ textAlign: "center", marginTop: 48, display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+        <button className="btn btn-solid" onClick={() => goCollection ? goCollection("2027") : setRoute("collection")}>
+          {lang === "bg" ? "Колекция 2027" : lang === "el" ? "Συλλογή 2027" : "2027 Collection"} <span style={{ fontFamily: "var(--f-serif)", fontSize: 16 }}>→</span>
+        </button>
         <button className="btn" onClick={() => setRoute("collection")}>
           {t.home.view_all} <span style={{ fontFamily: "var(--f-serif)", fontSize: 16 }}>→</span>
         </button>
@@ -302,8 +305,8 @@ function ServicesSection({ t, lang }) {
 
 function MarqueeStrip({ lang }) {
   const base = lang === "en"
-    ? ["Wedding dresses", "2026 Demetrios", "Handcrafted", "Sofia"]
-    : ["Булчински рокли", "2026 Demetrios", "Ръчна изработка", "София"];
+    ? ["Wedding dresses", "2027 Demetrios", "Handcrafted", "Sofia"]
+    : ["Булчински рокли", "2027 Demetrios", "Ръчна изработка", "София"];
   const items = [...base, ...base];
   return (
     <div className="marquee-strip">
@@ -436,7 +439,7 @@ function CtaBand({ t, setRoute, lang }) {
   );
 }
 
-function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite, goProduct }) {
+function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite, goProduct, goCollection }) {
   const t = i18n[lang];
   const Hero = heroVariant === "split" ? HomeHeroV2 : heroVariant === "noir" ? HomeHeroV3 : HomeHeroV1;
   useSeo({
@@ -467,7 +470,7 @@ function HomePage({ lang, setRoute, heroVariant, favorites = [], toggleFavorite,
   return (
     <div className="page-enter">
       <Hero t={t} lang={lang} setRoute={setRoute} />
-      <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} />
+      <CollectionPreview t={t} setRoute={setRoute} lang={lang} favorites={favorites} toggleFavorite={toggleFavorite} goProduct={goProduct} goCollection={goCollection} />
       <MarqueeStrip lang={lang} />
       <StorySection t={t} setRoute={setRoute} />
       <PriceRangesSection t={t} lang={lang} setRoute={setRoute} />
