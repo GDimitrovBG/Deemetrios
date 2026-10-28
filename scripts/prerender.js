@@ -56,7 +56,6 @@ async function loadRoutes() {
     '/collection/gradove/varna',
     '/collection/gradove/plovdiv',
     '/collection/gradove/burgas',
-    '/collection/2027',
     '/kviz',
     // Reachable from the nav heart and the mobile menu, and deliberately kept
     // out of the sitemap (noindex + robots Disallow). It still needs a snapshot:

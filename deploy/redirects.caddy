@@ -317,3 +317,10 @@ respond @wp_feed_any 410
 # Demetrios Platinum and five Destination Romance refs.
 @removed_products path_regexp ^/product/(?i)(am38|am43|am51|am67|t238sk30|8264|8271|8096|8110|8176|8177|1501|1505|1508|1511|1267|1278|1286|1218|1219|200144|200160|1079|1083|1107|1123|1176|1205|1212|1074|dp527|dp491|l1152|l1159|dr414|l1071|l1106)/?$
 respond @removed_products 410
+
+# --- Retired "Колекция 2027" year collection → full collection (301) ---
+# The salon does not split dresses by year; the empty season page implied the
+# rest were old. New models now live in their real collection, shown together.
+redir /collection/2027 /collection 301
+redir /en/collection/2027 /en/collection 301
+redir /el/collection/2027 /el/collection 301

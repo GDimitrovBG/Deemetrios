@@ -190,8 +190,10 @@ function pathToStateInner(pathname) {
   }
   if (p === '/collection/gradove') return { redirect: '/collection' };
 
-  // Season landing page rides in the collectionId slot — see SEASON_ID in catalog.jsx.
-  if (p === '/collection/2027') return { route: 'collection', collectionId: '2027' };
+  // The year-based "Колекция 2027" collection was retired (2026-10): the salon
+  // does not split dresses by year and the empty page implied the rest were old.
+  // Redirect to the full collection; new models live in their real collection.
+  if (p === '/collection/2027') return { redirect: '/collection' };
 
   const collMatch = p.match(/^\/collection\/([a-z]+)$/);
   if (collMatch && COLLECTION_IDS.includes(collMatch[1])) {

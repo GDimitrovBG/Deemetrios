@@ -22,9 +22,10 @@ export const COLLECTIONS = [
   { id:'evening',     label:'Вечерни рокли',       label_en:'Evening Dresses', label_el:'Βραδινά φορέματα', desc_bg:'Официални, бални и абитуриентски рокли за специални поводи — абитуриентски бал, сватба, кръщене или коктейлно парти.', desc_en:'Formal, prom and evening dresses for special occasions — proms, weddings, christenings and cocktail events.', seo_desc_bg:'Официални, бални и абитуриентски рокли в София от Арети. Вечерни рокли за бал, сватба и коктейл. Луксозни модели, час за проба.', seo_desc_en:'Evening, prom and formal dresses in Sofia from Areti. Elegant gowns for proms, weddings and cocktail events. Luxury styles, consultation.' },
 ];
 
-// Optional per-dress field: season:'2027' lists the dress on /collection/2027
-// and puts a "Ново 2027" badge on its card. Add it to each new-season style as
-// it arrives; remove it when the next season page takes over.
+// The salon does not split dresses by year, so there is no season collection
+// (the old /collection/2027 page was retired — it only ever looked empty and
+// made the rest of the catalogue read as "old"). New models are added to their
+// real collection below and shown together with everything else.
 export const DRESSES = [
   // === Колекция 2027 (нови модели, октомври 2026) ===
   // Снимките идват от клиента през Google Drive и се обработват от
