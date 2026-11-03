@@ -156,6 +156,24 @@ async function renderRoute(browser, route) {
     throw new Error('rendered an empty #app (React never mounted)');
   }
 
+  // Point the head's image preload at THIS page's LCP image. index.html ships
+  // a preload for the home hero, which on every other page is a high-priority
+  // fetch of an image the page never shows — competing with the real LCP image
+  // (a product's main photo) on a phone's narrow pipe. The page's own LCP
+  // candidate is the first <img fetchpriority="high"> it renders; pages with a
+  // text LCP have none, and lose the preload entirely.
+  await page.evaluate(() => {
+    const link = document.head.querySelector('link[rel="preload"][as="image"]');
+    if (!link) return;
+    const img = document.querySelector('#app img[fetchpriority="high"]');
+    if (!img || !img.getAttribute('src')) { link.remove(); return; }
+    link.setAttribute('href', img.getAttribute('src'));
+    const srcset = img.getAttribute('srcset');
+    const sizes = img.getAttribute('sizes');
+    if (srcset) link.setAttribute('imagesrcset', srcset); else link.removeAttribute('imagesrcset');
+    if (sizes) link.setAttribute('imagesizes', sizes); else link.removeAttribute('imagesizes');
+  });
+
   // Strip the Vite dev runtime + serialize.
   const html = await page.evaluate(() => '<!doctype html>\n' + document.documentElement.outerHTML);
 

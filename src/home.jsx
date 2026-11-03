@@ -198,10 +198,7 @@ function CollectionPreview({ t, setRoute, lang, favorites = [], toggleFavorite, 
       </div>
 
       <div style={{ textAlign: "center", marginTop: 48, display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-        <button className="btn btn-solid" onClick={() => goCollection ? goCollection("2027") : setRoute("collection")}>
-          {lang === "bg" ? "Колекция 2027" : lang === "el" ? "Συλλογή 2027" : "2027 Collection"} <span style={{ fontFamily: "var(--f-serif)", fontSize: 16 }}>→</span>
-        </button>
-        <button className="btn" onClick={() => setRoute("collection")}>
+        <button className="btn btn-solid" onClick={() => goCollection ? goCollection(null) : setRoute("collection")}>
           {t.home.view_all} <span style={{ fontFamily: "var(--f-serif)", fontSize: 16 }}>→</span>
         </button>
       </div>

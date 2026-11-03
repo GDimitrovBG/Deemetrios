@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:server": "cd server && node --watch index.js",
     "seed": "cd server && node seed.js",
-    "build": "node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.js",
+    "build": "node scripts/build-image-manifest.mjs && node scripts/generate-sitemap.mjs && vite build && node scripts/prerender.js",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "build:fast": "vite build",
     "prerender": "node scripts/prerender.js",

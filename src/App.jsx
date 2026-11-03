@@ -71,6 +71,10 @@ export default function App() {
   useSeoInject();
 
   const setRoute = (r) => {
+    // First in-app navigation: entrance animations are allowed from here on
+    // (see html[data-first-load] in styles.css). Removed in the click handler,
+    // before React commits the new page, so the old page never re-animates.
+    document.documentElement.removeAttribute("data-first-load");
     setRouteRaw(r);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

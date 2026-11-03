@@ -324,3 +324,17 @@ respond @removed_products 410
 redir /collection/2027 /collection 301
 redir /en/collection/2027 /en/collection 301
 redir /el/collection/2027 /el/collection 301
+
+# --- /quiz → /kviz (301) ---
+# "quiz" is the route name; the page has always lived at /kviz. An old footer
+# link pointed at /quiz and Search Console still crawls it (noindex 404).
+redir /quiz /kviz 301
+redir /en/quiz /en/kviz 301
+redir /el/quiz /el/kviz 301
+
+# --- Blog posts addressed by database id → blog index (301) ---
+# Search Console reports /blog/6a06c49b406dcd0315e01773-style URLs (24-hex
+# MongoDB ids) from the admin era. They have no slug to map to; the index is
+# the closest real page and keeps them out of the 404 report.
+@blog_dbid path_regexp ^/blog/[0-9a-f]{24}/?$
+redir @blog_dbid /blog 301

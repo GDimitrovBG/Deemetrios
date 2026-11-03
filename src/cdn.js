@@ -25,7 +25,12 @@
 //  in the app already goes through it.
 // =====================================================
 
-import VARIANTS from '../public/image-variants.json';
+// The manifest is generated on the server (scripts/build-image-manifest.mjs runs
+// first in `npm run build`) and is no longer committed, so it may be absent in
+// a fresh checkout. import.meta.glob resolves to {} when the file is missing
+// instead of failing the build; every image then simply has no srcset.
+const MANIFEST_MODULES = import.meta.glob('../public/image-variants.json', { eager: true, import: 'default' });
+const VARIANTS = Object.values(MANIFEST_MODULES)[0] || {};
 
 const ORIGIN_RE = /^https?:\/\/(www\.)?demetriosbride-bg\.com/i;
 

@@ -11,3 +11,6 @@ server/.env.production
 server/.env.staging
 server/areti-dump-*
 public/wp-content/uploads/
+# Generated on the server from the uploads folder (scripts/build-image-manifest.mjs).
+# Committing it let every `git pull` reset the live srcset manifest to {}.
+public/image-variants.json

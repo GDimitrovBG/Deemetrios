@@ -612,6 +612,14 @@ function EveningSeoContent({ lang, setRoute }) {
             {isBg ? "безплатния тест за силует →" : "free silhouette quiz →"}
           </a>
         </p>
+        <p className="seo-ed-note">
+          {isBg ? "Наръчници: " : "Guides: "}
+          <a href={blogHref("abiturientski-balni-rokli-sofia", lang)}>{isBg ? "как да изберете абитуриентска рокля" : "how to choose a prom dress"}</a>
+          {" · "}
+          <a href={blogHref("balna-roklia-spored-figurata", lang)}>{isBg ? "бална рокля според фигурата" : "a ball gown for your figure"}</a>
+          {" · "}
+          <a href={blogHref("rokli-za-svatba-gost-maykata-na-bulkata", lang)}>{isBg ? "рокли за сватба — за гостенки и майката на булката" : "wedding guest & mother of the bride dresses"}</a>
+        </p>
       </div>
 
       <h2 className="seo-ed-faq-head">
@@ -924,10 +932,12 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       : silData
       ? L3(`${silData.h1_bg} в София — ${silCount} модела Demetrios | Арети`, `${silData.h1_en} in Sofia — ${silCount} Demetrios styles | Areti`, `${silData.h1_el} στη Σόφια — ${silCount} μοντέλα Demetrios | Areti`)
       : isEvening
-      // "бални рокли 2027" is the fastest-growing evening query; the year goes
-      // in the title, and "бални" leads so it does not mirror the blog post
-      // ("Абитуриентски и бални рокли София 2027") word for word.
-      ? L3("Бални и абитуриентски рокли 2027 в София — колекция | Арети", "Prom & Evening Dresses 2027 in Sofia | Areti", "Βραδινά & φορέματα αποφοίτησης 2027 στη Σόφια | Areti")
+      // Search Console 2026-11: "бални рокли" is the biggest evening query
+      // (1,007 impressions, 9 clicks) and the title did not contain the phrase
+      // — "Бални и абитуриентски рокли" splits it. The exact phrase now leads;
+      // "бални рокли 2027" (611 impr.) and "абитуриентски" stay. The prom blog
+      // post was retitled to a how-to so the two stop competing.
+      ? L3("Бални рокли София 2027 — абитуриентски и официални | Арети", "Prom & Evening Dresses 2027 in Sofia | Areti", "Βραδινά & φορέματα αποφοίτησης 2027 στη Σόφια | Areti")
       : colData
         ? ((CTR_TITLES[lang] || CTR_TITLES.en)[initCollection] || L3(`Луксозни булчински рокли ${colData.label} в София | Арети`, `Luxury ${colData.label} Wedding Dresses in Sofia | Areti`, `Πολυτελή νυφικά ${colData.label} στη Σόφια | Areti`))
         : L3("Булчински и сватбени рокли София — 100+ модела от 1 000 € | Арети", "Wedding Dresses Sofia — 100+ styles from €1,000 | Areti", "Νυφικά στη Σόφια — 100+ μοντέλα Demetrios από 1.000 € | Areti"),
@@ -941,7 +951,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
       ? (pk(silData, "meta"))
       : isEvening
       ? L3(
-          `Абитуриентски, бални и официални рокли в София — ${colCount} модела в салон Арети. Проба по предварителен час, корекции на място.`,
+          `Бални рокли в София — ${colCount} модела абитуриентски, официални и вечерни рокли в салон Арети. Проба по предварителен час, корекции в ателието.`,
           `Prom, ball and formal dresses in Sofia — ${colCount} styles at Areti. Fitting by appointment, in-house alterations.`,
           `Φορέματα αποφοίτησης, μπαλ και επίσημα στη Σόφια — ${colCount} μοντέλα στην Areti. Πρόβα με ραντεβού, προσαρμογές επιτόπου.`)
       : colData
@@ -1106,7 +1116,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               : matData ? (pk(matData, "h1"))
               : silData ? (pk(silData, "h1"))
               : activeCol === "evening"
-                ? (lang === "el" ? <>Βραδινά, μπαλ και <em>φορέματα αποφοίτησης</em></> : isBg ? <>Вечерни, бални и <em>абитуриентски</em> рокли</> : <>Evening, prom and <em>formal</em> dresses</>)
+                ? (lang === "el" ? <>Βραδινά, μπαλ και <em>φορέματα αποφοίτησης</em></> : isBg ? <>Бални и <em>абитуриентски</em> рокли в София</> : <>Evening, prom and <em>formal</em> dresses</>)
               : activeColData
                 ? (lang === "el" ? <>Νυφικά <em>{collectionLabel(activeColData, lang)}</em></>
                    : isBg ? <>Булчински рокли <em>{collectionLabel(activeColData, lang)}</em></>
@@ -1154,7 +1164,7 @@ function CollectionPage({ lang, setRoute, initCollection = null, initSilhouette 
               <p className="collection-intro">
                 {activeCol === "evening"
                   ? (isBg
-                      ? `Официални, бални и абитуриентски рокли в София — елегантни вечерни рокли за абитуриентски бал, сватба, кръщене или коктейлно парти. Подбрани от Арети, булчински и сватбен салон в Лозенец. Записване за проба по предварителен час.`
+                      ? `Бални рокли в София — абитуриентски, официални и вечерни рокли за бал, сватба като гостенка, кръщене или коктейл. Подбрани от салон Арети в Лозенец. Проба по предварителен час, корекции в собственото ни ателие.`
                       : `Evening, prom and formal dresses in Sofia — elegant gowns for proms, weddings, christenings and cocktail events. Curated by Areti bridal salon in Lozenets. Fittings by appointment.`)
                   : (isBg
                       ? `Луксозни булчински и сватбени рокли от колекция ${activeColData.label} — част от каталога на Demetrios в булчински салон Арети, София. Всяка рокля пристига директно от Demetrios, с безплатни корекции до деня на сватбата. Записване за проба по предварителен час.`

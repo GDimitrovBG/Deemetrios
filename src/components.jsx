@@ -61,7 +61,13 @@ function Img({ src, label, alt, className = "", style = {}, priority = false, wi
         alt={a}
         width={width}
         height={height}
-        onError={() => setErrored(true)}
+        // Prerender blocks every image request on purpose (speed), so each
+        // <img> errors there. Swapping to the placeholder then baked a bare
+        // <div class="ph"> into the static HTML of every product page: Google
+        // got no product images in the HTML and the browser could not request
+        // the LCP image until the JS arrived (4.5 s load delay on mobile).
+        // Real visitors still get the placeholder for a genuinely broken file.
+        onError={() => { if (typeof window !== 'undefined' && window.__PRERENDER__) return; setErrored(true); }}
         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }}
         loading={priority ? "eager" : "lazy"}
         fetchpriority={priority ? "high" : "low"}

@@ -215,6 +215,9 @@ function pathToStateInner(pathname) {
   }
 
   if (p === '/kviz')        return { route: 'quiz' };
+  // /quiz is the route NAME, never a path — but it was linked as one for a while
+  // and Search Console still crawls it (noindex 404 shell). Send it home.
+  if (p === '/quiz')        return { redirect: '/kviz' };
   // /accessories retired: the salon does not sell accessories separately. The
   // page carried stock photos and invented prices under a title that contradicted
   // its own H1. Redirect rather than 404 — it has been indexed for a while.
