@@ -40,7 +40,11 @@ git pull
 
 # Клиент — билд в работната копия, не в живата директория
 npm ci
-npm run build               # sitemap → vite build → prerender (~2 мин)
+# UPLOADS_DIR е задължителен: от него build-ът прави списъка със srcset
+# варианти (public/image-variants.json). Без него снимките се теглят в пълен
+# размер на телефон. Проверете в изхода на build-а реда
+#   [images] manifest: NNN images with srcset   ← трябва да е > 0
+UPLOADS_DIR=/path/to/wp-content/uploads npm run build   # manifest → sitemap → vite → prerender
 
 # Публикуване: нова директория, после смяна
 rsync -a --delete dist/ /path/to/releases/next/
@@ -198,11 +202,21 @@ node scripts/optimize-images.mjs /path/to/wp-content/uploads --variants
 npm run build
 ```
 
-Скриптът записва `-480w` / `-960w` / `-1440w` до всяка снимка **и** списък с
-тях в `public/image-variants.json`. Приложението чете този списък и слага
-`srcset` само за снимките, които са в него — така страница не може да поиска
-вариант, който не е генериран. Докато скриптът не е пуснат, файлът е `{}` и
-всичко работи точно както сега.
+Скриптът записва `-480w` / `-960w` / `-1440w` до всяка снимка. Списъкът с тях,
+`public/image-variants.json`, **вече не е в Git**: `npm run build` го прави
+наново при всеки деплой от `UPLOADS_DIR` (`scripts/build-image-manifest.mjs`,
+само чете, без sharp, секунди). Приложението слага `srcset` само за снимките в
+списъка — страница не може да поиска вариант, който не съществува.
+
+> Защо: файлът беше в Git с `{}`. Сървърът го попълваше, после `git pull`
+> (или `git checkout --` при блокиран pull) го нулираше. На 2026-11-03 живият
+> списък беше `{}`, въпреки че всички варианти бяха на диска — нито една
+> страница нямаше `srcset`, а телефоните теглеха по 1,5–2,4 MB излишни снимки.
+>
+> **При първия `git pull` след тази промяна** Git ще изтрие стария
+> `public/image-variants.json` (или ще откаже pull заради локални промени —
+> тогава `git checkout -- public/image-variants.json` и пак `git pull`). Това е
+> очаквано: следващият `UPLOADS_DIR=… npm run build` го създава наново.
 
 Пуснете първо с `--dry`, ако искате само отчет.
 
