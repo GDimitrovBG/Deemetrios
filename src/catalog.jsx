@@ -620,6 +620,12 @@ function EveningSeoContent({ lang, setRoute }) {
           {" · "}
           <a href={blogHref("rokli-za-svatba-gost-maykata-na-bulkata", lang)}>{isBg ? "рокли за сватба — за гостенки и майката на булката" : "wedding guest & mother of the bride dresses"}</a>
         </p>
+        <p className="seo-ed-note">
+          {isBg ? "Мислите за официална рокля под наем? Вижте честното сравнение: " : "Thinking about renting a formal dress? See the honest comparison: "}
+          <a href={withLang("/blog/ofitsialni-balni-rokli-pod-naem-sofia", lang)} onClick={(e) => { e.preventDefault(); setRoute("blog/ofitsialni-balni-rokli-pod-naem-sofia"); }}>
+            {isBg ? "официални рокли под наем или покупка →" : "formal dresses to rent or buy →"}
+          </a>
+        </p>
       </div>
 
       <h2 className="seo-ed-faq-head">
