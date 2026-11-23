@@ -71,6 +71,15 @@ object Downloader {
 
     fun cancelAll() {
         queue.clear()
+        // Tell TDLib to stop the transfers too, not just drop the queue.
+        val running = activeMap.values.mapNotNull {
+            it.key.substringAfterLast(':').toIntOrNull()
+        }
+        scope.launch {
+            running.forEach { fileId ->
+                TgClient.sendOrNull(TdApi.CancelDownloadFile(fileId, false))
+            }
+        }
         job?.cancel()
         job = null
         activeMap.clear()

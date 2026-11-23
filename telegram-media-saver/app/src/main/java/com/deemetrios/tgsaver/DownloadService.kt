@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 class DownloadService : Service() {
 
     private val scope = CoroutineScope(Dispatchers.Main)
+    private var watchingProgress = false
 
     companion object {
         private const val CHANNEL_ID = "downloads"
@@ -53,6 +54,9 @@ class DownloadService : Service() {
         Downloader.ensureRunning(applicationContext) {
             scope.launch { stopSelf() }
         }
+
+        if (watchingProgress) return START_NOT_STICKY
+        watchingProgress = true
 
         scope.launch {
             Downloader.state.collectLatest { s ->
